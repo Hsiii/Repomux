@@ -573,13 +573,15 @@ export function App(): JSX.Element {
                                     </span>
                                     <span className='queue-row__content'>
                                         <span className='queue-row__title'>
-                                            <span className='muted'>
-                                                #{item.number}
-                                            </span>{' '}
                                             {item.title}
                                         </span>
-                                        <span className='queue-row__repo'>
-                                            {item.repo}
+                                        <span className='queue-row__meta'>
+                                            <span className='queue-row__repo'>
+                                                {item.repo}
+                                            </span>
+                                            <span className='queue-row__number'>
+                                                #{item.number}
+                                            </span>
                                         </span>
                                     </span>
                                     <span className='readiness'>
@@ -591,7 +593,7 @@ export function App(): JSX.Element {
                                         ) : (
                                             <span
                                                 aria-label='Not codex ready'
-                                                className='readiness__dot'
+                                                className='readiness__empty'
                                             />
                                         )}
                                     </span>
@@ -635,13 +637,11 @@ export function App(): JSX.Element {
                                 </span>
                                 <div>
                                     <h2 className='detail-title'>
-                                        <span className='muted'>
-                                            #{selectedItem.number}
-                                        </span>{' '}
                                         {selectedItem.title}
                                     </h2>
                                     <p className='detail-meta'>
-                                        {selectedItem.repo}
+                                        <span>{selectedItem.repo}</span>
+                                        <span>#{selectedItem.number}</span>
                                     </p>
                                 </div>
                             </div>
@@ -651,7 +651,7 @@ export function App(): JSX.Element {
                                 ) : (
                                     <span
                                         aria-label='Not codex ready'
-                                        className='readiness__dot'
+                                        className='readiness__empty'
                                     />
                                 )}
                             </span>
