@@ -456,7 +456,10 @@ export function App(): JSX.Element {
 
     useEffect(() => {
         function openAddRepositoryDialog(event: KeyboardEvent) {
-            if ((event.metaKey || event.ctrlKey) && event.key === 'n') {
+            if (
+                (event.metaKey || event.ctrlKey) &&
+                event.key.toLowerCase() === 'n'
+            ) {
                 event.preventDefault();
                 setIsAddRepositoryOpen(true);
             }
