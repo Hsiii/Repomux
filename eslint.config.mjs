@@ -9,6 +9,7 @@ export default [
             'node_modules/**',
             'packages/create-hsi-app/**',
             'scripts/**',
+            'supabase/functions/**',
         ],
     },
 
