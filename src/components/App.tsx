@@ -9,6 +9,7 @@ import {
     CircleDot,
     GitPullRequestArrow,
     Plus,
+    Trash2,
     X,
 } from 'lucide-react';
 
@@ -271,6 +272,12 @@ export function App(): JSX.Element {
         useState(mockRepositories);
     const [repoInput, setRepoInput] = useState('');
     const [githubToken, setGithubToken] = useState(getStoredGitHubToken);
+    const [isAddRepositoryOpen, setIsAddRepositoryOpen] = useState(false);
+    const [continueAddingRepositories, setContinueAddingRepositories] =
+        useState(false);
+    const [repositoryPendingRemoval, setRepositoryPendingRemoval] = useState<
+        Repository | undefined
+    >();
     const [selectedRepository, setSelectedRepository] = useState(
         supabase === undefined ? mockRepositories[0]?.fullName : undefined
     );
@@ -350,6 +357,9 @@ export function App(): JSX.Element {
         },
         onSuccess: () => {
             setRepoInput('');
+            if (!continueAddingRepositories) {
+                setIsAddRepositoryOpen(false);
+            }
             repositoriesQuery.refetch().catch((error: unknown) => {
                 setStatusMessage(
                     error instanceof Error
@@ -366,6 +376,7 @@ export function App(): JSX.Element {
                 setLocalRepositories((current) =>
                     current.filter((item) => item.id !== repository.id)
                 );
+                setRepositoryPendingRemoval(undefined);
                 return;
             }
 
@@ -379,6 +390,7 @@ export function App(): JSX.Element {
             }
         },
         onSuccess: () => {
+            setRepositoryPendingRemoval(undefined);
             repositoriesQuery.refetch().catch((error: unknown) => {
                 setStatusMessage(
                     error instanceof Error
@@ -421,6 +433,21 @@ export function App(): JSX.Element {
         }
     }, [displayedRepositories, selectedRepository]);
 
+    useEffect(() => {
+        function openAddRepositoryDialog(event: KeyboardEvent) {
+            if ((event.metaKey || event.ctrlKey) && event.key === 'n') {
+                event.preventDefault();
+                setIsAddRepositoryOpen(true);
+            }
+        }
+
+        globalThis.addEventListener('keydown', openAddRepositoryDialog);
+
+        return () => {
+            globalThis.removeEventListener('keydown', openAddRepositoryDialog);
+        };
+    }, []);
+
     function addRepository() {
         const fullName = normalizeRepository(repoInput);
 
@@ -456,39 +483,20 @@ export function App(): JSX.Element {
     return (
         <main className='app-shell'>
             <aside aria-label='Repositories' className='repo-panel'>
-                <h1 className='app-title'>Repomux</h1>
-
                 <section className='repo-panel__section'>
-                    <h2 className='section-title'>Repositories</h2>
-                    <form
-                        className='repo-form'
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            addRepository();
-                        }}
-                    >
-                        <label className='sr-only' htmlFor='repo-input'>
-                            Repository full name
-                        </label>
-                        <input
-                            className='repo-form__input'
-                            id='repo-input'
-                            onChange={(event) => {
-                                setRepoInput(event.target.value);
-                            }}
-                            placeholder='owner/repo'
-                            type='text'
-                            value={repoInput}
-                        />
+                    <div className='section-header'>
+                        <h2 className='section-title'>Repositories</h2>
                         <button
-                            className='icon-button icon-button--primary'
-                            disabled={addRepositoryMutation.isPending}
-                            type='submit'
+                            aria-label='Add repository'
+                            className='section-add-button'
+                            onClick={() => {
+                                setIsAddRepositoryOpen(true);
+                            }}
+                            type='button'
                         >
-                            <Plus aria-hidden='true' size={20} />
-                            <span className='sr-only'>Add repository</span>
+                            <Plus aria-hidden='true' size={18} />
                         </button>
-                    </form>
+                    </div>
 
                     <div className='repo-list'>
                         {displayedRepositories.map((repository) => (
@@ -521,9 +529,7 @@ export function App(): JSX.Element {
                                     aria-label={`Remove ${repository.fullName}`}
                                     className='repo-row__remove'
                                     onClick={() => {
-                                        removeRepositoryMutation.mutate(
-                                            repository
-                                        );
+                                        setRepositoryPendingRemoval(repository);
                                     }}
                                     type='button'
                                 >
@@ -716,6 +722,149 @@ export function App(): JSX.Element {
                     <p className='status-message'>{statusText}</p>
                 )}
             </section>
+
+            {isAddRepositoryOpen ? (
+                <div className='modal-backdrop'>
+                    <form
+                        aria-labelledby='add-repository-title'
+                        className='modal-card'
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            addRepository();
+                        }}
+                        role='dialog'
+                    >
+                        <div className='modal-header'>
+                            <div>
+                                <h2
+                                    className='modal-title'
+                                    id='add-repository-title'
+                                >
+                                    Add repository
+                                </h2>
+                                <p className='modal-description'>
+                                    Add a GitHub repository to the queue.
+                                </p>
+                            </div>
+                            <button
+                                aria-label='Close add repository'
+                                className='modal-icon-button'
+                                onClick={() => {
+                                    setIsAddRepositoryOpen(false);
+                                }}
+                                type='button'
+                            >
+                                <X aria-hidden='true' size={18} />
+                            </button>
+                        </div>
+
+                        <label className='field-label' htmlFor='repo-input'>
+                            Repository
+                        </label>
+                        <input
+                            autoFocus
+                            className='modal-input'
+                            id='repo-input'
+                            onChange={(event) => {
+                                setRepoInput(event.target.value);
+                            }}
+                            placeholder='owner/repo or GitHub URL'
+                            type='text'
+                            value={repoInput}
+                        />
+
+                        <label className='checkbox-row'>
+                            <input
+                                checked={continueAddingRepositories}
+                                onChange={(event) => {
+                                    setContinueAddingRepositories(
+                                        event.target.checked
+                                    );
+                                }}
+                                type='checkbox'
+                            />
+                            <span>Continue adding next</span>
+                        </label>
+
+                        <button
+                            className='modal-primary-button'
+                            disabled={addRepositoryMutation.isPending}
+                            type='submit'
+                        >
+                            <span>
+                                {addRepositoryMutation.isPending
+                                    ? 'Adding'
+                                    : 'Add repository'}
+                            </span>
+                            <Plus aria-hidden='true' size={20} />
+                        </button>
+                    </form>
+                </div>
+            ) : undefined}
+
+            {repositoryPendingRemoval === undefined ? undefined : (
+                <div className='modal-backdrop'>
+                    <div
+                        aria-labelledby='remove-repository-title'
+                        className='modal-card'
+                        role='dialog'
+                    >
+                        <div className='modal-header'>
+                            <div>
+                                <h2
+                                    className='modal-title'
+                                    id='remove-repository-title'
+                                >
+                                    Remove repository
+                                </h2>
+                                <p className='modal-description'>
+                                    Remove {repositoryPendingRemoval.fullName}{' '}
+                                    from the active queue.
+                                </p>
+                            </div>
+                            <button
+                                aria-label='Close remove repository'
+                                className='modal-icon-button'
+                                onClick={() => {
+                                    setRepositoryPendingRemoval(undefined);
+                                }}
+                                type='button'
+                            >
+                                <X aria-hidden='true' size={18} />
+                            </button>
+                        </div>
+
+                        <div className='modal-actions'>
+                            <button
+                                className='modal-secondary-button'
+                                onClick={() => {
+                                    setRepositoryPendingRemoval(undefined);
+                                }}
+                                type='button'
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className='modal-danger-button'
+                                disabled={removeRepositoryMutation.isPending}
+                                onClick={() => {
+                                    removeRepositoryMutation.mutate(
+                                        repositoryPendingRemoval
+                                    );
+                                }}
+                                type='button'
+                            >
+                                <span>
+                                    {removeRepositoryMutation.isPending
+                                        ? 'Removing'
+                                        : 'Remove'}
+                                </span>
+                                <Trash2 aria-hidden='true' size={18} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
