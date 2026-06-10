@@ -49,7 +49,7 @@ input:disabled {
 }
 
 #root {
-    min-height: 100vh;
+    height: 100vh;
 }
 
 .sr-only {
@@ -65,28 +65,35 @@ input:disabled {
 }
 
 .app-shell {
-    min-height: 100vh;
+    height: 100vh;
     display: grid;
     grid-template-columns: minmax(320px, var(--size-repo-panel)) 1fr;
+    overflow: hidden;
     background-color: var(--clr-bg-shell);
 }
 
 .repo-panel {
-    min-height: 100vh;
+    min-height: 0;
     padding: var(--space-40) var(--space-28);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
     border-right: var(--size-border-1) solid var(--clr-border);
     background-color: var(--clr-panel);
 }
 
 .app-title {
-    margin-bottom: var(--space-40);
     font: var(--font-title-md);
     letter-spacing: 0;
+    line-height: 1;
 }
 
 .repo-panel__section {
+    min-height: 0;
     display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     gap: var(--space-16);
+    padding-top: var(--space-40);
 }
 
 .section-title,
@@ -146,7 +153,8 @@ input:disabled {
 .repo-list {
     display: grid;
     margin-top: var(--space-8);
-    overflow: hidden;
+    align-content: start;
+    overflow: auto;
     border-radius: var(--radius-8);
 }
 
@@ -196,8 +204,12 @@ input:disabled {
 
 .work-panel {
     position: relative;
+    min-height: 0;
     min-width: 0;
     padding: var(--space-40);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
 }
 
 .work-panel__header {
@@ -210,6 +222,7 @@ input:disabled {
 
 .work-title {
     font: var(--font-title-sm);
+    line-height: 1;
 }
 
 .work-subtitle,
@@ -228,7 +241,8 @@ input:disabled {
 
 .queue-list {
     display: grid;
-    overflow: hidden;
+    align-content: start;
+    overflow: auto;
     border: var(--size-border-1) solid var(--clr-border);
     border-radius: var(--radius-8);
     background-color: var(--clr-panel-soft);
@@ -291,9 +305,12 @@ input:disabled {
 }
 
 .detail-panel {
+    min-height: 0;
     display: grid;
+    align-content: start;
     gap: var(--space-28);
     max-width: 980px;
+    overflow: auto;
 }
 
 .back-button {
@@ -393,17 +410,34 @@ input:disabled {
 
 @media (max-width: 900px) {
     .app-shell {
+        height: auto;
+        min-height: 100vh;
         grid-template-columns: 1fr;
+        overflow: visible;
     }
 
     .repo-panel {
         min-height: auto;
+        display: block;
+        overflow: visible;
         border-right: 0;
         border-bottom: var(--size-border-1) solid var(--clr-border);
     }
 
+    .repo-panel__section {
+        padding-top: var(--space-40);
+    }
+
     .work-panel {
+        min-height: auto;
+        display: block;
         padding: var(--space-28);
+        overflow: visible;
+    }
+
+    .queue-list,
+    .detail-panel {
+        overflow: visible;
     }
 
     .detail-header {
