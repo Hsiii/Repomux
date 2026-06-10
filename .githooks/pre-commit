@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+set -eu
+
+package_manager=$(node -p "try { JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).packageManager?.split('@')[0] ?? 'bun' } catch { 'bun' }")
+
+case "$package_manager" in
+  yarn)
+    yarn format:check
+    yarn lint
+    ;;
+  npm|pnpm|bun)
+    "$package_manager" run format:check
+    "$package_manager" run lint
+    ;;
+  *)
+    bun run format:check
+    bun run lint
+    ;;
+esac
