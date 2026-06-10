@@ -369,9 +369,6 @@ export function App(): JSX.Element {
     const [repositoryPendingRemoval, setRepositoryPendingRemoval] = useState<
         Repository | undefined
     >();
-    const [selectedRepository, setSelectedRepository] = useState(
-        supabase === undefined ? mockRepositories[0]?.fullName : undefined
-    );
     const [selectedItem, setSelectedItem] = useState(
         supabase === undefined ? mockWorkItems[0] : undefined
     );
@@ -408,15 +405,10 @@ export function App(): JSX.Element {
             !effectiveActiveRepositoryNames.includes(repository.fullName)
     );
 
-    const visibleRepositories = useMemo(() => {
-        if (selectedRepository === undefined) {
-            return activeRepositories;
-        }
-
-        return displayedRepositories.filter(
-            (repository) => repository.fullName === selectedRepository
-        );
-    }, [activeRepositories, displayedRepositories, selectedRepository]);
+    const visibleRepositories = useMemo(
+        () => activeRepositories,
+        [activeRepositories]
+    );
 
     const workItemsQuery = useQuery({
         enabled: supabase !== undefined && visibleRepositories.length > 0,
@@ -439,6 +431,17 @@ export function App(): JSX.Element {
               )
             : (workItemsQuery.data ?? []);
 
+    const githubUserQuery = useQuery({
+        enabled: githubToken.trim() !== '',
+        queryFn: async () =>
+            await fetchJson<GitHubUser>(
+                'https://api.github.com/user',
+                githubToken.trim()
+            ),
+        retry: false,
+        queryKey: ['github-user', githubToken],
+    });
+
     const filteredWorkItems = workItems.filter((item) => {
         const githubLogin = githubUserQuery.data?.login;
 
@@ -455,17 +458,6 @@ export function App(): JSX.Element {
 
     const selectedPrompt =
         selectedItem === undefined ? '' : (promptDrafts[selectedItem.id] ?? '');
-
-    const githubUserQuery = useQuery({
-        enabled: githubToken.trim() !== '',
-        queryFn: async () =>
-            await fetchJson<GitHubUser>(
-                'https://api.github.com/user',
-                githubToken.trim()
-            ),
-        retry: false,
-        queryKey: ['github-user', githubToken],
-    });
 
     useEffect(() => {
         const searchParams = new URLSearchParams(globalThis.location.search);
@@ -639,16 +631,7 @@ export function App(): JSX.Element {
 
             return next;
         });
-
-        if (
-            selectedRepository !== undefined &&
-            !displayedRepositories.some(
-                (repository) => repository.fullName === selectedRepository
-            )
-        ) {
-            setSelectedRepository(undefined);
-        }
-    }, [displayedRepositories, selectedRepository]);
+    }, [displayedRepositories]);
 
     useEffect(() => {
         function openAddRepositoryDialog(event: KeyboardEvent) {
@@ -756,26 +739,8 @@ export function App(): JSX.Element {
         isActiveRepository: boolean
     ) {
         return (
-            <div
-                className='repo-row'
-                data-selected={selectedRepository === repository.fullName}
-                key={repository.id}
-            >
-                <button
-                    aria-pressed={selectedRepository === repository.fullName}
-                    className='repo-row__select'
-                    onClick={() => {
-                        setSelectedRepository((current) =>
-                            current === repository.fullName
-                                ? undefined
-                                : repository.fullName
-                        );
-                        setSelectedItem(undefined);
-                    }}
-                    type='button'
-                >
-                    {repository.fullName}
-                </button>
+            <div className='repo-row' key={repository.id}>
+                <span className='repo-row__label'>{repository.fullName}</span>
                 <button
                     aria-label={
                         isActiveRepository
@@ -940,35 +905,6 @@ export function App(): JSX.Element {
                         <div className='work-panel__header'>
                             <h2 className='work-title'>Work queue</h2>
                             <div className='work-filters'>
-                                <label className='work-filter'>
-                                    <span className='work-filter__label'>
-                                        Repo
-                                    </span>
-                                    <select
-                                        className='work-filter__select'
-                                        onChange={(event) => {
-                                            setSelectedRepository(
-                                                event.target.value === ''
-                                                    ? undefined
-                                                    : event.target.value
-                                            );
-                                            setSelectedItem(undefined);
-                                        }}
-                                        value={selectedRepository ?? ''}
-                                    >
-                                        <option value=''>Active repos</option>
-                                        {displayedRepositories.map(
-                                            (repository) => (
-                                                <option
-                                                    key={repository.id}
-                                                    value={repository.fullName}
-                                                >
-                                                    {repository.fullName}
-                                                </option>
-                                            )
-                                        )}
-                                    </select>
-                                </label>
                                 <label className='work-filter work-filter--check'>
                                     <input
                                         checked={includeUnassignedIssues}
@@ -984,65 +920,71 @@ export function App(): JSX.Element {
                             </div>
                         </div>
 
-                        <div className='queue-list'>
-                            {filteredWorkItems.map((item) => (
-                                <button
-                                    className='queue-row'
-                                    key={item.id}
-                                    onClick={() => {
-                                        setSelectedItem(item);
-                                        setStatusMessage('');
-                                    }}
-                                    type='button'
-                                >
-                                    <span className='queue-row__type'>
-                                        {item.type === 'issue' ? (
-                                            <CircleDot
-                                                aria-label='Issue'
-                                                size={18}
-                                            />
-                                        ) : (
-                                            <GitPullRequestArrow
-                                                aria-label='Pull request'
-                                                size={18}
-                                            />
-                                        )}
-                                    </span>
-                                    <span className='queue-row__content'>
-                                        <span className='queue-row__title'>
-                                            {item.title}
+                        <div
+                            className={
+                                filteredWorkItems.length === 0
+                                    ? 'queue-list queue-list--empty'
+                                    : 'queue-list'
+                            }
+                        >
+                            {filteredWorkItems.length === 0 ? (
+                                <p className='empty-state'>
+                                    No open issues or pull requests found.
+                                </p>
+                            ) : (
+                                filteredWorkItems.map((item) => (
+                                    <button
+                                        className='queue-row'
+                                        key={item.id}
+                                        onClick={() => {
+                                            setSelectedItem(item);
+                                            setStatusMessage('');
+                                        }}
+                                        type='button'
+                                    >
+                                        <span className='queue-row__type'>
+                                            {item.type === 'issue' ? (
+                                                <CircleDot
+                                                    aria-label='Issue'
+                                                    size={18}
+                                                />
+                                            ) : (
+                                                <GitPullRequestArrow
+                                                    aria-label='Pull request'
+                                                    size={18}
+                                                />
+                                            )}
                                         </span>
-                                        <span className='queue-row__meta'>
-                                            <span className='queue-row__repo'>
-                                                {item.repo}
+                                        <span className='queue-row__content'>
+                                            <span className='queue-row__title'>
+                                                {item.title}
                                             </span>
-                                            <span className='queue-row__number'>
-                                                #{item.number}
+                                            <span className='queue-row__meta'>
+                                                <span className='queue-row__repo'>
+                                                    {item.repo}
+                                                </span>
+                                                <span className='queue-row__number'>
+                                                    #{item.number}
+                                                </span>
                                             </span>
                                         </span>
-                                    </span>
-                                    <span className='readiness'>
-                                        {item.codexReady ? (
-                                            <Check
-                                                aria-label='Codex ready'
-                                                size={18}
-                                            />
-                                        ) : (
-                                            <span
-                                                aria-label='Not codex ready'
-                                                className='readiness__empty'
-                                            />
-                                        )}
-                                    </span>
-                                </button>
-                            ))}
+                                        <span className='readiness'>
+                                            {item.codexReady ? (
+                                                <Check
+                                                    aria-label='Codex ready'
+                                                    size={18}
+                                                />
+                                            ) : (
+                                                <span
+                                                    aria-label='Not codex ready'
+                                                    className='readiness__empty'
+                                                />
+                                            )}
+                                        </span>
+                                    </button>
+                                ))
+                            )}
                         </div>
-
-                        {filteredWorkItems.length === 0 ? (
-                            <p className='empty-state'>
-                                No open issues or pull requests found.
-                            </p>
-                        ) : undefined}
                     </>
                 ) : (
                     <article className='detail-panel'>
