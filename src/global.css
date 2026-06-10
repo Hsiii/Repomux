@@ -91,6 +91,10 @@ input:disabled {
 .repo-panel__section {
     min-height: 0;
     display: grid;
+    grid-template-areas:
+        'title'
+        'list'
+        'form';
     grid-template-rows: auto minmax(0, 1fr) auto;
     gap: var(--space-16);
     padding-top: var(--space-40);
@@ -102,11 +106,22 @@ input:disabled {
     color: var(--clr-accent);
 }
 
+.section-title {
+    grid-area: title;
+}
+
 .repo-form {
-    display: grid;
-    grid-template-columns: 1fr var(--size-icon-button);
-    gap: var(--space-12);
-    align-items: center;
+    position: relative;
+    grid-area: form;
+}
+
+.repo-form .icon-button {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    width: var(--size-repo-add-button);
+    height: var(--size-repo-add-button);
+    border-radius: var(--radius-8);
 }
 
 .repo-form__input,
@@ -121,7 +136,13 @@ input:disabled {
 
 .repo-form__input {
     height: var(--size-icon-button);
-    padding: 0 var(--space-20);
+    padding: 0 calc(var(--size-repo-add-button) + var(--space-16)) 0
+        var(--space-16);
+}
+
+.repo-form__input:focus-visible {
+    outline: 0;
+    border-color: var(--clr-border-strong);
 }
 
 .repo-form__input::placeholder,
@@ -151,30 +172,33 @@ input:disabled {
 }
 
 .repo-list {
+    grid-area: list;
     display: grid;
-    margin-top: var(--space-8);
+    gap: var(--space-8);
     align-content: start;
     overflow: auto;
     border-radius: var(--radius-8);
 }
 
 .repo-row {
-    min-height: var(--size-row);
+    min-height: var(--size-repo-row);
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    border-bottom: var(--size-border-1) solid var(--clr-border);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-8);
+    background-color: var(--clr-panel-soft);
 }
 
 .repo-row[data-selected='true'] {
     background-color: var(--clr-surface-active);
-    box-shadow: inset var(--space-4) 0 0 var(--clr-accent);
+    border-color: var(--clr-border-strong);
 }
 
 .repo-row__select {
     height: 100%;
     min-width: 0;
-    padding: 0 var(--space-16) 0 var(--space-20);
+    padding: var(--space-8) var(--space-12);
     overflow: hidden;
     color: var(--clr-text);
     text-align: left;
@@ -187,7 +211,7 @@ input:disabled {
 .repo-row__remove {
     width: var(--space-32);
     height: var(--space-32);
-    margin-right: var(--space-12);
+    margin-right: var(--space-8);
     display: inline-grid;
     place-items: center;
     color: var(--clr-text-muted);

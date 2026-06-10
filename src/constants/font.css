@@ -34,11 +34,13 @@
     --size-border-1: 1px;
     --size-outline: 2px;
     --size-icon-button: 52px;
+    --size-repo-add-button: 44px;
+    --size-repo-row: 44px;
     --size-repo-panel: 416px;
     --size-row: 80px;
     --size-prompt: 240px;
 
     --radius-4: 4px;
-    --radius-8: 8px;
-    --radius-12: 12px;
+    --radius-8: 12px;
+    --radius-12: 16px;
 }

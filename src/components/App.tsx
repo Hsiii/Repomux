@@ -235,7 +235,35 @@ async function assignToCodex(
 }
 
 function normalizeRepository(input: string): string {
-    return input.trim().replace(/^https:\/\/github\.com\//u, '');
+    const trimmedInput = input.trim();
+    const sshMatch =
+        /^git@github\.com:(?<owner>[\w.-]+)\/(?<repo>[\w.-]+?)(?:\.git)?$/u.exec(
+            trimmedInput
+        );
+
+    if (sshMatch?.groups !== undefined) {
+        return `${sshMatch.groups.owner}/${sshMatch.groups.repo}`;
+    }
+
+    try {
+        const repositoryUrl = new URL(trimmedInput);
+
+        if (repositoryUrl.hostname !== 'github.com') {
+            return trimmedInput;
+        }
+
+        const pathSegments = repositoryUrl.pathname.split('/').filter(Boolean);
+
+        if (pathSegments.length < 2) {
+            return trimmedInput;
+        }
+
+        const [owner, repo] = pathSegments;
+
+        return `${owner}/${repo.replace(/\.git$/u, '')}`;
+    } catch {
+        return trimmedInput.replace(/\.git$/u, '');
+    }
 }
 
 export function App(): JSX.Element {
