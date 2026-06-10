@@ -30,9 +30,14 @@ interface GitHubIssue {
 }
 
 interface GitHubUser {
-    avatar_url?: string;
     login: string;
     name?: string | null;
+}
+
+interface OAuthTokenResponse {
+    accessToken: string;
+    scope: string;
+    tokenType: string;
 }
 
 interface WorkItem {
@@ -48,6 +53,9 @@ interface WorkItem {
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
+    | string
+    | undefined;
+const githubOAuthClientId = import.meta.env.VITE_GITHUB_OAUTH_CLIENT_ID as
     | string
     | undefined;
 
@@ -97,6 +105,10 @@ const mockWorkItems: readonly WorkItem[] = [
 
 function getStoredGitHubToken(): string {
     return globalThis.localStorage.getItem('repomux.githubToken') ?? '';
+}
+
+function getOAuthRedirectUri(): string {
+    return `${globalThis.location.origin}${globalThis.location.pathname}`;
 }
 
 function repositoryFromIssue(issue: GitHubIssue): string {
@@ -242,6 +254,45 @@ async function assignToCodex(
     }
 }
 
+async function exchangeGitHubOAuthCode(
+    code: string,
+    redirectUri: string
+): Promise<OAuthTokenResponse> {
+    if (
+        supabaseUrl === undefined ||
+        supabaseKey === undefined ||
+        supabase === undefined
+    ) {
+        throw new Error('Supabase is required for GitHub OAuth.');
+    }
+
+    const response = await fetch(
+        `${supabaseUrl}/functions/v1/github-oauth-token`,
+        {
+            body: JSON.stringify({ code, redirectUri }),
+            headers: {
+                'Authorization': `Bearer ${supabaseKey}`,
+                'Content-Type': 'application/json',
+                'apikey': supabaseKey,
+            },
+            method: 'POST',
+        }
+    );
+
+    const payload = (await response.json()) as
+        | OAuthTokenResponse
+        | { error?: string };
+
+    if (!response.ok || !('accessToken' in payload)) {
+        const errorMessage =
+            'error' in payload ? payload.error : 'GitHub OAuth failed.';
+
+        throw new Error(errorMessage ?? 'GitHub OAuth failed.');
+    }
+
+    return payload;
+}
+
 function normalizeRepository(input: string): string {
     const trimmedInput = input.trim();
     const sshMatch =
@@ -279,8 +330,6 @@ export function App(): JSX.Element {
         useState(mockRepositories);
     const [repoInput, setRepoInput] = useState('');
     const [githubToken, setGithubToken] = useState(getStoredGitHubToken);
-    const [githubTokenDraft, setGithubTokenDraft] =
-        useState(getStoredGitHubToken);
     const [isGitHubDialogOpen, setIsGitHubDialogOpen] = useState(false);
     const [isAddRepositoryOpen, setIsAddRepositoryOpen] = useState(false);
     const [continueAddingRepositories, setContinueAddingRepositories] =
@@ -356,6 +405,69 @@ export function App(): JSX.Element {
         retry: false,
         queryKey: ['github-user', githubToken],
     });
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(globalThis.location.search);
+        const code = searchParams.get('code');
+        const state = searchParams.get('state');
+        const oauthError =
+            searchParams.get('error_description') ?? searchParams.get('error');
+
+        if (code === null && oauthError === null) {
+            return;
+        }
+
+        searchParams.delete('code');
+        searchParams.delete('state');
+        searchParams.delete('error');
+        searchParams.delete('error_description');
+        globalThis.history.replaceState(
+            undefined,
+            '',
+            `${globalThis.location.pathname}${
+                searchParams.size === 0 ? '' : `?${searchParams.toString()}`
+            }`
+        );
+
+        if (oauthError !== null) {
+            setStatusMessage(oauthError);
+            return;
+        }
+
+        const storedState = globalThis.localStorage.getItem(
+            'repomux.githubOAuthState'
+        );
+        globalThis.localStorage.removeItem('repomux.githubOAuthState');
+
+        if (state === null || storedState === null || state !== storedState) {
+            setStatusMessage('GitHub OAuth state did not match.');
+            return;
+        }
+
+        exchangeGitHubOAuthCode(code ?? '', getOAuthRedirectUri())
+            .then((tokenResponse) => {
+                globalThis.localStorage.setItem(
+                    'repomux.githubToken',
+                    tokenResponse.accessToken
+                );
+                setGithubToken(tokenResponse.accessToken);
+                setStatusMessage('GitHub connected.');
+                workItemsQuery.refetch().catch((error: unknown) => {
+                    setStatusMessage(
+                        error instanceof Error
+                            ? error.message
+                            : 'Unable to reload work queue.'
+                    );
+                });
+            })
+            .catch((error: unknown) => {
+                setStatusMessage(
+                    error instanceof Error
+                        ? error.message
+                        : 'GitHub OAuth failed.'
+                );
+            });
+    }, [workItemsQuery]);
 
     const addRepositoryMutation = useMutation({
         mutationFn: async (fullName: string) => {
@@ -484,30 +596,31 @@ export function App(): JSX.Element {
     }
 
     function connectGitHub() {
-        const token = githubTokenDraft.trim();
-
-        if (token === '') {
-            setStatusMessage('GitHub token is required.');
+        if (githubOAuthClientId === undefined || githubOAuthClientId === '') {
+            setStatusMessage('GitHub OAuth client ID is not configured.');
             return;
         }
 
-        globalThis.localStorage.setItem('repomux.githubToken', token);
-        setGithubToken(token);
-        setIsGitHubDialogOpen(false);
-        setStatusMessage('');
-        workItemsQuery.refetch().catch((error: unknown) => {
-            setStatusMessage(
-                error instanceof Error
-                    ? error.message
-                    : 'Unable to reload work queue.'
-            );
-        });
+        const state = globalThis.crypto.randomUUID();
+        const authorizationUrl = new URL(
+            'https://github.com/login/oauth/authorize'
+        );
+
+        globalThis.localStorage.setItem('repomux.githubOAuthState', state);
+        authorizationUrl.searchParams.set('client_id', githubOAuthClientId);
+        authorizationUrl.searchParams.set(
+            'redirect_uri',
+            getOAuthRedirectUri()
+        );
+        authorizationUrl.searchParams.set('scope', 'repo');
+        authorizationUrl.searchParams.set('state', state);
+
+        globalThis.location.assign(authorizationUrl);
     }
 
     function disconnectGitHub() {
         globalThis.localStorage.removeItem('repomux.githubToken');
         setGithubToken('');
-        setGithubTokenDraft('');
         setStatusMessage('');
         workItemsQuery.refetch().catch((error: unknown) => {
             setStatusMessage(
@@ -998,23 +1111,8 @@ export function App(): JSX.Element {
                             </button>
                         </div>
 
-                        <label className='field-label' htmlFor='github-token'>
-                            Token
-                        </label>
-                        <input
-                            autoFocus
-                            className='modal-input'
-                            id='github-token'
-                            onChange={(event) => {
-                                setGithubTokenDraft(event.target.value);
-                            }}
-                            placeholder='ghp_...'
-                            type='password'
-                            value={githubTokenDraft}
-                        />
-
                         <button className='modal-primary-button' type='submit'>
-                            <span>Connect account</span>
+                            <span>Continue with GitHub</span>
                             <span aria-hidden='true' className='github-mark'>
                                 GH
                             </span>
