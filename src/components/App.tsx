@@ -3,7 +3,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
+    ArrowDown,
     ArrowLeft,
+    ArrowUp,
     Check,
     CircleArrowUp,
     CircleDot,
@@ -105,6 +107,20 @@ const mockWorkItems: readonly WorkItem[] = [
 
 function getStoredGitHubToken(): string {
     return globalThis.localStorage.getItem('repomux.githubToken') ?? '';
+}
+
+function getStoredActiveRepositories(): readonly string[] | undefined {
+    const storedValue = globalThis.localStorage.getItem(
+        'repomux.activeRepositories'
+    );
+
+    if (storedValue === null) {
+        return undefined;
+    }
+
+    return storedValue
+        .split('\n')
+        .filter((repositoryName) => repositoryName !== '');
 }
 
 function getOAuthRedirectUri(): string {
@@ -329,6 +345,9 @@ export function App(): JSX.Element {
     const [localRepositories, setLocalRepositories] =
         useState(mockRepositories);
     const [repoInput, setRepoInput] = useState('');
+    const [activeRepositoryNames, setActiveRepositoryNames] = useState<
+        readonly string[] | undefined
+    >(getStoredActiveRepositories);
     const [githubToken, setGithubToken] = useState(getStoredGitHubToken);
     const [isGitHubDialogOpen, setIsGitHubDialogOpen] = useState(false);
     const [isAddRepositoryOpen, setIsAddRepositoryOpen] = useState(false);
@@ -361,15 +380,30 @@ export function App(): JSX.Element {
 
     const displayedRepositories = repositories;
 
+    const effectiveActiveRepositoryNames =
+        activeRepositoryNames ??
+        (displayedRepositories.length === 0
+            ? []
+            : [displayedRepositories[0].fullName]);
+
+    const activeRepositories = displayedRepositories.filter((repository) =>
+        effectiveActiveRepositoryNames.includes(repository.fullName)
+    );
+
+    const normalRepositories = displayedRepositories.filter(
+        (repository) =>
+            !effectiveActiveRepositoryNames.includes(repository.fullName)
+    );
+
     const visibleRepositories = useMemo(() => {
         if (selectedRepository === undefined) {
-            return displayedRepositories;
+            return activeRepositories;
         }
 
         return displayedRepositories.filter(
             (repository) => repository.fullName === selectedRepository
         );
-    }, [displayedRepositories, selectedRepository]);
+    }, [activeRepositories, displayedRepositories, selectedRepository]);
 
     const workItemsQuery = useQuery({
         enabled: supabase !== undefined && visibleRepositories.length > 0,
@@ -385,10 +419,10 @@ export function App(): JSX.Element {
 
     const workItems =
         supabase === undefined
-            ? mockWorkItems.filter(
-                  (item) =>
-                      selectedRepository === undefined ||
-                      item.repo === selectedRepository
+            ? mockWorkItems.filter((item) =>
+                  visibleRepositories.some(
+                      (repository) => repository.fullName === item.repo
+                  )
               )
             : (workItemsQuery.data ?? []);
 
@@ -556,6 +590,29 @@ export function App(): JSX.Element {
     });
 
     useEffect(() => {
+        setActiveRepositoryNames((current) => {
+            if (current === undefined) {
+                return current;
+            }
+
+            const next = current.filter((repositoryName) =>
+                displayedRepositories.some(
+                    (repository) => repository.fullName === repositoryName
+                )
+            );
+
+            if (next.length === current.length) {
+                return current;
+            }
+
+            globalThis.localStorage.setItem(
+                'repomux.activeRepositories',
+                next.join('\n')
+            );
+
+            return next;
+        });
+
         if (
             selectedRepository !== undefined &&
             !displayedRepositories.some(
@@ -593,6 +650,31 @@ export function App(): JSX.Element {
         }
 
         addRepositoryMutation.mutate(fullName);
+    }
+
+    function updateActiveRepositories(nextRepositoryNames: readonly string[]) {
+        globalThis.localStorage.setItem(
+            'repomux.activeRepositories',
+            nextRepositoryNames.join('\n')
+        );
+        setActiveRepositoryNames(nextRepositoryNames);
+    }
+
+    function moveRepositoryToActive(repository: Readonly<Repository>) {
+        updateActiveRepositories([
+            ...effectiveActiveRepositoryNames.filter(
+                (repositoryName) => repositoryName !== repository.fullName
+            ),
+            repository.fullName,
+        ]);
+    }
+
+    function removeRepositoryFromActive(repository: Readonly<Repository>) {
+        updateActiveRepositories(
+            effectiveActiveRepositoryNames.filter(
+                (repositoryName) => repositoryName !== repository.fullName
+            )
+        );
     }
 
     function connectGitHub() {
@@ -642,6 +724,68 @@ export function App(): JSX.Element {
         }));
     }
 
+    function renderRepositoryRow(
+        repository: Readonly<Repository>,
+        isActiveRepository: boolean
+    ) {
+        return (
+            <div
+                className='repo-row'
+                data-selected={selectedRepository === repository.fullName}
+                key={repository.id}
+            >
+                <button
+                    aria-pressed={selectedRepository === repository.fullName}
+                    className='repo-row__select'
+                    onClick={() => {
+                        setSelectedRepository((current) =>
+                            current === repository.fullName
+                                ? undefined
+                                : repository.fullName
+                        );
+                        setSelectedItem(undefined);
+                    }}
+                    type='button'
+                >
+                    {repository.fullName}
+                </button>
+                <button
+                    aria-label={
+                        isActiveRepository
+                            ? `Remove ${repository.fullName} from active`
+                            : `Move ${repository.fullName} to active`
+                    }
+                    className='repo-row__action'
+                    onClick={() => {
+                        if (isActiveRepository) {
+                            removeRepositoryFromActive(repository);
+                            return;
+                        }
+
+                        moveRepositoryToActive(repository);
+                    }}
+                    type='button'
+                >
+                    {isActiveRepository ? (
+                        <ArrowDown aria-hidden='true' size={18} />
+                    ) : (
+                        <ArrowUp aria-hidden='true' size={18} />
+                    )}
+                </button>
+                <button
+                    aria-label={`Remove ${repository.fullName}`}
+                    className='repo-row__remove'
+                    onClick={() => {
+                        setRepositoryPendingRemoval(repository);
+                    }}
+                    type='button'
+                >
+                    <X aria-hidden='true' size={18} />
+                </button>
+            </div>
+        );
+    }
+
     let statusText = statusMessage;
 
     if (assignMutation.error instanceof Error) {
@@ -670,45 +814,24 @@ export function App(): JSX.Element {
                         </button>
                     </div>
 
-                    <div className='repo-list'>
-                        {displayedRepositories.map((repository) => (
-                            <div
-                                className='repo-row'
-                                data-selected={
-                                    selectedRepository === repository.fullName
-                                }
-                                key={repository.id}
-                            >
-                                <button
-                                    aria-pressed={
-                                        selectedRepository ===
-                                        repository.fullName
-                                    }
-                                    className='repo-row__select'
-                                    onClick={() => {
-                                        setSelectedRepository((current) =>
-                                            current === repository.fullName
-                                                ? undefined
-                                                : repository.fullName
-                                        );
-                                        setSelectedItem(undefined);
-                                    }}
-                                    type='button'
-                                >
-                                    {repository.fullName}
-                                </button>
-                                <button
-                                    aria-label={`Remove ${repository.fullName}`}
-                                    className='repo-row__remove'
-                                    onClick={() => {
-                                        setRepositoryPendingRemoval(repository);
-                                    }}
-                                    type='button'
-                                >
-                                    <X aria-hidden='true' size={18} />
-                                </button>
+                    <div className='repo-groups'>
+                        <section className='repo-group'>
+                            <h3 className='repo-group__title'>Active</h3>
+                            <div className='repo-list'>
+                                {activeRepositories.map((repository) =>
+                                    renderRepositoryRow(repository, true)
+                                )}
                             </div>
-                        ))}
+                        </section>
+
+                        <section className='repo-group'>
+                            <h3 className='repo-group__title'>Repositories</h3>
+                            <div className='repo-list'>
+                                {normalRepositories.map((repository) =>
+                                    renderRepositoryRow(repository, false)
+                                )}
+                            </div>
+                        </section>
                     </div>
 
                     <div className='github-account-card'>
