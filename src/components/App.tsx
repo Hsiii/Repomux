@@ -8,6 +8,7 @@ import {
     CircleArrowUp,
     CircleDot,
     GitPullRequestArrow,
+    LogOut,
     Plus,
     Trash2,
     X,
@@ -26,6 +27,12 @@ interface GitHubIssue {
     pull_request?: unknown;
     repository_url: string;
     title: string;
+}
+
+interface GitHubUser {
+    avatar_url?: string;
+    login: string;
+    name?: string | null;
 }
 
 interface WorkItem {
@@ -272,6 +279,9 @@ export function App(): JSX.Element {
         useState(mockRepositories);
     const [repoInput, setRepoInput] = useState('');
     const [githubToken, setGithubToken] = useState(getStoredGitHubToken);
+    const [githubTokenDraft, setGithubTokenDraft] =
+        useState(getStoredGitHubToken);
+    const [isGitHubDialogOpen, setIsGitHubDialogOpen] = useState(false);
     const [isAddRepositoryOpen, setIsAddRepositoryOpen] = useState(false);
     const [continueAddingRepositories, setContinueAddingRepositories] =
         useState(false);
@@ -335,6 +345,17 @@ export function App(): JSX.Element {
 
     const selectedPrompt =
         selectedItem === undefined ? '' : (promptDrafts[selectedItem.id] ?? '');
+
+    const githubUserQuery = useQuery({
+        enabled: githubToken.trim() !== '',
+        queryFn: async () =>
+            await fetchJson<GitHubUser>(
+                'https://api.github.com/user',
+                githubToken.trim()
+            ),
+        retry: false,
+        queryKey: ['github-user', githubToken],
+    });
 
     const addRepositoryMutation = useMutation({
         mutationFn: async (fullName: string) => {
@@ -459,6 +480,41 @@ export function App(): JSX.Element {
         addRepositoryMutation.mutate(fullName);
     }
 
+    function connectGitHub() {
+        const token = githubTokenDraft.trim();
+
+        if (token === '') {
+            setStatusMessage('GitHub token is required.');
+            return;
+        }
+
+        globalThis.localStorage.setItem('repomux.githubToken', token);
+        setGithubToken(token);
+        setIsGitHubDialogOpen(false);
+        setStatusMessage('');
+        workItemsQuery.refetch().catch((error: unknown) => {
+            setStatusMessage(
+                error instanceof Error
+                    ? error.message
+                    : 'Unable to reload work queue.'
+            );
+        });
+    }
+
+    function disconnectGitHub() {
+        globalThis.localStorage.removeItem('repomux.githubToken');
+        setGithubToken('');
+        setGithubTokenDraft('');
+        setStatusMessage('');
+        workItemsQuery.refetch().catch((error: unknown) => {
+            setStatusMessage(
+                error instanceof Error
+                    ? error.message
+                    : 'Unable to reload work queue.'
+            );
+        });
+    }
+
     function updatePrompt(value: string) {
         if (selectedItem === undefined) {
             return;
@@ -537,6 +593,57 @@ export function App(): JSX.Element {
                                 </button>
                             </div>
                         ))}
+                    </div>
+
+                    <div className='github-account-card'>
+                        <span aria-hidden='true' className='github-mark'>
+                            GH
+                        </span>
+                        {githubToken.trim() === '' ? (
+                            <>
+                                <div className='github-account-card__main'>
+                                    <span className='github-account-card__name'>
+                                        GitHub
+                                    </span>
+                                    <span className='github-account-card__meta'>
+                                        Not connected
+                                    </span>
+                                </div>
+                                <button
+                                    className='github-account-card__button'
+                                    onClick={() => {
+                                        setIsGitHubDialogOpen(true);
+                                    }}
+                                    type='button'
+                                >
+                                    Connect
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <div className='github-account-card__main'>
+                                    <span className='github-account-card__name'>
+                                        {githubUserQuery.data?.name ??
+                                            githubUserQuery.data?.login ??
+                                            'GitHub'}
+                                    </span>
+                                    <span className='github-account-card__meta'>
+                                        {githubUserQuery.isError
+                                            ? 'Token needs attention'
+                                            : (githubUserQuery.data?.login ??
+                                              'Connected')}
+                                    </span>
+                                </div>
+                                <button
+                                    aria-label='Log out of GitHub'
+                                    className='github-account-card__icon-button'
+                                    onClick={disconnectGitHub}
+                                    type='button'
+                                >
+                                    <LogOut aria-hidden='true' size={18} />
+                                </button>
+                            </>
+                        )}
                     </div>
                 </section>
             </aside>
@@ -680,20 +787,6 @@ export function App(): JSX.Element {
                             }}
                             placeholder='Add any additional context or instructions for Codex...'
                             value={selectedPrompt}
-                        />
-
-                        <label className='token-label' htmlFor='github-token'>
-                            GitHub token
-                        </label>
-                        <input
-                            className='token-input'
-                            id='github-token'
-                            onChange={(event) => {
-                                setGithubToken(event.target.value);
-                            }}
-                            placeholder='ghp_...'
-                            type='password'
-                            value={githubToken}
                         />
 
                         <button
@@ -865,6 +958,67 @@ export function App(): JSX.Element {
                     </div>
                 </div>
             )}
+
+            {isGitHubDialogOpen ? (
+                <div className='modal-backdrop'>
+                    <form
+                        aria-labelledby='github-auth-title'
+                        className='modal-card'
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            connectGitHub();
+                        }}
+                        role='dialog'
+                    >
+                        <div className='modal-header'>
+                            <div>
+                                <h2
+                                    className='modal-title'
+                                    id='github-auth-title'
+                                >
+                                    GitHub account
+                                </h2>
+                                <p className='modal-description'>
+                                    Connect a GitHub token for queue reads and
+                                    Codex assignment.
+                                </p>
+                            </div>
+                            <button
+                                aria-label='Close GitHub account'
+                                className='modal-icon-button'
+                                onClick={() => {
+                                    setIsGitHubDialogOpen(false);
+                                }}
+                                type='button'
+                            >
+                                <X aria-hidden='true' size={18} />
+                            </button>
+                        </div>
+
+                        <label className='field-label' htmlFor='github-token'>
+                            Token
+                        </label>
+                        <input
+                            autoFocus
+                            className='modal-input'
+                            id='github-token'
+                            onChange={(event) => {
+                                setGithubTokenDraft(event.target.value);
+                            }}
+                            placeholder='ghp_...'
+                            type='password'
+                            value={githubTokenDraft}
+                        />
+
+                        <button className='modal-primary-button' type='submit'>
+                            <span>Connect account</span>
+                            <span aria-hidden='true' className='github-mark'>
+                                GH
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            ) : undefined}
         </main>
     );
 }
