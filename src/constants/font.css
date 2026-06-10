@@ -1,31 +1,44 @@
 :root {
-    --ff-body: 'IBM Plex Sans', 'Avenir Next', 'Segoe UI', sans-serif;
-    --ff-display: 'Iowan Old Style', 'Palatino Linotype', serif;
+    --ff-body:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        'Segoe UI', sans-serif;
 
-    --fs-label: 0.75rem;
-    --fs-body: 1rem;
-    --fs-title: clamp(2.75rem, 7vw, 5rem);
+    --fs-12: 0.75rem;
+    --fs-13: 0.8125rem;
+    --fs-14: 0.875rem;
+    --fs-16: 1rem;
+    --fs-20: 1.25rem;
+    --fs-28: 1.75rem;
 
     --fw-medium: 500;
     --fw-semibold: 600;
     --fw-bold: 700;
 
-    --font-label: var(--fw-semibold) var(--fs-label) / 1.2 var(--ff-body);
-    --font-body-md: var(--fw-medium) var(--fs-body) / 1.6 var(--ff-body);
-    --font-display: var(--fw-bold) var(--fs-title) / 0.94 var(--ff-display);
+    --font-label: var(--fw-semibold) var(--fs-14) / 1.2 var(--ff-body);
+    --font-body-sm: var(--fw-medium) var(--fs-13) / 1.45 var(--ff-body);
+    --font-body-md: var(--fw-medium) var(--fs-16) / 1.6 var(--ff-body);
+    --font-title-sm: var(--fw-semibold) var(--fs-20) / 1.2 var(--ff-body);
+    --font-title-md: var(--fw-bold) var(--fs-28) / 1.1 var(--ff-body);
 
+    --space-4: 4px;
     --space-8: 8px;
     --space-12: 12px;
     --space-16: 16px;
+    --space-20: 20px;
     --space-24: 24px;
+    --space-28: 28px;
     --space-32: 32px;
+    --space-40: 40px;
     --space-48: 48px;
-    --space-64: 64px;
 
     --size-border-1: 1px;
     --size-outline: 2px;
-    --size-content-max: 720px;
-    --measure-copy: 36ch;
+    --size-icon-button: 52px;
+    --size-repo-panel: 416px;
+    --size-row: 80px;
+    --size-prompt: 240px;
 
-    --radius-24: 24px;
+    --radius-4: 4px;
+    --radius-8: 8px;
+    --radius-12: 12px;
 }

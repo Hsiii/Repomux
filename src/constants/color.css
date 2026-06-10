@@ -1,13 +1,27 @@
 :root {
     accent-color: var(--clr-accent);
 
-    --clr-bg: #f7f4ee;
-    --clr-bg-accent: rgba(159, 75, 46, 0.1);
-    --clr-surface: #fffdf9;
-    --clr-surface-elevated: color-mix(in srgb, var(--clr-surface) 88%, white);
-    --clr-text: #1f1d1a;
-    --clr-text-muted: #66605a;
-    --clr-border: #d9d1c7;
-    --clr-accent: #9f4b2e;
-    --shadow-surface: 0 24px 48px rgba(31, 29, 26, 0.08);
+    --clr-bg: #0f111b;
+    --clr-bg-soft: #141725;
+    --clr-surface: #181b2b;
+    --clr-surface-muted: #1f2336;
+    --clr-surface-active: #272848;
+    --clr-bg-shell: rgba(15, 17, 27, 0.82);
+    --clr-panel: rgba(20, 23, 37, 0.54);
+    --clr-panel-soft: rgba(20, 23, 37, 0.36);
+    --clr-input: rgba(15, 17, 27, 0.64);
+    --clr-hover: rgba(39, 40, 72, 0.56);
+    --clr-not-ready-ring: rgba(243, 93, 91, 0.12);
+    --clr-text: #f5f1fa;
+    --clr-text-muted: #a6adc8;
+    --clr-text-dim: #737994;
+    --clr-border: rgba(205, 214, 244, 0.12);
+    --clr-border-strong: rgba(203, 166, 247, 0.42);
+    --clr-accent: #a78bfa;
+    --clr-accent-strong: #8b6ff4;
+    --clr-ready: rgba(245, 241, 250, 0.72);
+    --clr-not-ready: #f35d5b;
+    --clr-success: #a6e3a1;
+    --clr-error: #f38ba8;
+    --shadow-surface: 0 24px 64px rgba(4, 6, 14, 0.28);
 }
