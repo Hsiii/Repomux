@@ -22,6 +22,7 @@ interface Repository {
 }
 
 interface GitHubIssue {
+    assignees?: ReadonlyArray<{ readonly login?: string }>;
     body?: string;
     html_url: string;
     labels: ReadonlyArray<string | { readonly name?: string }>;
@@ -43,6 +44,7 @@ interface OAuthTokenResponse {
 }
 
 interface WorkItem {
+    assigneeLogins: readonly string[];
     body: string;
     codexReady: boolean;
     id: string;
@@ -74,6 +76,7 @@ const mockRepositories: readonly Repository[] = [
 
 const mockWorkItems: readonly WorkItem[] = [
     {
+        assigneeLogins: [],
         body: 'Add a dark mode toggle to the app.\n\nIt should persist the preference, respect system preference by default, and update all surfaces.',
         codexReady: false,
         id: 'hsi/Repomux#128',
@@ -84,6 +87,7 @@ const mockWorkItems: readonly WorkItem[] = [
         url: '#',
     },
     {
+        assigneeLogins: ['hsi'],
         body: 'Review the Supabase repository editor and simplify the empty state before merge.',
         codexReady: false,
         id: 'hsi/Repomux#124',
@@ -94,6 +98,7 @@ const mockWorkItems: readonly WorkItem[] = [
         url: '#',
     },
     {
+        assigneeLogins: [],
         body: 'Replace the current manual issue refresh behavior with a query invalidation path.',
         codexReady: true,
         id: 'hsi/create-hsi-app#72',
@@ -185,6 +190,10 @@ async function fetchWorkItems(
             const repo = repositoryFromIssue(issue);
 
             return {
+                assigneeLogins:
+                    issue.assignees?.flatMap((assignee) =>
+                        assignee.login === undefined ? [] : [assignee.login]
+                    ) ?? [],
                 body: typeof issue.body === 'string' ? issue.body.trim() : '',
                 codexReady: hasLabel(issue, 'codex-ready'),
                 id: `${repo}#${issue.number}`,
@@ -353,6 +362,8 @@ export function App(): JSX.Element {
     const [isAddRepositoryOpen, setIsAddRepositoryOpen] = useState(false);
     const [continueAddingRepositories, setContinueAddingRepositories] =
         useState(false);
+    const [includeUnassignedIssues, setIncludeUnassignedIssues] =
+        useState(true);
     const [repositoryPendingRemoval, setRepositoryPendingRemoval] = useState<
         Repository | undefined
     >();
@@ -425,6 +436,20 @@ export function App(): JSX.Element {
                   )
               )
             : (workItemsQuery.data ?? []);
+
+    const filteredWorkItems = workItems.filter((item) => {
+        const githubLogin = githubUserQuery.data?.login;
+
+        if (githubLogin === undefined) {
+            return true;
+        }
+
+        if (item.assigneeLogins.includes(githubLogin)) {
+            return true;
+        }
+
+        return includeUnassignedIssues && item.assigneeLogins.length === 0;
+    });
 
     const selectedPrompt =
         selectedItem === undefined ? '' : (promptDrafts[selectedItem.id] ?? '');
@@ -892,15 +917,53 @@ export function App(): JSX.Element {
                     <>
                         <div className='work-panel__header'>
                             <h2 className='work-title'>Work queue</h2>
-                            {selectedRepository === undefined ? undefined : (
-                                <p className='work-subtitle'>
-                                    {selectedRepository}
-                                </p>
-                            )}
+                            <div className='work-filters'>
+                                <label className='work-filter'>
+                                    <span className='work-filter__label'>
+                                        Repo
+                                    </span>
+                                    <select
+                                        className='work-filter__select'
+                                        onChange={(event) => {
+                                            setSelectedRepository(
+                                                event.target.value === ''
+                                                    ? undefined
+                                                    : event.target.value
+                                            );
+                                            setSelectedItem(undefined);
+                                        }}
+                                        value={selectedRepository ?? ''}
+                                    >
+                                        <option value=''>Active repos</option>
+                                        {displayedRepositories.map(
+                                            (repository) => (
+                                                <option
+                                                    key={repository.id}
+                                                    value={repository.fullName}
+                                                >
+                                                    {repository.fullName}
+                                                </option>
+                                            )
+                                        )}
+                                    </select>
+                                </label>
+                                <label className='work-filter work-filter--check'>
+                                    <input
+                                        checked={includeUnassignedIssues}
+                                        onChange={(event) => {
+                                            setIncludeUnassignedIssues(
+                                                event.target.checked
+                                            );
+                                        }}
+                                        type='checkbox'
+                                    />
+                                    <span>Include unassigned</span>
+                                </label>
+                            </div>
                         </div>
 
                         <div className='queue-list'>
-                            {workItems.map((item) => (
+                            {filteredWorkItems.map((item) => (
                                 <button
                                     className='queue-row'
                                     key={item.id}
@@ -953,7 +1016,7 @@ export function App(): JSX.Element {
                             ))}
                         </div>
 
-                        {workItems.length === 0 ? (
+                        {filteredWorkItems.length === 0 ? (
                             <p className='empty-state'>
                                 No open issues or pull requests found.
                             </p>
