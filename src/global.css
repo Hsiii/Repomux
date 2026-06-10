@@ -230,7 +230,7 @@ input:disabled {
     position: relative;
     min-height: 0;
     min-width: 0;
-    padding: var(--space-40);
+    padding: var(--space-48) var(--space-40) var(--space-40);
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     overflow: hidden;
