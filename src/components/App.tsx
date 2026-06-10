@@ -800,23 +800,23 @@ export function App(): JSX.Element {
         <main className='app-shell'>
             <aside aria-label='Repositories' className='repo-panel'>
                 <section className='repo-panel__section'>
-                    <div className='section-header'>
-                        <h2 className='section-title'>Repositories</h2>
-                        <button
-                            aria-label='Add repository'
-                            className='section-add-button'
-                            onClick={() => {
-                                setIsAddRepositoryOpen(true);
-                            }}
-                            type='button'
-                        >
-                            <Plus aria-hidden='true' size={18} />
-                        </button>
-                    </div>
-
                     <div className='repo-groups'>
                         <section className='repo-group'>
-                            <h3 className='repo-group__title'>Active</h3>
+                            <div className='repo-group__header'>
+                                <h2 className='repo-group__title'>
+                                    Active repos
+                                </h2>
+                                <button
+                                    aria-label='Add repository'
+                                    className='section-add-button'
+                                    onClick={() => {
+                                        setIsAddRepositoryOpen(true);
+                                    }}
+                                    type='button'
+                                >
+                                    <Plus aria-hidden='true' size={18} />
+                                </button>
+                            </div>
                             <div className='repo-list'>
                                 {activeRepositories.map((repository) =>
                                     renderRepositoryRow(repository, true)
@@ -825,7 +825,7 @@ export function App(): JSX.Element {
                         </section>
 
                         <section className='repo-group'>
-                            <h3 className='repo-group__title'>Repositories</h3>
+                            <h2 className='repo-group__title'>Pocket repos</h2>
                             <div className='repo-list'>
                                 {normalRepositories.map((repository) =>
                                     renderRepositoryRow(repository, false)

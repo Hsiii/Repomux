@@ -85,29 +85,15 @@ input:disabled {
     min-height: 0;
     display: grid;
     grid-template-areas:
-        'title'
         'list'
         'account';
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto;
     gap: var(--space-16);
 }
 
-.section-title,
 .prompt-label {
     font: var(--font-label);
     color: var(--clr-accent);
-}
-
-.section-title {
-    color: var(--clr-text-dim);
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-12);
-    grid-area: title;
 }
 
 .section-add-button,
@@ -127,8 +113,8 @@ input:disabled {
     transition: opacity 160ms ease;
 }
 
-.section-header:hover .section-add-button,
-.section-header:focus-within .section-add-button {
+.repo-group__header:hover .section-add-button,
+.repo-group__header:focus-within .section-add-button {
     opacity: 1;
 }
 
@@ -185,6 +171,13 @@ input:disabled {
 .repo-group {
     display: grid;
     gap: var(--space-8);
+}
+
+.repo-group__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
 }
 
 .repo-group__title {
