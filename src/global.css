@@ -75,7 +75,7 @@ input:disabled {
 .repo-panel {
     min-height: 0;
     padding: var(--space-40) var(--space-28);
-    overflow: hidden;
+    overflow: auto;
     border-right: var(--size-border-1) solid var(--clr-border);
     background-color: var(--clr-panel);
 }
@@ -179,7 +179,6 @@ input:disabled {
     display: grid;
     gap: var(--space-20);
     align-content: start;
-    overflow: auto;
     min-height: 0;
 }
 
@@ -326,7 +325,7 @@ input:disabled {
     padding: var(--space-48) var(--space-40) var(--space-40);
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
-    overflow: hidden;
+    overflow: auto;
 }
 
 .work-panel__header {
@@ -360,7 +359,6 @@ input:disabled {
 .queue-list {
     display: grid;
     align-content: start;
-    overflow: auto;
     border: var(--size-border-1) solid var(--clr-border);
     border-radius: var(--radius-8);
     background-color: var(--clr-panel-soft);
@@ -433,7 +431,6 @@ input:disabled {
     align-content: start;
     gap: var(--space-28);
     max-width: 980px;
-    overflow: auto;
 }
 
 .back-button {
