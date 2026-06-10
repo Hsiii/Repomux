@@ -180,6 +180,14 @@ input:disabled {
     gap: var(--space-12);
 }
 
+.repo-group__heading {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8);
+    color: var(--clr-text-dim);
+}
+
 .repo-group__title {
     color: var(--clr-text-dim);
     font: var(--font-body-sm);

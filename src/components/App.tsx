@@ -12,7 +12,9 @@ import {
     GitPullRequestArrow,
     LogOut,
     Plus,
+    Rocket,
     Trash2,
+    Umbrella,
     X,
 } from 'lucide-react';
 
@@ -828,9 +830,12 @@ export function App(): JSX.Element {
                     <div className='repo-groups'>
                         <section className='repo-group'>
                             <div className='repo-group__header'>
-                                <h2 className='repo-group__title'>
-                                    Active repos
-                                </h2>
+                                <div className='repo-group__heading'>
+                                    <Rocket aria-hidden='true' size={16} />
+                                    <h2 className='repo-group__title'>
+                                        Active repos
+                                    </h2>
+                                </div>
                                 <button
                                     aria-label='Add repository'
                                     className='section-add-button'
@@ -850,7 +855,24 @@ export function App(): JSX.Element {
                         </section>
 
                         <section className='repo-group'>
-                            <h2 className='repo-group__title'>Pocket repos</h2>
+                            <div className='repo-group__header'>
+                                <div className='repo-group__heading'>
+                                    <Umbrella aria-hidden='true' size={16} />
+                                    <h2 className='repo-group__title'>
+                                        Pocket repos
+                                    </h2>
+                                </div>
+                                <button
+                                    aria-label='Add repository'
+                                    className='section-add-button'
+                                    onClick={() => {
+                                        setIsAddRepositoryOpen(true);
+                                    }}
+                                    type='button'
+                                >
+                                    <Plus aria-hidden='true' size={18} />
+                                </button>
+                            </div>
                             <div className='repo-list'>
                                 {normalRepositories.map((repository) =>
                                     renderRepositoryRow(repository, false)
