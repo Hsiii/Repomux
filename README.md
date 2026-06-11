@@ -36,6 +36,19 @@ Enable GitHub as a Supabase Auth provider in the Supabase dashboard and
 set the app URL, for example `http://localhost:5173/` during local
 development, in the provider's redirect allow list.
 
+For hosted Supabase, GitHub does not need to trust your localhost app URL.
+GitHub only needs the Supabase callback URL registered on the GitHub OAuth
+App:
+
+```text
+https://tfcypevhielaycatojoo.supabase.co/auth/v1/callback
+```
+
+Supabase then validates `VITE_GITHUB_OAUTH_REDIRECT_URL` and redirects back
+to the local app after GitHub completes. If GitHub shows a 404 on
+`/login/oauth/authorize`, the Supabase provider is usually using the GitHub
+app name instead of the OAuth client ID.
+
 Do not add a GitHub client secret to frontend env. The secret belongs in
 the Supabase GitHub Auth provider configuration. If local dev needs a
 different callback than `location.origin + location.pathname`, set
@@ -50,6 +63,39 @@ label.
 you need private repository issue/PR access through a GitHub OAuth app.
 If your deployment only needs public repositories, set it to
 `public_repo` to reduce token scope.
+
+## Local Supabase Auth
+
+Use this when you want an isolated test environment that does not depend on
+the hosted Supabase project's GitHub provider settings.
+
+1. Create a GitHub OAuth App for local development.
+2. Set its Authorization callback URL to:
+
+```text
+http://127.0.0.1:54321/auth/v1/callback
+```
+
+3. Create `.env.local` from `.env.local.supabase.example`.
+4. Fill in `SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID` and
+   `SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET`.
+5. Start local Supabase:
+
+```bash
+bunx supabase start
+```
+
+6. Copy the local anon key from `bunx supabase status` into
+   `VITE_SUPABASE_PUBLISHABLE_KEY` in `.env.local`.
+7. Start the app:
+
+```bash
+bun run dev -- --host 127.0.0.1 --port 5173
+```
+
+The checked-in `supabase/config.toml` enables GitHub Auth locally and uses
+the dedicated local callback above, while the browser still returns to
+`http://localhost:5173/`.
 
 ## Check
 
