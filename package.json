@@ -12,7 +12,7 @@
         "format": "prettier . --write",
         "format:check": "prettier . --check",
         "typecheck": "tsc -p tsconfig.json --noEmit",
-        "smoke": "node scripts/smoke-create-hsi-app.mjs",
+        "smoke": "bun scripts/smoke-supabase-auth-repo-crud.mjs",
         "check": "tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && vite build"
     },
     "dependencies": {

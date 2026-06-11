@@ -45,4 +45,17 @@ label.
 bun run check
 ```
 
+## Smoke
+
+Run the authenticated repository smoke test with a real Supabase user JWT:
+
+```bash
+REPO_MUX_SMOKE_ACCESS_TOKEN=... bun run smoke
+```
+
+It uses `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` from your
+environment, verifies the token resolves to a real user, inserts a
+repository row for that user, reads it back through RLS, then archives it
+with an update.
+
 This project includes `bunfig.toml` with `minimumReleaseAge = 604800`.
