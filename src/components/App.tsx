@@ -210,39 +210,71 @@ export function App(): JSX.Element {
         statusText = workItemsQuery.error.message;
     }
 
+    const isGitHubConnected = githubToken.trim() !== '';
+
     return (
-        <main className='app-shell'>
-            <RepositorySidebar
-                filteredRepositories={filteredRepositories}
-                githubToken={githubToken}
-                githubUser={githubUserQuery.data}
-                hasGitHubError={githubUserQuery.isError}
-                onConnectGitHub={() => {
-                    setIsGitHubDialogOpen(true);
-                }}
-                onDisconnectGitHub={disconnectGitHub}
-                onSelectRepository={selectRepository}
-                onUpdateRepositorySearchQuery={setRepositorySearchQuery}
-                repositorySearchQuery={repositorySearchQuery}
-                selectedRepositoryNames={effectiveActiveRepositoryNames}
-            />
+        <>
+            {isGitHubConnected ? (
+                <main className='app-shell'>
+                    <RepositorySidebar
+                        filteredRepositories={filteredRepositories}
+                        githubToken={githubToken}
+                        githubUser={githubUserQuery.data}
+                        hasGitHubError={githubUserQuery.isError}
+                        onConnectGitHub={() => {
+                            setIsGitHubDialogOpen(true);
+                        }}
+                        onDisconnectGitHub={disconnectGitHub}
+                        onSelectRepository={selectRepository}
+                        onUpdateRepositorySearchQuery={setRepositorySearchQuery}
+                        repositorySearchQuery={repositorySearchQuery}
+                        selectedRepositoryNames={effectiveActiveRepositoryNames}
+                    />
 
-            <WorkPanel
-                filteredWorkItems={filteredWorkItems}
-                githubToken={githubToken}
-                includeUnassignedIssues={includeUnassignedIssues}
-                isAssigning={assignMutation.isPending}
-                onAssign={() => {
-                    assignMutation.mutate(undefined);
-                }}
-                onSelectItem={selectItem}
-                onUpdateIncludeUnassignedIssues={setIncludeUnassignedIssues}
-                onUpdatePrompt={updatePrompt}
-                selectedItem={selectedItem}
-                selectedPrompt={selectedPrompt}
-                statusText={statusText}
-            />
-
+                    <WorkPanel
+                        filteredWorkItems={filteredWorkItems}
+                        githubToken={githubToken}
+                        includeUnassignedIssues={includeUnassignedIssues}
+                        isAssigning={assignMutation.isPending}
+                        onAssign={() => {
+                            assignMutation.mutate(undefined);
+                        }}
+                        onSelectItem={selectItem}
+                        onUpdateIncludeUnassignedIssues={
+                            setIncludeUnassignedIssues
+                        }
+                        onUpdatePrompt={updatePrompt}
+                        selectedItem={selectedItem}
+                        selectedPrompt={selectedPrompt}
+                        statusText={statusText}
+                    />
+                </main>
+            ) : (
+                <main className='login-wall'>
+                    <section className='login-wall__card'>
+                        <p className='login-wall__eyebrow'>Repomux</p>
+                        <h1 className='login-wall__title'>
+                            Connect GitHub to continue
+                        </h1>
+                        <p className='login-wall__message'>
+                            Sign in to load your repositories, review work, and
+                            assign items to Codex.
+                        </p>
+                        <button
+                            className='login-wall__button'
+                            onClick={() => {
+                                setIsGitHubDialogOpen(true);
+                            }}
+                            type='button'
+                        >
+                            Connect GitHub
+                        </button>
+                        {statusText === '' ? undefined : (
+                            <p className='login-wall__status'>{statusText}</p>
+                        )}
+                    </section>
+                </main>
+            )}
             {isGitHubDialogOpen ? (
                 <GitHubAuthModal
                     onClose={() => {
@@ -251,6 +283,6 @@ export function App(): JSX.Element {
                     onSubmit={connectGitHub}
                 />
             ) : undefined}
-        </main>
+        </>
     );
 }
