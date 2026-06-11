@@ -70,15 +70,20 @@ export async function fetchAccessibleRepositories(
 
     const repositoriesByName = new Map<string, Repository>();
     const trimmedToken = token.trim();
-    async function fetchRepositoryPages(
-        page: number
-    ): Promise<
-        ReadonlyArray<{ readonly full_name?: string; readonly id: number }>
+    async function fetchRepositoryPages(page: number): Promise<
+        ReadonlyArray<{
+            readonly full_name?: string;
+            readonly id: number;
+            readonly pushed_at?: string;
+            readonly stargazers_count?: number;
+        }>
     > {
         const repositories = await fetchJson<
             ReadonlyArray<{
                 full_name?: string;
                 id: number;
+                pushed_at?: string;
+                stargazers_count?: number;
             }>
         >(
             `https://api.github.com/user/repos?affiliation=owner,collaborator,organization_member&per_page=100&page=${page}&sort=updated`,
@@ -92,7 +97,27 @@ export async function fetchAccessibleRepositories(
         return [...repositories, ...(await fetchRepositoryPages(page + 1))];
     }
 
-    for (const repository of await fetchRepositoryPages(1)) {
+    const repositories = await fetchRepositoryPages(1);
+
+    const rankedRepositories = repositories.toSorted((first, second) => {
+        const firstStars = first.stargazers_count ?? 0;
+        const secondStars = second.stargazers_count ?? 0;
+
+        if (firstStars !== secondStars) {
+            return secondStars - firstStars;
+        }
+
+        const firstPushedAt = first.pushed_at ?? '';
+        const secondPushedAt = second.pushed_at ?? '';
+
+        if (firstPushedAt !== secondPushedAt) {
+            return secondPushedAt.localeCompare(firstPushedAt);
+        }
+
+        return (first.full_name ?? '').localeCompare(second.full_name ?? '');
+    });
+
+    for (const repository of rankedRepositories) {
         if (
             typeof repository.full_name === 'string' &&
             repository.full_name !== ''
@@ -104,9 +129,7 @@ export async function fetchAccessibleRepositories(
         }
     }
 
-    return [...repositoriesByName.values()].toSorted((first, second) =>
-        first.fullName.localeCompare(second.fullName)
-    );
+    return [...repositoriesByName.values()];
 }
 
 export async function fetchWorkItems(

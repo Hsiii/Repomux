@@ -12,41 +12,22 @@ import { mockRepositories, mockWorkItems } from '../lib/mock-data.js';
 import {
     getStoredActiveRepositories,
     loadRepositories,
-    normalizeRepository,
     setStoredActiveRepositories,
 } from '../lib/repositories.js';
 import { supabase } from '../lib/supabase.js';
 import type { Repository, WorkItem } from '../types/app.js';
-import { AddRepositoryModal } from './modals/add-repository-modal.js';
 import { GitHubAuthModal } from './modals/github-auth-modal.js';
-import { RemoveRepositoryModal } from './modals/remove-repository-modal.js';
 import { RepositorySidebar } from './repository-sidebar.js';
 import { WorkPanel } from './work-panel.js';
 
-const MAX_REPOSITORY_SEARCH_RESULTS = 24;
-
-function fullNameForStatus(input: string): string {
-    const fullName = normalizeRepository(input);
-
-    return fullName === '' ? 'repository' : fullName;
-}
-
 export function App(): JSX.Element {
-    const [localRepositories, setLocalRepositories] =
-        useState(mockRepositories);
-    const [repoInput, setRepoInput] = useState('');
+    const [repositorySearchQuery, setRepositorySearchQuery] = useState('');
     const [activeRepositoryNames, setActiveRepositoryNames] = useState<
         readonly string[] | undefined
     >(getStoredActiveRepositories);
     const [isGitHubDialogOpen, setIsGitHubDialogOpen] = useState(false);
-    const [isAddRepositoryOpen, setIsAddRepositoryOpen] = useState(false);
-    const [continueAddingRepositories, setContinueAddingRepositories] =
-        useState(false);
     const [includeUnassignedIssues, setIncludeUnassignedIssues] =
         useState(true);
-    const [repositoryPendingRemoval, setRepositoryPendingRemoval] = useState<
-        Repository | undefined
-    >();
     const [selectedItem, setSelectedItem] = useState(
         supabase === undefined ? mockWorkItems[0] : undefined
     );
@@ -69,37 +50,53 @@ export function App(): JSX.Element {
         queryKey: ['repositories'],
     });
 
-    const displayedRepositories =
-        supabase === undefined
-            ? localRepositories
-            : (repositoriesQuery.data ?? []);
+    const accessibleRepositoriesQuery = useQuery({
+        enabled: githubToken.trim() !== '',
+        queryFn: async () => await fetchAccessibleRepositories(githubToken),
+        queryKey: ['accessible-repositories', githubToken],
+        staleTime: 60_000,
+    });
+
+    const availableRepositories = useMemo(() => {
+        if ((accessibleRepositoriesQuery.data?.length ?? 0) > 0) {
+            return accessibleRepositoriesQuery.data ?? [];
+        }
+
+        if (supabase === undefined) {
+            return mockRepositories;
+        }
+
+        return repositoriesQuery.data ?? [];
+    }, [accessibleRepositoriesQuery.data, repositoriesQuery.data]);
 
     const effectiveActiveRepositoryNames =
         activeRepositoryNames ??
-        (displayedRepositories.length === 0
+        (availableRepositories.length === 0
             ? []
-            : [displayedRepositories[0].fullName]);
+            : [availableRepositories[0].fullName]);
 
-    const activeRepositories = displayedRepositories.filter((repository) =>
+    const activeRepositories = availableRepositories.filter((repository) =>
         effectiveActiveRepositoryNames.includes(repository.fullName)
     );
 
-    const normalRepositories = displayedRepositories.filter(
-        (repository) =>
-            !effectiveActiveRepositoryNames.includes(repository.fullName)
-    );
+    const filteredRepositories = useMemo(() => {
+        const normalizedQuery = repositorySearchQuery.trim().toLowerCase();
 
-    const visibleRepositories = useMemo(
-        () => activeRepositories,
-        [activeRepositories]
-    );
+        if (normalizedQuery === '') {
+            return availableRepositories;
+        }
+
+        return availableRepositories.filter((repository) =>
+            repository.fullName.toLowerCase().includes(normalizedQuery)
+        );
+    }, [availableRepositories, repositorySearchQuery]);
 
     const workItemsQuery = useQuery({
-        enabled: supabase !== undefined && visibleRepositories.length > 0,
-        queryFn: async () => await fetchWorkItems(visibleRepositories),
+        enabled: supabase !== undefined && activeRepositories.length > 0,
+        queryFn: async () => await fetchWorkItems(activeRepositories),
         queryKey: [
             'work-items',
-            visibleRepositories
+            activeRepositories
                 .map((repository) => repository.fullName)
                 .toSorted()
                 .join(','),
@@ -109,7 +106,7 @@ export function App(): JSX.Element {
     const workItems =
         supabase === undefined
             ? mockWorkItems.filter((item) =>
-                  visibleRepositories.some(
+                  activeRepositories.some(
                       (repository) => repository.fullName === item.repo
                   )
               )
@@ -131,123 +128,6 @@ export function App(): JSX.Element {
 
     const selectedPrompt =
         selectedItem === undefined ? '' : (promptDrafts[selectedItem.id] ?? '');
-
-    const accessibleRepositoriesQuery = useQuery({
-        enabled: isAddRepositoryOpen && githubToken.trim() !== '',
-        queryFn: async () => await fetchAccessibleRepositories(githubToken),
-        queryKey: ['accessible-repositories', githubToken],
-        staleTime: 60_000,
-    });
-
-    const matchingAccessibleRepositories = useMemo(() => {
-        const normalizedQuery = repoInput.trim().toLowerCase();
-        const repositories = accessibleRepositoriesQuery.data ?? [];
-
-        if (normalizedQuery === '') {
-            return repositories;
-        }
-
-        return repositories.filter((repository) =>
-            repository.fullName.toLowerCase().includes(normalizedQuery)
-        );
-    }, [accessibleRepositoriesQuery.data, repoInput]);
-
-    const visibleAccessibleRepositories = matchingAccessibleRepositories.slice(
-        0,
-        MAX_REPOSITORY_SEARCH_RESULTS
-    );
-
-    const hasExactAccessibleRepositoryMatch = (
-        accessibleRepositoriesQuery.data ?? []
-    ).some(
-        (repository) => repository.fullName === normalizeRepository(repoInput)
-    );
-
-    const addRepositoryMutation = useMutation({
-        mutationFn: async (fullName: string) => {
-            if (supabase === undefined) {
-                setLocalRepositories((current) => [
-                    ...current,
-                    { fullName, id: `local-${fullName}` },
-                ]);
-                return;
-            }
-
-            if (githubSession === undefined) {
-                throw new Error('Connect GitHub before adding repositories.');
-            }
-
-            const { error } = await supabase.from('repositories').insert({
-                full_name: fullName,
-                is_active: true,
-                user_id: githubSession.user.id,
-            });
-
-            if (error !== null) {
-                throw new Error(error.message);
-            }
-        },
-        onSuccess: () => {
-            setRepoInput('');
-            setStatusMessage(`Added ${fullNameForStatus(repoInput)}.`);
-            if (!continueAddingRepositories) {
-                setIsAddRepositoryOpen(false);
-            }
-            repositoriesQuery.refetch().catch((error: unknown) => {
-                setStatusMessage(
-                    error instanceof Error
-                        ? error.message
-                        : 'Unable to reload repositories.'
-                );
-            });
-        },
-        onError: (error: unknown) => {
-            setStatusMessage(
-                error instanceof Error
-                    ? error.message
-                    : 'Unable to add repository.'
-            );
-        },
-    });
-
-    const removeRepositoryMutation = useMutation({
-        mutationFn: async (repository: Readonly<Repository>) => {
-            if (supabase === undefined) {
-                setLocalRepositories((current) =>
-                    current.filter((item) => item.id !== repository.id)
-                );
-                setRepositoryPendingRemoval(undefined);
-                return;
-            }
-
-            const { error } = await supabase
-                .from('repositories')
-                .update({ is_active: false })
-                .eq('id', repository.id);
-
-            if (error !== null) {
-                throw new Error(error.message);
-            }
-        },
-        onSuccess: () => {
-            setRepositoryPendingRemoval(undefined);
-            setStatusMessage('Removed repository.');
-            repositoriesQuery.refetch().catch((error: unknown) => {
-                setStatusMessage(
-                    error instanceof Error
-                        ? error.message
-                        : 'Unable to reload repositories.'
-                );
-            });
-        },
-        onError: (error: unknown) => {
-            setStatusMessage(
-                error instanceof Error
-                    ? error.message
-                    : 'Unable to remove repository.'
-            );
-        },
-    });
 
     const assignMutation = useMutation({
         mutationFn: async () => {
@@ -277,7 +157,7 @@ export function App(): JSX.Element {
             }
 
             const next = current.filter((repositoryName) =>
-                displayedRepositories.some(
+                availableRepositories.some(
                     (repository) => repository.fullName === repositoryName
                 )
             );
@@ -289,68 +169,17 @@ export function App(): JSX.Element {
             setStoredActiveRepositories(next);
             return next;
         });
-    }, [displayedRepositories]);
-
-    useEffect(() => {
-        function openAddRepositoryDialog(event: KeyboardEvent) {
-            if (
-                (event.metaKey || event.ctrlKey) &&
-                event.key.toLowerCase() === 'n'
-            ) {
-                event.preventDefault();
-                setIsAddRepositoryOpen(true);
-            }
-        }
-
-        globalThis.addEventListener('keydown', openAddRepositoryDialog);
-
-        return () => {
-            globalThis.removeEventListener('keydown', openAddRepositoryDialog);
-        };
-    }, []);
+    }, [availableRepositories]);
 
     function updateActiveRepositories(nextRepositoryNames: readonly string[]) {
         setStoredActiveRepositories(nextRepositoryNames);
         setActiveRepositoryNames(nextRepositoryNames);
     }
 
-    function addRepository() {
-        const fullName = normalizeRepository(repoInput);
-
-        if (githubToken.trim() === '') {
-            setStatusMessage('Connect GitHub before adding repositories.');
-            return;
-        }
-
-        const accessibleRepository = (
-            accessibleRepositoriesQuery.data ?? []
-        ).find((repository) => repository.fullName === fullName);
-
-        if (accessibleRepository === undefined) {
-            setStatusMessage(
-                'Choose a repository from your accessible GitHub repositories.'
-            );
-            return;
-        }
-
-        addRepositoryMutation.mutate(accessibleRepository.fullName);
-    }
-
-    function moveRepositoryToActive(repository: Readonly<Repository>) {
-        updateActiveRepositories([
-            ...effectiveActiveRepositoryNames.filter(
-                (repositoryName) => repositoryName !== repository.fullName
-            ),
-            repository.fullName,
-        ]);
-    }
-
-    function removeRepositoryFromActive(repository: Readonly<Repository>) {
-        updateActiveRepositories(
-            effectiveActiveRepositoryNames.filter(
-                (repositoryName) => repositoryName !== repository.fullName
-            )
-        );
+    function selectRepository(repository: Readonly<Repository>) {
+        updateActiveRepositories([repository.fullName]);
+        setSelectedItem(undefined);
+        setStatusMessage('');
     }
 
     function updatePrompt(value: string) {
@@ -373,10 +202,6 @@ export function App(): JSX.Element {
 
     if (assignMutation.error instanceof Error) {
         statusText = assignMutation.error.message;
-    } else if (addRepositoryMutation.error instanceof Error) {
-        statusText = addRepositoryMutation.error.message;
-    } else if (removeRepositoryMutation.error instanceof Error) {
-        statusText = removeRepositoryMutation.error.message;
     } else if (accessibleRepositoriesQuery.error instanceof Error) {
         statusText = accessibleRepositoriesQuery.error.message;
     } else if (repositoriesQuery.error instanceof Error) {
@@ -388,23 +213,18 @@ export function App(): JSX.Element {
     return (
         <main className='app-shell'>
             <RepositorySidebar
-                activeRepositories={activeRepositories}
+                filteredRepositories={filteredRepositories}
                 githubToken={githubToken}
                 githubUser={githubUserQuery.data}
                 hasGitHubError={githubUserQuery.isError}
-                normalRepositories={normalRepositories}
                 onConnectGitHub={() => {
                     setIsGitHubDialogOpen(true);
                 }}
                 onDisconnectGitHub={disconnectGitHub}
-                onMoveRepositoryToActive={moveRepositoryToActive}
-                onOpenAddRepository={() => {
-                    setIsAddRepositoryOpen(true);
-                }}
-                onRemoveRepository={(repository) => {
-                    setRepositoryPendingRemoval(repository);
-                }}
-                onRemoveRepositoryFromActive={removeRepositoryFromActive}
+                onSelectRepository={selectRepository}
+                onUpdateRepositorySearchQuery={setRepositorySearchQuery}
+                repositorySearchQuery={repositorySearchQuery}
+                selectedRepositoryNames={effectiveActiveRepositoryNames}
             />
 
             <WorkPanel
@@ -422,50 +242,6 @@ export function App(): JSX.Element {
                 selectedPrompt={selectedPrompt}
                 statusText={statusText}
             />
-
-            {isAddRepositoryOpen ? (
-                <AddRepositoryModal
-                    accessibleRepositories={visibleAccessibleRepositories}
-                    accessibleRepositoryCount={
-                        accessibleRepositoriesQuery.data?.length ?? 0
-                    }
-                    continueAddingRepositories={continueAddingRepositories}
-                    hasExactMatch={hasExactAccessibleRepositoryMatch}
-                    isGitHubConnected={githubToken.trim() !== ''}
-                    isPending={addRepositoryMutation.isPending}
-                    isRepositoryListPending={
-                        accessibleRepositoriesQuery.isPending
-                    }
-                    matchingRepositoryCount={
-                        matchingAccessibleRepositories.length
-                    }
-                    onClose={() => {
-                        setIsAddRepositoryOpen(false);
-                    }}
-                    onPickRepository={setRepoInput}
-                    onSubmit={addRepository}
-                    onToggleContinueAddingRepositories={
-                        setContinueAddingRepositories
-                    }
-                    onUpdateRepoInput={setRepoInput}
-                    repoInput={repoInput}
-                />
-            ) : undefined}
-
-            {repositoryPendingRemoval === undefined ? undefined : (
-                <RemoveRepositoryModal
-                    isPending={removeRepositoryMutation.isPending}
-                    onClose={() => {
-                        setRepositoryPendingRemoval(undefined);
-                    }}
-                    onRemove={() => {
-                        removeRepositoryMutation.mutate(
-                            repositoryPendingRemoval
-                        );
-                    }}
-                    repository={repositoryPendingRemoval}
-                />
-            )}
 
             {isGitHubDialogOpen ? (
                 <GitHubAuthModal
