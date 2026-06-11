@@ -38,7 +38,7 @@ GITHUB_CLIENT_SECRET=
 ```
 
 The browser redirects through GitHub OAuth, exchanges the returned code
-through the Edge Function, stores the returned user token in browser local
+through the Edge Function, stores the returned user token in browser session
 storage, and uses that token to post the prompt comment and add the
 `codex-ready` label.
 

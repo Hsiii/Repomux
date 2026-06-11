@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 *.tsbuildinfo
+supabase/.temp/
 
 # IDE files
 .vscode/

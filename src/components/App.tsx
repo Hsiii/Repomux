@@ -18,6 +18,15 @@ import {
     X,
 } from 'lucide-react';
 
+import {
+    clearStoredGitHubOAuthState,
+    clearStoredGitHubToken,
+    getStoredGitHubOAuthState,
+    getStoredGitHubToken,
+    setStoredGitHubOAuthState,
+    setStoredGitHubToken,
+} from '../lib/github-session.js';
+
 interface Repository {
     fullName: string;
     id: string;
@@ -111,10 +120,6 @@ const mockWorkItems: readonly WorkItem[] = [
         url: '#',
     },
 ];
-
-function getStoredGitHubToken(): string {
-    return globalThis.localStorage.getItem('repomux.githubToken') ?? '';
-}
 
 function getStoredActiveRepositories(): readonly string[] | undefined {
     const storedValue = globalThis.localStorage.getItem(
@@ -250,7 +255,7 @@ async function assignToCodex(
         throw new Error('GitHub token is required to assign work.');
     }
 
-    globalThis.localStorage.setItem('repomux.githubToken', token.trim());
+    setStoredGitHubToken(token.trim());
 
     const commentResponse = await fetch(
         `https://api.github.com/repos/${item.repo}/issues/${item.number}/comments`,
@@ -487,22 +492,21 @@ export function App(): JSX.Element {
             return;
         }
 
-        const storedState = globalThis.localStorage.getItem(
-            'repomux.githubOAuthState'
-        );
-        globalThis.localStorage.removeItem('repomux.githubOAuthState');
+        const storedState = getStoredGitHubOAuthState();
+        clearStoredGitHubOAuthState();
 
-        if (state === null || storedState === null || state !== storedState) {
+        if (
+            state === null ||
+            storedState === undefined ||
+            state !== storedState
+        ) {
             setStatusMessage('GitHub OAuth state did not match.');
             return;
         }
 
         exchangeGitHubOAuthCode(code ?? '', getOAuthRedirectUri())
             .then((tokenResponse) => {
-                globalThis.localStorage.setItem(
-                    'repomux.githubToken',
-                    tokenResponse.accessToken
-                );
+                setStoredGitHubToken(tokenResponse.accessToken);
                 setGithubToken(tokenResponse.accessToken);
                 setStatusMessage('GitHub connected.');
                 workItemsQuery.refetch().catch((error: unknown) => {
@@ -698,7 +702,7 @@ export function App(): JSX.Element {
             'https://github.com/login/oauth/authorize'
         );
 
-        globalThis.localStorage.setItem('repomux.githubOAuthState', state);
+        setStoredGitHubOAuthState(state);
         authorizationUrl.searchParams.set('client_id', githubOAuthClientId);
         authorizationUrl.searchParams.set(
             'redirect_uri',
@@ -711,7 +715,7 @@ export function App(): JSX.Element {
     }
 
     function disconnectGitHub() {
-        globalThis.localStorage.removeItem('repomux.githubToken');
+        clearStoredGitHubToken();
         setGithubToken('');
         setStatusMessage('');
         workItemsQuery.refetch().catch((error: unknown) => {
