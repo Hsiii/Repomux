@@ -19,6 +19,12 @@ import { RemoveRepositoryModal } from './modals/remove-repository-modal.js';
 import { RepositorySidebar } from './repository-sidebar.js';
 import { WorkPanel } from './work-panel.js';
 
+function fullNameForStatus(input: string): string {
+    const fullName = normalizeRepository(input);
+
+    return fullName === '' ? 'repository' : fullName;
+}
+
 export function App(): JSX.Element {
     const [localRepositories, setLocalRepositories] =
         useState(mockRepositories);
@@ -146,6 +152,7 @@ export function App(): JSX.Element {
         },
         onSuccess: () => {
             setRepoInput('');
+            setStatusMessage(`Added ${fullNameForStatus(repoInput)}.`);
             if (!continueAddingRepositories) {
                 setIsAddRepositoryOpen(false);
             }
@@ -156,6 +163,13 @@ export function App(): JSX.Element {
                         : 'Unable to reload repositories.'
                 );
             });
+        },
+        onError: (error: unknown) => {
+            setStatusMessage(
+                error instanceof Error
+                    ? error.message
+                    : 'Unable to add repository.'
+            );
         },
     });
 
@@ -180,6 +194,7 @@ export function App(): JSX.Element {
         },
         onSuccess: () => {
             setRepositoryPendingRemoval(undefined);
+            setStatusMessage('Removed repository.');
             repositoriesQuery.refetch().catch((error: unknown) => {
                 setStatusMessage(
                     error instanceof Error
@@ -187,6 +202,13 @@ export function App(): JSX.Element {
                         : 'Unable to reload repositories.'
                 );
             });
+        },
+        onError: (error: unknown) => {
+            setStatusMessage(
+                error instanceof Error
+                    ? error.message
+                    : 'Unable to remove repository.'
+            );
         },
     });
 
@@ -303,6 +325,10 @@ export function App(): JSX.Element {
 
     if (assignMutation.error instanceof Error) {
         statusText = assignMutation.error.message;
+    } else if (addRepositoryMutation.error instanceof Error) {
+        statusText = addRepositoryMutation.error.message;
+    } else if (removeRepositoryMutation.error instanceof Error) {
+        statusText = removeRepositoryMutation.error.message;
     } else if (repositoriesQuery.error instanceof Error) {
         statusText = repositoriesQuery.error.message;
     } else if (workItemsQuery.error instanceof Error) {
