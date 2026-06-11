@@ -1,5 +1,5 @@
 source visual truth path: /Users/hsi/.codex/generated_images/019eaf42-73b4-7c22-bf45-f244324dbec4/ig_00381c09deb9a1d8016a292ea216888191b8127be353a6680b.png
-implementation screenshot path: /Users/hsi/Projects/Current/LazyHub/repomux-implementation.png
+implementation screenshot path: /Users/hsi/Projects/Current/Repomux/repomux-implementation.png
 viewport: Chrome extension capture, approximately desktop wide viewport
 state: selected issue prompt detail with repository list visible
 full-view comparison evidence: source and implementation were opened visually. The implementation preserves the two-column shell, selected repository filter, prompt-detail state, icon-only issue/readiness indicators, single prompt textarea, and right-aligned Assign to Codex CTA.
