@@ -77,37 +77,19 @@ input:disabled {
     display: grid;
     place-items: center;
     padding: var(--space-24);
-    background:
-        radial-gradient(
-            circle at top,
-            var(--clr-surface-muted),
-            transparent 40%
-        ),
-        var(--clr-bg);
 }
 
 .login-wall__card {
     width: min(100%, 432px);
     display: grid;
     gap: var(--space-16);
-    padding: var(--space-32);
-    border: var(--size-border-1) solid var(--clr-border);
-    border-radius: var(--radius-12);
-    background-color: var(--clr-panel);
-    box-shadow: var(--shadow-surface);
     text-align: center;
 }
 
-.login-wall__eyebrow {
-    color: var(--clr-accent);
-    font: var(--font-label);
-}
-
 .login-wall__title {
-    font: var(--font-title-md);
+    font: var(--font-title-sm);
 }
 
-.login-wall__message,
 .login-wall__status {
     color: var(--clr-text-dim);
     font: var(--font-body-sm);
@@ -118,14 +100,13 @@ input:disabled {
     padding: 0 var(--space-16);
     border: 0;
     border-radius: var(--radius-8);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
     color: var(--clr-text);
     font: var(--font-label);
-    background: linear-gradient(
-        135deg,
-        var(--clr-accent),
-        var(--clr-accent-strong)
-    );
-    box-shadow: var(--shadow-surface);
+    background-color: var(--clr-surface-muted);
 }
 
 .repo-panel {
