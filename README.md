@@ -23,10 +23,12 @@ VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
 
-Run `supabase/schema.sql` in Supabase to create the `repositories`
-table. The table is user-scoped: every row belongs to the authenticated
-Supabase user, and row-level security only allows each user to read and
-modify their own repositories.
+Apply the checked-in migration at
+`supabase/migrations/20260612010200_scope_repositories_to_github_users.sql`
+to create/update the `repositories` table. `supabase/schema.sql` reflects
+the expected end state. The table is user-scoped: every row belongs to
+the authenticated Supabase user, and row-level security only allows each
+user to read and modify their own repositories.
 
 Enable GitHub as a Supabase Auth provider in the Supabase dashboard and
 set the app URL, for example `http://localhost:5173/` during local
