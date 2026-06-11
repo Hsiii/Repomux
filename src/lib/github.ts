@@ -61,6 +61,53 @@ export async function fetchGitHubUser(token: string): Promise<GitHubUser> {
     return await fetchJson<GitHubUser>('https://api.github.com/user', token);
 }
 
+export async function fetchAccessibleRepositories(
+    token: string
+): Promise<readonly Repository[]> {
+    if (token.trim() === '') {
+        throw new Error('GitHub token is required to load repositories.');
+    }
+
+    const repositoriesByName = new Map<string, Repository>();
+    const pages = [1, 2, 3, 4, 5];
+    const repositoryPages = await Promise.all(
+        pages.map(
+            async (page) =>
+                await fetchJson<
+                    ReadonlyArray<{
+                        full_name?: string;
+                        id: number;
+                    }>
+                >(
+                    `https://api.github.com/user/repos?affiliation=owner,collaborator,organization_member&per_page=100&page=${page}&sort=updated`,
+                    token.trim()
+                )
+        )
+    );
+
+    for (const repositories of repositoryPages) {
+        for (const repository of repositories) {
+            if (
+                typeof repository.full_name === 'string' &&
+                repository.full_name !== ''
+            ) {
+                repositoriesByName.set(repository.full_name, {
+                    fullName: repository.full_name,
+                    id: String(repository.id),
+                });
+            }
+        }
+
+        if (repositories.length < 100) {
+            break;
+        }
+    }
+
+    return [...repositoriesByName.values()].toSorted((first, second) =>
+        first.fullName.localeCompare(second.fullName)
+    );
+}
+
 export async function fetchWorkItems(
     repositories: ReadonlyArray<Readonly<Repository>>
 ): Promise<readonly WorkItem[]> {

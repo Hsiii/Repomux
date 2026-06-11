@@ -3,7 +3,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { useGitHubConnection } from '../hooks/use-github-connection.js';
-import { assignToCodex, fetchWorkItems } from '../lib/github.js';
+import {
+    assignToCodex,
+    fetchAccessibleRepositories,
+    fetchWorkItems,
+} from '../lib/github.js';
 import { mockRepositories, mockWorkItems } from '../lib/mock-data.js';
 import {
     getStoredActiveRepositories,
@@ -125,6 +129,34 @@ export function App(): JSX.Element {
 
     const selectedPrompt =
         selectedItem === undefined ? '' : (promptDrafts[selectedItem.id] ?? '');
+
+    const accessibleRepositoriesQuery = useQuery({
+        enabled: isAddRepositoryOpen && githubToken.trim() !== '',
+        queryFn: async () => await fetchAccessibleRepositories(githubToken),
+        queryKey: ['accessible-repositories', githubToken],
+        staleTime: 60_000,
+    });
+
+    const filteredAccessibleRepositories = useMemo(() => {
+        const normalizedQuery = repoInput.trim().toLowerCase();
+        const repositories = accessibleRepositoriesQuery.data ?? [];
+
+        if (normalizedQuery === '') {
+            return repositories.slice(0, 24);
+        }
+
+        return repositories
+            .filter((repository) =>
+                repository.fullName.toLowerCase().includes(normalizedQuery)
+            )
+            .slice(0, 24);
+    }, [accessibleRepositoriesQuery.data, repoInput]);
+
+    const hasExactAccessibleRepositoryMatch = (
+        accessibleRepositoriesQuery.data ?? []
+    ).some(
+        (repository) => repository.fullName === normalizeRepository(repoInput)
+    );
 
     const addRepositoryMutation = useMutation({
         mutationFn: async (fullName: string) => {
@@ -280,12 +312,23 @@ export function App(): JSX.Element {
     function addRepository() {
         const fullName = normalizeRepository(repoInput);
 
-        if (!/^[\w.-]+\/[\w.-]+$/u.test(fullName)) {
-            setStatusMessage('Use owner/repo.');
+        if (githubToken.trim() === '') {
+            setStatusMessage('Connect GitHub before adding repositories.');
             return;
         }
 
-        addRepositoryMutation.mutate(fullName);
+        const accessibleRepository = (
+            accessibleRepositoriesQuery.data ?? []
+        ).find((repository) => repository.fullName === fullName);
+
+        if (accessibleRepository === undefined) {
+            setStatusMessage(
+                'Choose a repository from your accessible GitHub repositories.'
+            );
+            return;
+        }
+
+        addRepositoryMutation.mutate(accessibleRepository.fullName);
     }
 
     function moveRepositoryToActive(repository: Readonly<Repository>) {
@@ -329,6 +372,8 @@ export function App(): JSX.Element {
         statusText = addRepositoryMutation.error.message;
     } else if (removeRepositoryMutation.error instanceof Error) {
         statusText = removeRepositoryMutation.error.message;
+    } else if (accessibleRepositoriesQuery.error instanceof Error) {
+        statusText = accessibleRepositoriesQuery.error.message;
     } else if (repositoriesQuery.error instanceof Error) {
         statusText = repositoriesQuery.error.message;
     } else if (workItemsQuery.error instanceof Error) {
@@ -375,11 +420,18 @@ export function App(): JSX.Element {
 
             {isAddRepositoryOpen ? (
                 <AddRepositoryModal
+                    accessibleRepositories={filteredAccessibleRepositories}
                     continueAddingRepositories={continueAddingRepositories}
+                    hasExactMatch={hasExactAccessibleRepositoryMatch}
+                    isGitHubConnected={githubToken.trim() !== ''}
                     isPending={addRepositoryMutation.isPending}
+                    isRepositoryListPending={
+                        accessibleRepositoriesQuery.isPending
+                    }
                     onClose={() => {
                         setIsAddRepositoryOpen(false);
                     }}
+                    onPickRepository={setRepoInput}
                     onSubmit={addRepository}
                     onToggleContinueAddingRepositories={
                         setContinueAddingRepositories

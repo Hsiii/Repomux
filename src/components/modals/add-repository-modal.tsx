@@ -1,10 +1,17 @@
 import type { JSX } from 'react';
 import { Plus, X } from 'lucide-react';
 
+import type { Repository } from '../../types/app.js';
+
 interface AddRepositoryModalProps {
+    accessibleRepositories: readonly Repository[];
     continueAddingRepositories: boolean;
+    hasExactMatch: boolean;
+    isGitHubConnected: boolean;
     isPending: boolean;
+    isRepositoryListPending: boolean;
     onClose: () => void;
+    onPickRepository: (fullName: string) => void;
     onSubmit: () => void;
     onToggleContinueAddingRepositories: (checked: boolean) => void;
     onUpdateRepoInput: (value: string) => void;
@@ -15,14 +22,61 @@ export function AddRepositoryModal(
     props: AddRepositoryModalProps
 ): JSX.Element {
     const {
+        accessibleRepositories,
         continueAddingRepositories,
+        hasExactMatch,
+        isGitHubConnected,
         isPending,
+        isRepositoryListPending,
         onClose,
+        onPickRepository,
         onSubmit,
         onToggleContinueAddingRepositories,
         onUpdateRepoInput,
         repoInput,
     } = props;
+    let results: JSX.Element;
+
+    if (isGitHubConnected) {
+        if (isRepositoryListPending) {
+            results = (
+                <p className='repo-search-results__message'>
+                    Loading accessible repositories...
+                </p>
+            );
+        } else if (accessibleRepositories.length === 0) {
+            results = (
+                <p className='repo-search-results__message'>
+                    No accessible repositories match this search.
+                </p>
+            );
+        } else {
+            results = (
+                <>
+                    {accessibleRepositories.map((repository) => (
+                        <button
+                            className='repo-search-result'
+                            key={repository.id}
+                            onClick={() => {
+                                onPickRepository(repository.fullName);
+                            }}
+                            type='button'
+                        >
+                            <span className='repo-search-result__name'>
+                                {repository.fullName}
+                            </span>
+                        </button>
+                    ))}
+                </>
+            );
+        }
+    } else {
+        results = (
+            <p className='repo-search-results__message'>
+                Connect GitHub to search accessible repositories.
+            </p>
+        );
+    }
 
     return (
         <div className='modal-backdrop'>
@@ -69,6 +123,10 @@ export function AddRepositoryModal(
                     value={repoInput}
                 />
 
+                <div className='repo-search-results' role='list'>
+                    {results}
+                </div>
+
                 <label className='checkbox-row'>
                     <input
                         checked={continueAddingRepositories}
@@ -84,7 +142,7 @@ export function AddRepositoryModal(
 
                 <button
                     className='modal-primary-button'
-                    disabled={isPending}
+                    disabled={isPending || !hasExactMatch}
                     type='submit'
                 >
                     <span>{isPending ? 'Adding' : 'Add repository'}</span>
