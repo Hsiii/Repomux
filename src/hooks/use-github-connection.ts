@@ -4,6 +4,7 @@ import type { Session } from '@supabase/supabase-js';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { getGitHubOAuthScope } from '../lib/github-auth.js';
 import {
     clearStoredGitHubToken,
     getStoredGitHubToken,
@@ -109,7 +110,7 @@ export function useGitHubConnection(
                 provider: 'github',
                 options: {
                     redirectTo: getOAuthRedirectUri(),
-                    scopes: 'repo',
+                    scopes: getGitHubOAuthScope(),
                 },
             })
             .then(({ error }) => {

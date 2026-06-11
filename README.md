@@ -21,6 +21,7 @@ Create `.env` from `.env.example` and set:
 ```bash
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
+VITE_GITHUB_OAUTH_SCOPE=repo
 ```
 
 Apply the checked-in migration at
@@ -38,6 +39,11 @@ The browser signs in through Supabase GitHub OAuth, stores the GitHub
 provider token in browser session storage, and uses that token to read
 the GitHub queue, post the prompt comment, and add the `codex-ready`
 label.
+
+`VITE_GITHUB_OAUTH_SCOPE` defaults to `repo`, which is still required if
+you need private repository issue/PR access through a GitHub OAuth app.
+If your deployment only needs public repositories, set it to
+`public_repo` to reduce token scope.
 
 ## Check
 
