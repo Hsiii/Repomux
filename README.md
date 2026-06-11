@@ -22,7 +22,7 @@ Create `.env` from `.env.example` and set:
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_GITHUB_OAUTH_SCOPE=repo
-VITE_GITHUB_OAUTH_REDIRECT_URL=
+VITE_GITHUB_OAUTH_REDIRECT_URL=http://localhost:5173/
 ```
 
 Apply the checked-in migration at
