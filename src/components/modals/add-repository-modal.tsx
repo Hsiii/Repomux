@@ -4,12 +4,14 @@ import { Plus, X } from 'lucide-react';
 import type { Repository } from '../../types/app.js';
 
 interface AddRepositoryModalProps {
+    accessibleRepositoryCount: number;
     accessibleRepositories: readonly Repository[];
     continueAddingRepositories: boolean;
     hasExactMatch: boolean;
     isGitHubConnected: boolean;
     isPending: boolean;
     isRepositoryListPending: boolean;
+    matchingRepositoryCount: number;
     onClose: () => void;
     onPickRepository: (fullName: string) => void;
     onSubmit: () => void;
@@ -22,12 +24,14 @@ export function AddRepositoryModal(
     props: AddRepositoryModalProps
 ): JSX.Element {
     const {
+        accessibleRepositoryCount,
         accessibleRepositories,
         continueAddingRepositories,
         hasExactMatch,
         isGitHubConnected,
         isPending,
         isRepositoryListPending,
+        matchingRepositoryCount,
         onClose,
         onPickRepository,
         onSubmit,
@@ -53,6 +57,11 @@ export function AddRepositoryModal(
         } else {
             results = (
                 <>
+                    <p className='repo-search-results__message'>
+                        Showing {accessibleRepositories.length} of{' '}
+                        {matchingRepositoryCount} matching repositories from{' '}
+                        {accessibleRepositoryCount} accessible repositories.
+                    </p>
                     {accessibleRepositories.map((repository) => (
                         <button
                             className='repo-search-result'

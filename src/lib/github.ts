@@ -69,37 +69,38 @@ export async function fetchAccessibleRepositories(
     }
 
     const repositoriesByName = new Map<string, Repository>();
-    const pages = [1, 2, 3, 4, 5];
-    const repositoryPages = await Promise.all(
-        pages.map(
-            async (page) =>
-                await fetchJson<
-                    ReadonlyArray<{
-                        full_name?: string;
-                        id: number;
-                    }>
-                >(
-                    `https://api.github.com/user/repos?affiliation=owner,collaborator,organization_member&per_page=100&page=${page}&sort=updated`,
-                    token.trim()
-                )
-        )
-    );
-
-    for (const repositories of repositoryPages) {
-        for (const repository of repositories) {
-            if (
-                typeof repository.full_name === 'string' &&
-                repository.full_name !== ''
-            ) {
-                repositoriesByName.set(repository.full_name, {
-                    fullName: repository.full_name,
-                    id: String(repository.id),
-                });
-            }
-        }
+    const trimmedToken = token.trim();
+    async function fetchRepositoryPages(
+        page: number
+    ): Promise<
+        ReadonlyArray<{ readonly full_name?: string; readonly id: number }>
+    > {
+        const repositories = await fetchJson<
+            ReadonlyArray<{
+                full_name?: string;
+                id: number;
+            }>
+        >(
+            `https://api.github.com/user/repos?affiliation=owner,collaborator,organization_member&per_page=100&page=${page}&sort=updated`,
+            trimmedToken
+        );
 
         if (repositories.length < 100) {
-            break;
+            return repositories;
+        }
+
+        return [...repositories, ...(await fetchRepositoryPages(page + 1))];
+    }
+
+    for (const repository of await fetchRepositoryPages(1)) {
+        if (
+            typeof repository.full_name === 'string' &&
+            repository.full_name !== ''
+        ) {
+            repositoriesByName.set(repository.full_name, {
+                fullName: repository.full_name,
+                id: String(repository.id),
+            });
         }
     }
 

@@ -23,6 +23,8 @@ import { RemoveRepositoryModal } from './modals/remove-repository-modal.js';
 import { RepositorySidebar } from './repository-sidebar.js';
 import { WorkPanel } from './work-panel.js';
 
+const MAX_REPOSITORY_SEARCH_RESULTS = 24;
+
 function fullNameForStatus(input: string): string {
     const fullName = normalizeRepository(input);
 
@@ -137,20 +139,23 @@ export function App(): JSX.Element {
         staleTime: 60_000,
     });
 
-    const filteredAccessibleRepositories = useMemo(() => {
+    const matchingAccessibleRepositories = useMemo(() => {
         const normalizedQuery = repoInput.trim().toLowerCase();
         const repositories = accessibleRepositoriesQuery.data ?? [];
 
         if (normalizedQuery === '') {
-            return repositories.slice(0, 24);
+            return repositories;
         }
 
-        return repositories
-            .filter((repository) =>
-                repository.fullName.toLowerCase().includes(normalizedQuery)
-            )
-            .slice(0, 24);
+        return repositories.filter((repository) =>
+            repository.fullName.toLowerCase().includes(normalizedQuery)
+        );
     }, [accessibleRepositoriesQuery.data, repoInput]);
+
+    const visibleAccessibleRepositories = matchingAccessibleRepositories.slice(
+        0,
+        MAX_REPOSITORY_SEARCH_RESULTS
+    );
 
     const hasExactAccessibleRepositoryMatch = (
         accessibleRepositoriesQuery.data ?? []
@@ -420,13 +425,19 @@ export function App(): JSX.Element {
 
             {isAddRepositoryOpen ? (
                 <AddRepositoryModal
-                    accessibleRepositories={filteredAccessibleRepositories}
+                    accessibleRepositories={visibleAccessibleRepositories}
+                    accessibleRepositoryCount={
+                        accessibleRepositoriesQuery.data?.length ?? 0
+                    }
                     continueAddingRepositories={continueAddingRepositories}
                     hasExactMatch={hasExactAccessibleRepositoryMatch}
                     isGitHubConnected={githubToken.trim() !== ''}
                     isPending={addRepositoryMutation.isPending}
                     isRepositoryListPending={
                         accessibleRepositoriesQuery.isPending
+                    }
+                    matchingRepositoryCount={
+                        matchingAccessibleRepositories.length
                     }
                     onClose={() => {
                         setIsAddRepositoryOpen(false);
