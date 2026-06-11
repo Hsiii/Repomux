@@ -14,12 +14,33 @@ alter table public.repositories
 add column if not exists user_id uuid references auth.users (id) on delete cascade;
 
 do $$
+declare
+    owner_id uuid;
+    user_count bigint;
 begin
-    if exists (
-        select 1
-        from public.repositories
-        where user_id is null
-    ) then
+    select count(*)
+    into user_count
+    from auth.users;
+
+    if exists (select 1 from public.repositories where user_id is null) then
+        if user_count <> 1 then
+            raise exception
+                'repositories.user_id backfill requires exactly one auth user, found %',
+                user_count;
+        end if;
+
+        select id
+        into owner_id
+        from auth.users
+        order by created_at asc
+        limit 1;
+
+        update public.repositories
+        set user_id = owner_id
+        where user_id is null;
+    end if;
+
+    if exists (select 1 from public.repositories where user_id is null) then
         raise exception
             'repositories.user_id must be backfilled before this migration can be applied';
     end if;
