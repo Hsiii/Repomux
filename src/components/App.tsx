@@ -11,10 +11,10 @@ import {
     CircleDot,
     GitPullRequestArrow,
     LogOut,
+    Parasol,
     Plus,
     Rocket,
     Trash2,
-    Umbrella,
     X,
 } from 'lucide-react';
 
@@ -822,7 +822,7 @@ export function App(): JSX.Element {
                         <section className='repo-group'>
                             <div className='repo-group__header'>
                                 <div className='repo-group__heading'>
-                                    <Umbrella aria-hidden='true' size={16} />
+                                    <Parasol aria-hidden='true' size={16} />
                                     <h2 className='repo-group__title'>
                                         Pocket repos
                                     </h2>
