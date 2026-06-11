@@ -21,26 +21,21 @@ Create `.env` from `.env.example` and set:
 ```bash
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
-VITE_GITHUB_OAUTH_CLIENT_ID=
 ```
 
 Run `supabase/schema.sql` in Supabase to create the `repositories`
-table. Create a GitHub OAuth App whose callback URL matches the app URL,
-for example `http://localhost:5173/` during local development, and set
-the OAuth app client ID in `VITE_GITHUB_OAUTH_CLIENT_ID`.
+table. The table is user-scoped: every row belongs to the authenticated
+Supabase user, and row-level security only allows each user to read and
+modify their own repositories.
 
-Deploy `supabase/functions/github-oauth-token` and set these Supabase
-Edge Function secrets:
+Enable GitHub as a Supabase Auth provider in the Supabase dashboard and
+set the app URL, for example `http://localhost:5173/` during local
+development, in the provider's redirect allow list.
 
-```bash
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-```
-
-The browser redirects through GitHub OAuth, exchanges the returned code
-through the Edge Function, stores the returned user token in browser session
-storage, and uses that token to post the prompt comment and add the
-`codex-ready` label.
+The browser signs in through Supabase GitHub OAuth, stores the GitHub
+provider token in browser session storage, and uses that token to read
+the GitHub queue, post the prompt comment, and add the `codex-ready`
+label.
 
 ## Check
 

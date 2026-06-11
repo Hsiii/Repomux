@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import { useEffect, useMemo, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
@@ -19,11 +20,8 @@ import {
 } from 'lucide-react';
 
 import {
-    clearStoredGitHubOAuthState,
     clearStoredGitHubToken,
-    getStoredGitHubOAuthState,
     getStoredGitHubToken,
-    setStoredGitHubOAuthState,
     setStoredGitHubToken,
 } from '../lib/github-session.js';
 
@@ -48,12 +46,6 @@ interface GitHubUser {
     name?: string | null;
 }
 
-interface OAuthTokenResponse {
-    accessToken: string;
-    scope: string;
-    tokenType: string;
-}
-
 interface WorkItem {
     assigneeLogins: readonly string[];
     body: string;
@@ -68,9 +60,6 @@ interface WorkItem {
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
-    | string
-    | undefined;
-const githubOAuthClientId = import.meta.env.VITE_GITHUB_OAUTH_CLIENT_ID as
     | string
     | undefined;
 
@@ -286,45 +275,6 @@ async function assignToCodex(
     }
 }
 
-async function exchangeGitHubOAuthCode(
-    code: string,
-    redirectUri: string
-): Promise<OAuthTokenResponse> {
-    if (
-        supabaseUrl === undefined ||
-        supabaseKey === undefined ||
-        supabase === undefined
-    ) {
-        throw new Error('Supabase is required for GitHub OAuth.');
-    }
-
-    const response = await fetch(
-        `${supabaseUrl}/functions/v1/github-oauth-token`,
-        {
-            body: JSON.stringify({ code, redirectUri }),
-            headers: {
-                'Authorization': `Bearer ${supabaseKey}`,
-                'Content-Type': 'application/json',
-                'apikey': supabaseKey,
-            },
-            method: 'POST',
-        }
-    );
-
-    const payload = (await response.json()) as
-        | OAuthTokenResponse
-        | { error?: string };
-
-    if (!response.ok || !('accessToken' in payload)) {
-        const errorMessage =
-            'error' in payload ? payload.error : 'GitHub OAuth failed.';
-
-        throw new Error(errorMessage ?? 'GitHub OAuth failed.');
-    }
-
-    return payload;
-}
-
 function normalizeRepository(input: string): string {
     const trimmedInput = input.trim();
     const sshMatch =
@@ -360,6 +310,9 @@ function normalizeRepository(input: string): string {
 export function App(): JSX.Element {
     const [localRepositories, setLocalRepositories] =
         useState(mockRepositories);
+    const [githubSession, setGitHubSession] = useState<Session | undefined>(
+        undefined
+    );
     const [repoInput, setRepoInput] = useState('');
     const [activeRepositoryNames, setActiveRepositoryNames] = useState<
         readonly string[] | undefined
@@ -383,7 +336,7 @@ export function App(): JSX.Element {
     const [statusMessage, setStatusMessage] = useState('');
 
     const repositoriesQuery = useQuery({
-        enabled: supabase !== undefined,
+        enabled: supabase !== undefined && githubSession !== undefined,
         queryFn: loadRepositories,
         queryKey: ['repositories'],
     });
@@ -437,7 +390,7 @@ export function App(): JSX.Element {
             : (workItemsQuery.data ?? []);
 
     const githubUserQuery = useQuery({
-        enabled: githubToken.trim() !== '',
+        enabled: githubSession !== undefined && githubToken.trim() !== '',
         queryFn: async () =>
             await fetchJson<GitHubUser>(
                 'https://api.github.com/user',
@@ -465,66 +418,66 @@ export function App(): JSX.Element {
         selectedItem === undefined ? '' : (promptDrafts[selectedItem.id] ?? '');
 
     useEffect(() => {
-        const searchParams = new URLSearchParams(globalThis.location.search);
-        const code = searchParams.get('code');
-        const state = searchParams.get('state');
-        const oauthError =
-            searchParams.get('error_description') ?? searchParams.get('error');
-
-        if (code === null && oauthError === null) {
-            return;
+        if (supabase === undefined) {
+            return undefined;
         }
 
-        searchParams.delete('code');
-        searchParams.delete('state');
-        searchParams.delete('error');
-        searchParams.delete('error_description');
-        globalThis.history.replaceState(
-            undefined,
-            '',
-            `${globalThis.location.pathname}${
-                searchParams.size === 0 ? '' : `?${searchParams.toString()}`
-            }`
-        );
+        supabase.auth
+            .getSession()
+            .then(({ data, error }) => {
+                if (error !== null) {
+                    setStatusMessage(error.message);
+                    return;
+                }
 
-        if (oauthError !== null) {
-            setStatusMessage(oauthError);
-            return;
-        }
+                setGitHubSession(data.session ?? undefined);
 
-        const storedState = getStoredGitHubOAuthState();
-        clearStoredGitHubOAuthState();
+                if (
+                    typeof data.session?.provider_token === 'string' &&
+                    data.session.provider_token !== ''
+                ) {
+                    setStoredGitHubToken(data.session.provider_token);
+                    setGithubToken(data.session.provider_token);
+                    return;
+                }
 
-        if (
-            state === null ||
-            storedState === undefined ||
-            state !== storedState
-        ) {
-            setStatusMessage('GitHub OAuth state did not match.');
-            return;
-        }
-
-        exchangeGitHubOAuthCode(code ?? '', getOAuthRedirectUri())
-            .then((tokenResponse) => {
-                setStoredGitHubToken(tokenResponse.accessToken);
-                setGithubToken(tokenResponse.accessToken);
-                setStatusMessage('GitHub connected.');
-                workItemsQuery.refetch().catch((error: unknown) => {
-                    setStatusMessage(
-                        error instanceof Error
-                            ? error.message
-                            : 'Unable to reload work queue.'
-                    );
-                });
+                if (data.session === null) {
+                    clearStoredGitHubToken();
+                    setGithubToken('');
+                }
             })
             .catch((error: unknown) => {
                 setStatusMessage(
                     error instanceof Error
                         ? error.message
-                        : 'GitHub OAuth failed.'
+                        : 'Unable to restore GitHub session.'
                 );
             });
-    }, [workItemsQuery]);
+
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((event, session) => {
+            setGitHubSession(session ?? undefined);
+
+            if (event === 'SIGNED_OUT' || session === null) {
+                clearStoredGitHubToken();
+                setGithubToken('');
+                return;
+            }
+
+            if (
+                typeof session.provider_token === 'string' &&
+                session.provider_token !== ''
+            ) {
+                setStoredGitHubToken(session.provider_token);
+                setGithubToken(session.provider_token);
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
 
     const addRepositoryMutation = useMutation({
         mutationFn: async (fullName: string) => {
@@ -536,9 +489,14 @@ export function App(): JSX.Element {
                 return;
             }
 
+            if (githubSession === undefined) {
+                throw new Error('Connect GitHub before adding repositories.');
+            }
+
             const { error } = await supabase.from('repositories').insert({
                 full_name: fullName,
                 is_active: true,
+                user_id: githubSession.user.id,
             });
 
             if (error !== null) {
@@ -692,39 +650,59 @@ export function App(): JSX.Element {
     }
 
     function connectGitHub() {
-        if (githubOAuthClientId === undefined || githubOAuthClientId === '') {
-            setStatusMessage('GitHub OAuth client ID is not configured.');
+        if (supabase === undefined) {
+            setStatusMessage('Supabase is required for GitHub auth.');
             return;
         }
 
-        const state = globalThis.crypto.randomUUID();
-        const authorizationUrl = new URL(
-            'https://github.com/login/oauth/authorize'
-        );
-
-        setStoredGitHubOAuthState(state);
-        authorizationUrl.searchParams.set('client_id', githubOAuthClientId);
-        authorizationUrl.searchParams.set(
-            'redirect_uri',
-            getOAuthRedirectUri()
-        );
-        authorizationUrl.searchParams.set('scope', 'repo');
-        authorizationUrl.searchParams.set('state', state);
-
-        globalThis.location.assign(authorizationUrl);
+        supabase.auth
+            .signInWithOAuth({
+                provider: 'github',
+                options: {
+                    redirectTo: getOAuthRedirectUri(),
+                    scopes: 'repo',
+                },
+            })
+            .then(({ error }) => {
+                if (error !== null) {
+                    setStatusMessage(error.message);
+                }
+            })
+            .catch((error: unknown) => {
+                setStatusMessage(
+                    error instanceof Error
+                        ? error.message
+                        : 'Unable to start GitHub auth.'
+                );
+            });
     }
 
     function disconnectGitHub() {
-        clearStoredGitHubToken();
-        setGithubToken('');
-        setStatusMessage('');
-        workItemsQuery.refetch().catch((error: unknown) => {
-            setStatusMessage(
-                error instanceof Error
-                    ? error.message
-                    : 'Unable to reload work queue.'
-            );
-        });
+        if (supabase === undefined) {
+            clearStoredGitHubToken();
+            setGithubToken('');
+            return;
+        }
+
+        supabase.auth
+            .signOut()
+            .then(({ error }) => {
+                if (error !== null) {
+                    setStatusMessage(error.message);
+                    return;
+                }
+
+                setStatusMessage('');
+                clearStoredGitHubToken();
+                setGithubToken('');
+            })
+            .catch((error: unknown) => {
+                setStatusMessage(
+                    error instanceof Error
+                        ? error.message
+                        : 'Unable to disconnect GitHub.'
+                );
+            });
     }
 
     function updatePrompt(value: string) {
