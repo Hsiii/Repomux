@@ -22,6 +22,7 @@ Create `.env` from `.env.example` and set:
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_GITHUB_OAUTH_SCOPE=repo
+VITE_GITHUB_OAUTH_REDIRECT_URL=
 ```
 
 Apply the checked-in migration at
@@ -34,6 +35,11 @@ user to read and modify their own repositories.
 Enable GitHub as a Supabase Auth provider in the Supabase dashboard and
 set the app URL, for example `http://localhost:5173/` during local
 development, in the provider's redirect allow list.
+
+Do not add a GitHub client secret to frontend env. The secret belongs in
+the Supabase GitHub Auth provider configuration. If local dev needs a
+different callback than `location.origin + location.pathname`, set
+`VITE_GITHUB_OAUTH_REDIRECT_URL` to the exact allowed redirect URL.
 
 The browser signs in through Supabase GitHub OAuth, stores the GitHub
 provider token in browser session storage, and uses that token to read
