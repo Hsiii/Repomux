@@ -22,4 +22,26 @@
     --clr-success: #a6e3a1;
     --clr-error: #f38ba8;
     --shadow-surface: 0 24px 64px rgba(4, 6, 14, 0.28);
+
+    --clr-login-bg: #fcfcfd;
+    --clr-login-grid: rgba(15, 23, 42, 0.06);
+    --clr-login-spotlight: rgba(255, 255, 255, 0.96);
+    --clr-login-card: rgba(255, 255, 255, 0.92);
+    --clr-login-card-strong: #ffffff;
+    --clr-login-border: rgba(15, 23, 42, 0.1);
+    --clr-login-border-strong: rgba(15, 23, 42, 0.16);
+    --clr-login-text: #111827;
+    --clr-login-text-muted: #4b5563;
+    --clr-login-text-dim: #6b7280;
+    --clr-login-accent: #111827;
+    --clr-login-accent-soft: #f3f4f6;
+    --clr-login-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+    --clr-login-shadow-press: 0 12px 24px rgba(15, 23, 42, 0.16);
+    --clr-login-surface-soft: rgba(255, 255, 255, 0.72);
+    --clr-login-surface-pill: rgba(255, 255, 255, 0.64);
+    --clr-login-overlay-strong: rgba(255, 255, 255, 0.88);
+    --clr-login-overlay-soft: rgba(255, 255, 255, 0.72);
+    --clr-login-glow-strong: rgba(255, 255, 255, 0.96);
+    --clr-login-glow-soft: rgba(243, 244, 246, 0.92);
+    --clr-login-glow-edge: rgba(229, 231, 235, 0.7);
 }
