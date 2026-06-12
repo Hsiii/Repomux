@@ -236,6 +236,7 @@ input:disabled {
 }
 
 .login-wall__benefit-stack {
+    margin-top: var(--space-48);
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-16);
@@ -247,7 +248,7 @@ input:disabled {
     grid-template-columns: auto minmax(0, 1fr);
     align-items: start;
     gap: var(--space-16);
-    min-height: var(--size-row);
+    min-height: var(--size-login-benefit-card);
     padding: var(--space-16);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
@@ -403,6 +404,7 @@ input:disabled {
 }
 
 .login-wall__automation {
+    margin-top: var(--space-48);
     display: grid;
     gap: var(--space-20);
     padding: var(--space-24);
@@ -453,6 +455,8 @@ input:disabled {
 }
 
 .login-wall__footer {
+    width: min(100%, var(--size-login-preview));
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -623,6 +627,10 @@ input:disabled {
 
     .login-wall__benefit-stack {
         grid-template-columns: 1fr;
+    }
+
+    .login-wall__benefit-card {
+        min-height: var(--size-row);
     }
 
     .login-wall__app-shell-preview {
@@ -1034,7 +1042,7 @@ input:disabled {
     position: relative;
     min-height: 0;
     min-width: 0;
-    padding: var(--space-48) var(--space-40) var(--space-40);
+    padding: var(--space-40);
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     overflow: auto;
