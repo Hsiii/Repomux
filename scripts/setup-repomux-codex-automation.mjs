@@ -45,10 +45,13 @@ function ensureRepomuxCheckout(repoRoot) {
 async function main() {
     const options = parseArgs(process.argv.slice(2));
     const repoRoot = path.resolve(options.get('repo-root') ?? process.cwd());
-    const appUrl = options.get('app-url') ?? 'http://localhost:5173';
-    const worktreeRoot = path.resolve(
-        options.get('worktree-root') ?? path.dirname(repoRoot)
+    const appUrl = options.get('app-url') ?? 'https://repomux.hsichen.dev';
+    const automationWorkspaceRoot = path.resolve(
+        options.get('automation-workspace-root') ?? repoRoot
     );
+    const worktreeRoot =
+        options.get('worktree-root') ??
+        '__SET_THIS_TO_YOUR_LOCAL_REPOSITORY_ROOT__';
     const templatePath = path.join(
         repoRoot,
         'codex',

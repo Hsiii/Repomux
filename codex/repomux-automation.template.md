@@ -23,7 +23,7 @@ Workflow
     - GitHub URL
     - the most recent comment whose heading is `## Codex prompt`
 5. If the item is missing the `codex-ready` label or the latest `## Codex prompt` comment, stop and report the reason instead of guessing intent.
-6. In the local worktree root, clone the target repository if it is missing. If it already exists, fetch the latest remote state before editing.
+6. In the local repository root, clone the target repository if it is missing. If it already exists, fetch the latest remote state before editing.
 7. Create a fresh branch named `codex/<item-number>-<short-slug>`.
 8. Complete the requested work. Respect repository-local `AGENTS.md` instructions before making changes.
 9. Run the narrowest useful validation first, then broader checks when they are cheap enough to justify. Do not claim success without stating what ran.
@@ -41,4 +41,5 @@ Safety
 - Never process more than one work item in a single run.
 - Never take work that Repomux has not marked `codex-ready`.
 - Never invent missing auth, prompt text, or repository state.
+- If the automation workspace root or local repository root is unknown, stop and report the missing local setup instead of guessing a path.
 - If the target repository is already dirty in a conflicting way, stop and report the conflict.
