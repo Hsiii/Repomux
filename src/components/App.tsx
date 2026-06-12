@@ -303,13 +303,7 @@ export function App(): JSX.Element {
                                 <BrandLogo
                                     alt='Repomux'
                                     className='login-wall__wordmark-mark'
-                                    tone={
-                                        loginTheme === 'dark' ? 'light' : 'dark'
-                                    }
                                 />
-                                <span className='login-wall__wordmark-text'>
-                                    Repomux
-                                </span>
                             </div>
                             <button
                                 className='login-wall__button login-wall__topbar-login'

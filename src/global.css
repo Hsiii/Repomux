@@ -56,15 +56,7 @@ input:disabled {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-}
-
-.brand-logo--dark {
-    filter: brightness(0);
-}
-
-.brand-logo--light {
-    filter: brightness(0) invert(1);
+    object-fit: cover;
 }
 
 .sr-only {
@@ -146,20 +138,13 @@ input:disabled {
 }
 
 .login-wall__wordmark {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-8);
-    font: var(--font-wordmark);
-    letter-spacing: 0.01em;
+    display: block;
+    height: var(--size-login-mark);
 }
 
 .login-wall__wordmark-mark {
-    width: 36px;
-    height: 36px;
-}
-
-.login-wall__wordmark-text {
-    font: var(--font-wordmark);
+    width: auto;
+    height: 100%;
 }
 
 .login-wall__topbar-login {

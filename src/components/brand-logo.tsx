@@ -3,13 +3,12 @@ import type { JSX } from 'react';
 interface BrandLogoProps {
     alt?: string;
     className?: string;
-    tone?: 'dark' | 'light';
 }
 
 export function BrandLogo(props: BrandLogoProps): JSX.Element {
-    const { alt = 'repomux logo', className = '', tone = 'dark' } = props;
+    const { alt = 'repomux logo', className = '' } = props;
 
-    const classes = ['brand-logo', `brand-logo--${tone}`, className]
+    const classes = ['brand-logo', className]
         .filter((value) => value !== '')
         .join(' ');
 
