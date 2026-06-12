@@ -56,8 +56,15 @@
     --size-login-preview: 1088px;
     --size-login-topbar: 1080px;
     --size-login-preview-height: 560px;
+    --size-login-preview-compact: 420px;
+    --size-login-feature-min: 360px;
     --size-login-benefit-card: 160px;
     --size-login-prompt-preview: 160px;
+    --size-login-prompt-compact: 128px;
+    --size-login-flow-node: 112px;
+    --size-login-automation-node: 132px;
+    --size-login-pr-card: 560px;
+    --size-login-result-card: 152px;
     --size-login-topbar-button: 36px;
     --size-settings-menu: 248px;
     --size-assign-button: 176px;

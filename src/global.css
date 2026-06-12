@@ -232,72 +232,175 @@ input:disabled {
     width: 100%;
     max-width: var(--size-login-preview);
     display: grid;
-    gap: var(--space-20);
+    gap: var(--space-24);
 }
 
-.login-wall__benefit-stack {
-    margin-top: var(--space-48);
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-16);
-}
-
-.login-wall__benefit-card {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
-    gap: var(--space-16);
-    min-height: var(--size-login-benefit-card);
-    padding: var(--space-16);
+.login-wall__app-preview,
+.login-wall__feature,
+.login-wall__github-card,
+.login-wall__prompt-card,
+.login-wall__pr-card {
+    overflow: hidden;
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
-    background-color: var(--clr-login-control);
-    backdrop-filter: blur(var(--space-12));
+    background-color: var(--clr-login-card);
+    box-shadow: var(--clr-login-shadow);
 }
 
-.login-wall__benefit-step {
-    position: relative;
-    z-index: 1;
-    width: var(--space-40);
-    height: var(--space-40);
-    display: inline-grid;
-    place-items: center;
-    border-radius: var(--radius-8);
-    color: var(--clr-login-text);
-    font: var(--font-auth-eyebrow);
-    background-color: var(--clr-login-accent-soft);
-}
-
-.login-wall__benefit-copy {
+.login-wall__feature {
+    min-height: var(--size-login-feature-min);
     display: grid;
-    gap: var(--space-4);
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.84fr);
+    align-items: stretch;
+    background:
+        linear-gradient(
+            90deg,
+            transparent calc(50% - var(--size-border-1)),
+            var(--clr-login-grid) calc(50% - var(--size-border-1)),
+            var(--clr-login-grid) 50%,
+            transparent 50%
+        ),
+        var(--clr-login-card);
 }
 
-.login-wall__benefit-detail,
-.login-wall__product-kicker {
+.login-wall__feature--queue {
+    grid-template-columns: minmax(288px, 0.64fr) minmax(0, 1.36fr);
+}
+
+.login-wall__feature--prompt,
+.login-wall__feature--automation,
+.login-wall__feature--result {
+    grid-template-columns: minmax(288px, 0.8fr) minmax(0, 1.2fr);
+}
+
+.login-wall__feature-copy,
+.login-wall__feature-visual,
+.login-wall__prompt-stage,
+.login-wall__automation-flow,
+.login-wall__result-stage {
+    min-width: 0;
+    padding: var(--space-40);
+}
+
+.login-wall__feature-copy {
+    display: grid;
+    align-content: center;
+    gap: var(--space-16);
+}
+
+.login-wall__feature-copy h2 {
+    max-width: 13ch;
+    font: var(--font-title-md);
+    letter-spacing: -0.02em;
+}
+
+.login-wall__feature-copy p:not(.login-wall__feature-kicker) {
+    max-width: 34rem;
+    color: var(--clr-login-text-muted);
+    font: var(--font-body-lg);
+}
+
+.login-wall__feature-kicker,
+.login-wall__product-title {
     color: var(--clr-login-text-dim);
     font: var(--font-auth-eyebrow);
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
-.login-wall__benefit-label {
-    font: var(--font-title-sm);
+.login-wall__feature-visual {
+    display: grid;
+    align-items: center;
 }
 
-.login-wall__benefit-value {
+.login-wall__mux-diagram {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.login-wall__mux-line {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 4;
+    stroke-dasharray: 280;
+    stroke-dashoffset: 280;
+    animation: login-wall-draw 4.8s ease-in-out infinite;
+}
+
+.login-wall__mux-line--blue {
+    stroke: var(--clr-login-flow-blue);
+}
+
+.login-wall__mux-line--red {
+    stroke: var(--clr-login-flow-red);
+    animation-delay: 120ms;
+}
+
+.login-wall__mux-line--yellow {
+    stroke: var(--clr-login-flow-yellow);
+    animation-delay: 240ms;
+}
+
+.login-wall__mux-line--green {
+    stroke: var(--clr-login-flow-green);
+    animation-delay: 360ms;
+}
+
+.login-wall__mux-line--cyan {
+    stroke: var(--clr-login-flow-cyan);
+    animation-delay: 480ms;
+}
+
+.login-wall__mux-line--pink {
+    stroke: var(--clr-login-flow-pink);
+    animation-delay: 600ms;
+}
+
+.login-wall__mux-repo rect,
+.login-wall__mux-hub rect,
+.login-wall__mux-output rect {
+    fill: var(--clr-login-control);
+    stroke: var(--clr-login-border);
+    stroke-width: var(--size-border-1);
+}
+
+.login-wall__mux-repo svg,
+.login-wall__mux-output svg {
     color: var(--clr-login-text-muted);
-    font: var(--font-body-sm);
 }
 
-.login-wall__app-preview,
-.login-wall__automation {
-    overflow: hidden;
-    border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-16);
-    background-color: var(--clr-login-card);
-    box-shadow: var(--clr-login-shadow);
+.login-wall__mux-repo-owner,
+.login-wall__mux-repo-branch {
+    fill: var(--clr-login-text-dim);
+    font: var(--font-auth-eyebrow);
+}
+
+.login-wall__mux-repo-name,
+.login-wall__mux-hub-label,
+.login-wall__mux-output text {
+    fill: var(--clr-login-text);
+    font: var(--font-label);
+}
+
+.login-wall__mux-repo-branch {
+    opacity: 0.72;
+}
+
+.login-wall__mux-hub rect {
+    fill: var(--clr-login-card-strong);
+    stroke: var(--clr-login-border-strong);
+}
+
+.login-wall__mux-logo {
+    width: var(--space-64);
+    height: var(--space-64);
+    filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
+        hue-rotate(204deg) brightness(104%) contrast(97%);
+}
+
+.login-wall--light .login-wall__mux-logo {
+    filter: brightness(0);
 }
 
 .login-wall__product-topbar {
@@ -325,7 +428,7 @@ input:disabled {
 
 .login-wall__app-shell-preview {
     height: auto;
-    min-height: var(--size-login-preview-height);
+    min-height: var(--size-login-preview-compact);
     display: grid;
     grid-template-columns: minmax(240px, var(--size-repo-panel)) minmax(0, 1fr);
     overflow: hidden;
@@ -346,7 +449,7 @@ input:disabled {
 }
 
 .work-panel.login-wall__work-panel-preview {
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto;
     align-content: start;
     overflow: hidden;
 }
@@ -364,20 +467,16 @@ input:disabled {
     font: var(--font-body-sm);
 }
 
-.login-wall__detail-preview {
-    margin-top: var(--space-16);
-    display: grid;
-    gap: var(--space-16);
-}
-
 .login-wall__prompt-preview {
-    min-height: var(--size-login-prompt-preview);
+    min-height: var(--size-login-prompt-compact);
     padding: var(--space-16);
     font: var(--font-body-sm);
     line-height: 1.45;
+    overflow: hidden;
 }
 
 .login-wall__assign-preview {
+    position: relative;
     min-height: var(--space-40);
     width: fit-content;
     padding: 0 var(--space-16);
@@ -385,33 +484,219 @@ input:disabled {
     align-items: center;
     justify-content: center;
     gap: var(--space-12);
+    animation: login-wall-click 3.8s ease-in-out infinite;
 }
 
-.login-wall__section-heading {
+.login-wall__assign-preview::after {
+    content: '';
+    position: absolute;
+    inset: calc(var(--space-8) * -1);
+    border: var(--size-border-1) solid var(--clr-login-border-strong);
+    border-radius: var(--radius-12);
+    opacity: 0;
+    animation: login-wall-click-ring 3.8s ease-in-out infinite;
+}
+
+.login-wall__prompt-stage {
     display: grid;
-    gap: var(--space-8);
-    max-width: 640px;
-}
-
-.login-wall__section-heading h2 {
-    font: var(--font-title-md);
-    letter-spacing: -0.02em;
-}
-
-.login-wall__section-heading p {
-    color: var(--clr-login-text-muted);
-    font: var(--font-body-lg);
-}
-
-.login-wall__automation {
-    margin-top: var(--space-48);
-    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    align-items: center;
     gap: var(--space-20);
-    padding: var(--space-24);
 }
 
-.login-wall__automation .login-wall__section-heading {
-    max-width: 760px;
+.login-wall__github-card,
+.login-wall__prompt-card {
+    min-width: 0;
+    padding: var(--space-20);
+    display: grid;
+    gap: var(--space-16);
+}
+
+.login-wall__github-card h3,
+.login-wall__pr-card h3 {
+    font: var(--font-title-sm);
+}
+
+.login-wall__github-card p,
+.login-wall__pr-card p,
+.login-wall__pr-card span {
+    color: var(--clr-login-text-muted);
+    font: var(--font-body-sm);
+}
+
+.login-wall__github-header,
+.login-wall__github-labels,
+.login-wall__github-comment,
+.login-wall__codex-badge,
+.login-wall__pr-button {
+    display: inline-flex;
+    align-items: center;
+}
+
+.login-wall__github-header {
+    gap: var(--space-8);
+    color: var(--clr-login-text-muted);
+    font: var(--font-label);
+}
+
+.login-wall__issue-number {
+    color: var(--clr-login-text-dim);
+}
+
+.login-wall__github-labels {
+    flex-wrap: wrap;
+    gap: var(--space-8);
+}
+
+.login-wall__github-label {
+    min-height: var(--space-24);
+    padding: 0 var(--space-8);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-pill);
+    color: var(--clr-login-label-text);
+    font: var(--font-auth-eyebrow);
+    background-color: var(--clr-login-label-bg);
+}
+
+.login-wall__github-label--ready {
+    color: var(--clr-login-success-text);
+    background-color: var(--clr-login-success-bg);
+}
+
+.login-wall__github-comment {
+    gap: var(--space-8);
+    padding: var(--space-12);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-8);
+    color: var(--clr-login-text-muted);
+    font: var(--font-body-sm);
+    background-color: var(--clr-login-control);
+}
+
+.login-wall__github-comment svg {
+    flex: 0 0 auto;
+    color: var(--clr-login-flow-yellow);
+}
+
+.login-wall__prompt-card {
+    background-color: var(--clr-login-card-strong);
+}
+
+.login-wall__typing-line {
+    display: block;
+    width: 0;
+    max-width: max-content;
+    overflow: hidden;
+    border-right: var(--size-border-1) solid var(--clr-login-text);
+    white-space: nowrap;
+    animation:
+        login-wall-type 5.8s steps(98, end) infinite,
+        login-wall-caret 960ms steps(1, end) infinite;
+}
+
+.login-wall__automation-flow,
+.login-wall__result-stage {
+    display: grid;
+    place-items: center;
+}
+
+.login-wall__automation-flow {
+    grid-template-columns:
+        minmax(var(--size-login-flow-node), 1fr) auto
+        minmax(var(--size-login-flow-node), 1fr) auto
+        minmax(var(--size-login-flow-node), 1fr);
+    gap: var(--space-16);
+}
+
+.login-wall__automation-node {
+    width: 100%;
+    min-height: var(--size-login-automation-node);
+    padding: var(--space-16);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-12);
+    display: grid;
+    place-items: center;
+    gap: var(--space-12);
+    color: var(--clr-login-text-muted);
+    font: var(--font-label);
+    text-align: center;
+    background-color: var(--clr-login-control);
+}
+
+.login-wall__automation-node--active {
+    border-color: var(--clr-login-border-strong);
+    color: var(--clr-login-text);
+    box-shadow: inset 0 0 0 var(--size-border-1) var(--clr-login-border);
+}
+
+.login-wall__automation-node--active svg {
+    color: var(--clr-login-flow-cyan);
+}
+
+.login-wall__automation-arrow {
+    color: var(--clr-login-text-dim);
+}
+
+.login-wall__result-stage {
+    align-content: center;
+    gap: var(--space-16);
+}
+
+.login-wall__codex-badge {
+    gap: var(--space-8);
+    min-height: var(--space-36);
+    padding: 0 var(--space-12);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-pill);
+    color: var(--clr-login-text-muted);
+    font: var(--font-label);
+    background-color: var(--clr-login-control);
+}
+
+.login-wall__pr-card {
+    width: min(100%, var(--size-login-pr-card));
+    min-height: var(--size-login-result-card);
+    padding: var(--space-20);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-16);
+    animation: login-wall-pop 4.8s ease-in-out infinite;
+}
+
+.login-wall__pr-icon {
+    width: var(--space-48);
+    height: var(--space-48);
+    border-radius: var(--radius-8);
+    display: grid;
+    place-items: center;
+    color: var(--clr-login-success-text);
+    background-color: var(--clr-login-success-bg);
+}
+
+.login-wall__pr-copy {
+    min-width: 0;
+    display: grid;
+    gap: var(--space-4);
+}
+
+.login-wall__pr-copy h3,
+.login-wall__pr-copy p,
+.login-wall__pr-copy span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.login-wall__pr-button {
+    min-height: var(--space-36);
+    gap: var(--space-8);
+    padding: 0 var(--space-12);
+    border: var(--size-border-1) solid var(--clr-login-border-strong);
+    border-radius: var(--radius-8);
+    color: var(--clr-login-text);
+    font: var(--font-label);
+    background-color: var(--clr-login-control-hover);
 }
 
 .login-wall__button {
@@ -574,6 +859,89 @@ input:disabled {
     }
 }
 
+@keyframes login-wall-draw {
+    0%,
+    12% {
+        stroke-dashoffset: 280;
+    }
+
+    44%,
+    72% {
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-dashoffset: -280;
+    }
+}
+
+@keyframes login-wall-type {
+    0%,
+    12% {
+        width: 0;
+    }
+
+    52%,
+    82% {
+        width: 100%;
+    }
+
+    100% {
+        width: 0;
+    }
+}
+
+@keyframes login-wall-caret {
+    50% {
+        border-color: transparent;
+    }
+}
+
+@keyframes login-wall-click {
+    0%,
+    64%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    72% {
+        transform: translateY(var(--size-border-1)) scale(0.98);
+    }
+}
+
+@keyframes login-wall-click-ring {
+    0%,
+    64%,
+    100% {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+    76% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes login-wall-pop {
+    0%,
+    24% {
+        opacity: 0;
+        transform: translateY(var(--space-24)) scale(0.96);
+    }
+
+    44%,
+    84% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(calc(var(--space-12) * -1)) scale(0.98);
+    }
+}
+
 .login-wall__language {
     position: relative;
 }
@@ -624,16 +992,22 @@ input:disabled {
         gap: var(--space-20);
     }
 
-    .login-wall__benefits {
+    .login-wall__benefits,
+    .login-wall__feature,
+    .login-wall__feature--queue,
+    .login-wall__feature--prompt,
+    .login-wall__feature--automation,
+    .login-wall__feature--result,
+    .login-wall__prompt-stage {
         grid-template-columns: 1fr;
     }
 
-    .login-wall__benefit-stack {
-        grid-template-columns: 1fr;
+    .login-wall__feature {
+        background: var(--clr-login-card);
     }
 
-    .login-wall__benefit-card {
-        min-height: var(--size-row);
+    .login-wall__feature-copy h2 {
+        max-width: 18ch;
     }
 
     .login-wall__app-shell-preview {
@@ -642,6 +1016,14 @@ input:disabled {
 
     .login-wall__app-shell-preview {
         height: auto;
+    }
+
+    .login-wall__automation-flow {
+        grid-template-columns: 1fr;
+    }
+
+    .login-wall__automation-arrow {
+        transform: rotate(90deg);
     }
 
     .login-wall__title {
@@ -676,10 +1058,42 @@ input:disabled {
         font: var(--font-title-md);
     }
 
+    .login-wall__feature-copy,
+    .login-wall__feature-visual,
+    .login-wall__prompt-stage,
+    .login-wall__automation-flow,
+    .login-wall__result-stage,
     .login-wall__repo-panel-preview,
-    .login-wall__work-panel-preview,
-    .login-wall__automation {
+    .login-wall__work-panel-preview {
         padding: var(--space-16);
+    }
+
+    .login-wall__pr-card {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .login-wall__pr-button {
+        grid-column: 1 / -1;
+        width: fit-content;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-wall__mux-line,
+    .login-wall__typing-line,
+    .login-wall__assign-preview,
+    .login-wall__assign-preview::after,
+    .login-wall__value-button::before,
+    .login-wall__pr-card {
+        animation: none;
+    }
+
+    .login-wall__mux-line {
+        stroke-dashoffset: 0;
+    }
+
+    .login-wall__typing-line {
+        width: 100%;
     }
 }
 

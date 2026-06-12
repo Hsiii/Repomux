@@ -49,6 +49,16 @@
     --clr-login-glow-edge: rgba(15, 17, 27, 0.84);
     --clr-login-control: rgba(15, 17, 27, 0.72);
     --clr-login-control-hover: rgba(39, 40, 72, 0.72);
+    --clr-login-flow-blue: #2997ff;
+    --clr-login-flow-red: #ff5f57;
+    --clr-login-flow-yellow: #ffbd2e;
+    --clr-login-flow-green: #28c840;
+    --clr-login-flow-cyan: #2dd4bf;
+    --clr-login-flow-pink: #ff7ab6;
+    --clr-login-label-bg: rgba(45, 212, 191, 0.12);
+    --clr-login-label-text: #7dd3fc;
+    --clr-login-success-bg: rgba(40, 200, 64, 0.14);
+    --clr-login-success-text: #86efac;
 
     --clr-app-light-bg: #fcfcfd;
     --clr-app-light-bg-soft: #f7f8fb;
@@ -95,4 +105,8 @@
     --clr-login-glow-edge: rgba(229, 231, 235, 0.7);
     --clr-login-control: rgba(255, 255, 255, 0.72);
     --clr-login-control-hover: rgba(255, 255, 255, 0.92);
+    --clr-login-label-bg: rgba(37, 99, 235, 0.08);
+    --clr-login-label-text: #2563eb;
+    --clr-login-success-bg: rgba(22, 163, 74, 0.1);
+    --clr-login-success-text: #15803d;
 }
