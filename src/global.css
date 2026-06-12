@@ -194,16 +194,8 @@ input:disabled {
 
 .login-wall__story {
     display: grid;
-    gap: var(--space-32);
+    gap: var(--space-28);
     align-content: center;
-}
-
-.login-wall__eyebrow,
-.login-wall__auth-eyebrow {
-    color: var(--clr-login-text-dim);
-    font: var(--font-auth-eyebrow);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
 }
 
 .login-wall__headline-group,
@@ -219,7 +211,6 @@ input:disabled {
 }
 
 .login-wall__lede,
-.login-wall__auth-body,
 .login-wall__queue-value,
 .login-wall__auth-note {
     color: var(--clr-login-text-muted);
@@ -269,24 +260,6 @@ input:disabled {
     font: var(--font-body-sm);
 }
 
-.login-wall__principles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-12);
-}
-
-.login-wall__signal {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-8);
-    padding: var(--space-8) var(--space-12);
-    border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-pill);
-    background-color: var(--clr-login-surface-pill);
-    color: var(--clr-login-text-muted);
-    font: var(--font-body-sm);
-}
-
 .login-wall__auth-shell {
     display: grid;
     justify-items: end;
@@ -295,7 +268,7 @@ input:disabled {
 .login-wall__auth-card {
     width: min(100%, 432px);
     display: grid;
-    gap: var(--space-24);
+    gap: var(--space-20);
     padding: var(--space-32);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-16);
@@ -347,12 +320,7 @@ input:disabled {
 
 .login-wall__auth-foot {
     display: grid;
-    gap: var(--space-16);
-}
-
-.login-wall__auth-divider {
-    height: var(--size-border-1);
-    background-color: var(--clr-login-border);
+    gap: var(--space-8);
 }
 
 .login-wall__auth-note {

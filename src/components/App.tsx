@@ -3,9 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
-    CheckCheck,
+    CircleArrowUp,
     Clock3,
-    GitBranch,
     Inbox,
     Workflow,
 } from 'lucide-react';
@@ -223,30 +222,24 @@ export function App(): JSX.Element {
     const loginWallQueue = [
         {
             icon: Inbox,
-            label: 'Inbox',
-            value: 'Scattered issues and rough ideas land here first.',
+            label: 'Repositories',
+            value: 'Connect GitHub and choose the repos that matter now.',
         },
         {
             icon: Workflow,
-            label: 'Prepared',
-            value: 'Intent and constraints get clarified before execution.',
+            label: 'Work queue',
+            value: 'Browse open issues and pull requests in one view.',
         },
         {
             icon: Clock3,
-            label: 'Running',
-            value: 'Work moves asynchronously while you stay out of the loop.',
+            label: 'Prompt / context',
+            value: 'Add the intent Codex needs before execution.',
         },
         {
-            icon: CheckCheck,
-            label: 'Completed',
-            value: 'Results wait for review when you return.',
+            icon: CircleArrowUp,
+            label: 'Assign to Codex',
+            value: 'Send the selected work item into the async queue.',
         },
-    ] as const;
-
-    const loginWallSignals = [
-        'One workspace for many repositories',
-        'GitHub-backed queueing and delegation',
-        'Clear intent before async execution',
     ] as const;
 
     return (
@@ -320,18 +313,13 @@ export function App(): JSX.Element {
 
                         <section className='login-wall__layout'>
                             <div className='login-wall__story'>
-                                <div className='login-wall__eyebrow'>
-                                    Repo operations desk
-                                </div>
                                 <div className='login-wall__headline-group'>
                                     <h1 className='login-wall__title'>
-                                        Capture intent once. Return to completed
-                                        results.
+                                        Assign work. Wake up to results.
                                     </h1>
                                     <p className='login-wall__lede'>
-                                        repomux centralizes repository work,
-                                        clarifies what matters, and queues
-                                        execution so you can step away.
+                                        Centralizes work and queues execution so
+                                        you can step away.
                                     </p>
                                 </div>
 
@@ -360,37 +348,14 @@ export function App(): JSX.Element {
                                         )
                                     )}
                                 </div>
-
-                                <div className='login-wall__principles'>
-                                    {loginWallSignals.map((signal) => (
-                                        <div
-                                            className='login-wall__signal'
-                                            key={signal}
-                                        >
-                                            <GitBranch
-                                                aria-hidden='true'
-                                                size={14}
-                                            />
-                                            <span>{signal}</span>
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
 
                             <section className='login-wall__auth-shell'>
                                 <div className='login-wall__auth-card'>
                                     <div className='login-wall__auth-copy'>
-                                        <div className='login-wall__auth-eyebrow'>
-                                            Log in to repomux
-                                        </div>
                                         <h2 className='login-wall__auth-title'>
-                                            Continue with GitHub
+                                            Log in
                                         </h2>
-                                        <p className='login-wall__auth-body'>
-                                            GitHub powers repository discovery,
-                                            task capture, and execution context
-                                            across your workspace.
-                                        </p>
                                     </div>
 
                                     <button
@@ -422,11 +387,9 @@ export function App(): JSX.Element {
                                     )}
 
                                     <div className='login-wall__auth-foot'>
-                                        <div className='login-wall__auth-divider' />
                                         <p className='login-wall__auth-note'>
-                                            Connect once to unlock repository
-                                            overview, queue preparation, and
-                                            async execution review.
+                                            GitHub is required to load
+                                            repositories and assign work.
                                         </p>
                                     </div>
                                 </div>
