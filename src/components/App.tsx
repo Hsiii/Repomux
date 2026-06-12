@@ -4,13 +4,13 @@ import type { CSSProperties, JSX } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
+    ArrowDown,
     ArrowRight,
     BookMarked,
     Check,
     ChevronDown,
     CircleArrowUp,
     CircleDot,
-    ExternalLink,
     GitPullRequestArrow,
     Languages,
     Moon,
@@ -51,6 +51,7 @@ export function App(): JSX.Element {
     const [loginTheme, setLoginTheme] = useState<'dark' | 'light'>('dark');
     const [loginLanguage, setLoginLanguage] = useState('en');
     const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+    const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
     const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
     const [isAutomationDialogOpen, setIsAutomationDialogOpen] = useState(false);
     const [hasAutomationReminder, setHasAutomationReminder] = useState(false);
@@ -263,9 +264,17 @@ export function App(): JSX.Element {
         { label: 'English', shortLabel: 'EN', value: 'en' },
         { label: 'Chinese', shortLabel: 'ZH', value: 'zh' },
     ] as const;
+    const loginThemes = [
+        { icon: Moon, label: 'Dark', value: 'dark' },
+        { icon: Sun, label: 'Light', value: 'light' },
+    ] as const;
     const selectedLoginLanguage =
         loginLanguages.find((language) => language.value === loginLanguage) ??
         loginLanguages[0];
+    const selectedLoginTheme =
+        loginThemes.find((theme) => theme.value === loginTheme) ??
+        loginThemes[0];
+    const SelectedLoginThemeIcon = selectedLoginTheme.icon;
     function openAutomationDialog() {
         setIsSettingsMenuOpen(false);
         setIsAutomationDialogOpen(true);
@@ -355,6 +364,156 @@ export function App(): JSX.Element {
                                     Repomux
                                 </span>
                             </div>
+                            <div className='login-wall__topbar-controls'>
+                                <a
+                                    className='login-wall__footer-link'
+                                    href='https://github.com/Hsiii/LazyHub'
+                                    rel='noreferrer'
+                                    target='_blank'
+                                >
+                                    <GitHubMark className='login-wall__github-icon' />
+                                    <span>GitHub</span>
+                                </a>
+
+                                <div className='login-wall__language'>
+                                    <button
+                                        aria-expanded={isLanguageMenuOpen}
+                                        aria-haspopup='menu'
+                                        className='login-wall__language-trigger'
+                                        onClick={() => {
+                                            setIsLanguageMenuOpen(
+                                                (current) => !current
+                                            );
+                                            setIsThemeMenuOpen(false);
+                                        }}
+                                        type='button'
+                                    >
+                                        <Languages
+                                            aria-hidden='true'
+                                            size={16}
+                                        />
+                                        <span>
+                                            {selectedLoginLanguage.shortLabel}
+                                        </span>
+                                        <ChevronDown
+                                            aria-hidden='true'
+                                            size={14}
+                                        />
+                                    </button>
+
+                                    {isLanguageMenuOpen ? (
+                                        <div
+                                            className='login-wall__language-menu'
+                                            role='menu'
+                                        >
+                                            {loginLanguages.map((language) => (
+                                                <button
+                                                    aria-checked={
+                                                        language.value ===
+                                                        loginLanguage
+                                                    }
+                                                    className='login-wall__language-option'
+                                                    key={language.value}
+                                                    onClick={() => {
+                                                        setLoginLanguage(
+                                                            language.value
+                                                        );
+                                                        setIsLanguageMenuOpen(
+                                                            false
+                                                        );
+                                                    }}
+                                                    role='menuitemradio'
+                                                    type='button'
+                                                >
+                                                    <span>
+                                                        {language.label}
+                                                    </span>
+                                                    {language.value ===
+                                                    loginLanguage ? (
+                                                        <Check
+                                                            aria-hidden='true'
+                                                            size={14}
+                                                        />
+                                                    ) : undefined}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : undefined}
+                                </div>
+
+                                <div className='login-wall__language'>
+                                    <button
+                                        aria-expanded={isThemeMenuOpen}
+                                        aria-haspopup='menu'
+                                        className='login-wall__theme-toggle'
+                                        onClick={() => {
+                                            setIsThemeMenuOpen(
+                                                (current) => !current
+                                            );
+                                            setIsLanguageMenuOpen(false);
+                                        }}
+                                        type='button'
+                                    >
+                                        <SelectedLoginThemeIcon
+                                            aria-hidden='true'
+                                            size={16}
+                                        />
+                                        <span>{selectedLoginTheme.label}</span>
+                                        <ChevronDown
+                                            aria-hidden='true'
+                                            size={14}
+                                        />
+                                    </button>
+
+                                    {isThemeMenuOpen ? (
+                                        <div
+                                            className='login-wall__language-menu'
+                                            role='menu'
+                                        >
+                                            {loginThemes.map((theme) => {
+                                                const ThemeIcon = theme.icon;
+
+                                                return (
+                                                    <button
+                                                        aria-checked={
+                                                            theme.value ===
+                                                            loginTheme
+                                                        }
+                                                        className='login-wall__language-option'
+                                                        key={theme.value}
+                                                        onClick={() => {
+                                                            setLoginTheme(
+                                                                theme.value
+                                                            );
+                                                            setIsThemeMenuOpen(
+                                                                false
+                                                            );
+                                                        }}
+                                                        role='menuitemradio'
+                                                        type='button'
+                                                    >
+                                                        <span>
+                                                            {theme.label}
+                                                        </span>
+                                                        {theme.value ===
+                                                        loginTheme ? (
+                                                            <Check
+                                                                aria-hidden='true'
+                                                                size={14}
+                                                            />
+                                                        ) : (
+                                                            <ThemeIcon
+                                                                aria-hidden='true'
+                                                                size={14}
+                                                            />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : undefined}
+                                </div>
+                            </div>
                             <button
                                 className='login-wall__button login-wall__topbar-login'
                                 onClick={connectGitHub}
@@ -408,23 +567,23 @@ export function App(): JSX.Element {
                                                 </title>
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--blue'
-                                                    d='M140 88 C208 88 230 160 270 200'
+                                                    d='M192 82 C244 82 258 160 316 206'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--red'
-                                                    d='M140 144 C214 144 234 176 270 200'
+                                                    d='M192 158 C250 158 264 184 316 206'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--yellow'
-                                                    d='M140 216 C214 216 234 224 270 200'
+                                                    d='M192 234 C250 234 264 228 316 206'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--green'
-                                                    d='M140 280 C208 280 230 240 270 200'
+                                                    d='M192 310 C244 310 258 252 316 206'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--pink'
-                                                    d='M356 200 C404 200 414 132 472 132'
+                                                    d='M374 206 C424 206 438 206 492 206'
                                                 />
                                                 {loginWallRepositoryNodes.map(
                                                     (
@@ -434,30 +593,30 @@ export function App(): JSX.Element {
                                                         <g
                                                             className='login-wall__mux-repo'
                                                             key={name}
-                                                            transform={`translate(20 ${44 + index * 72})`}
+                                                            transform={`translate(20 ${48 + index * 76})`}
                                                         >
                                                             <rect
-                                                                height='60'
+                                                                height='68'
                                                                 rx='12'
-                                                                width='156'
+                                                                width='172'
                                                             />
                                                             <BookMarked
                                                                 aria-hidden='true'
                                                                 size={18}
                                                                 x={16}
-                                                                y={18}
+                                                                y={25}
                                                             />
                                                             <text
                                                                 className='login-wall__mux-repo-owner'
                                                                 x='44'
-                                                                y='24'
+                                                                y='29'
                                                             >
                                                                 {owner}
                                                             </text>
                                                             <text
                                                                 className='login-wall__mux-repo-name'
                                                                 x='44'
-                                                                y='42'
+                                                                y='48'
                                                             >
                                                                 {name}
                                                             </text>
@@ -466,10 +625,10 @@ export function App(): JSX.Element {
                                                 )}
                                                 <g className='login-wall__mux-hub'>
                                                     <foreignObject
-                                                        height='80'
-                                                        width='80'
-                                                        x='270'
-                                                        y='160'
+                                                        height='96'
+                                                        width='96'
+                                                        x='278'
+                                                        y='158'
                                                     >
                                                         <BrandLogo
                                                             alt=''
@@ -479,27 +638,19 @@ export function App(): JSX.Element {
                                                 </g>
                                                 <g
                                                     className='login-wall__mux-output'
-                                                    transform='translate(472 92)'
+                                                    transform='translate(492 174)'
                                                 >
-                                                    <rect
-                                                        height='72'
-                                                        rx='12'
-                                                        width='116'
-                                                    />
                                                     <foreignObject
-                                                        height='32'
-                                                        width='32'
-                                                        x='16'
-                                                        y='20'
+                                                        height='64'
+                                                        width='64'
+                                                        x='0'
+                                                        y='0'
                                                     >
                                                         <CodexMark
                                                             className='login-wall__mux-codex'
                                                             theme={loginTheme}
                                                         />
                                                     </foreignObject>
-                                                    <text x='62' y='44'>
-                                                        Codex
-                                                    </text>
                                                 </g>
                                             </svg>
                                         </div>
@@ -722,36 +873,56 @@ export function App(): JSX.Element {
                                                     </p>
                                                 </div>
                                                 <div className='login-wall__automation-flow'>
-                                                    <div className='login-wall__automation-issue'>
-                                                        <span className='login-wall__automation-kicker'>
-                                                            Issue
+                                                    <div className='login-wall__automation-issue queue-row'>
+                                                        <span className='queue-row__type'>
+                                                            <CircleDot
+                                                                aria-label='Issue'
+                                                                size={18}
+                                                            />
                                                         </span>
-                                                        <strong>
-                                                            Support Claude in
-                                                            comux
-                                                        </strong>
-                                                        <span className='login-wall__automation-chip'>
-                                                            codex-ready
+                                                        <span className='queue-row__content'>
+                                                            <span className='queue-row__title'>
+                                                                Consider
+                                                                supporting
+                                                                Claude
+                                                            </span>
+                                                            <span className='queue-row__meta'>
+                                                                <span className='queue-row__repo'>
+                                                                    Hsiii/comux
+                                                                </span>
+                                                                <span className='queue-row__number'>
+                                                                    #41
+                                                                </span>
+                                                            </span>
+                                                        </span>
+                                                        <span className='readiness'>
+                                                            <Check
+                                                                aria-label='Codex ready'
+                                                                size={18}
+                                                            />
                                                         </span>
                                                     </div>
-                                                    <div className='login-wall__automation-rail' />
+                                                    <ArrowDown
+                                                        aria-hidden='true'
+                                                        className='login-wall__automation-arrow'
+                                                        size={24}
+                                                    />
                                                     <div className='login-wall__automation-codex'>
                                                         <CodexMark
                                                             className='login-wall__automation-codex-mark'
                                                             theme={loginTheme}
                                                         />
-                                                        <span>Codex</span>
                                                     </div>
-                                                    <div className='login-wall__automation-rail login-wall__automation-rail--result' />
+                                                    <ArrowDown
+                                                        aria-hidden='true'
+                                                        className='login-wall__automation-arrow'
+                                                        size={24}
+                                                    />
                                                     <div className='login-wall__automation-outcome'>
-                                                        <span className='login-wall__automation-outcome-label'>
-                                                            Result
-                                                        </span>
-                                                        <strong className='login-wall__automation-outcome-value'>
-                                                            Review-ready PR
-                                                            linked back to the
-                                                            issue.
-                                                        </strong>
+                                                        <GitPullRequestArrow
+                                                            aria-label='Pull request'
+                                                            size={28}
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
@@ -770,36 +941,30 @@ export function App(): JSX.Element {
                                             </p>
                                         </div>
                                         <div className='login-wall__result-stage'>
-                                            <div className='login-wall__pr-card'>
-                                                <div className='login-wall__pr-icon'>
+                                            <div className='login-wall__pr-card queue-row'>
+                                                <span className='queue-row__type login-wall__pr-icon'>
                                                     <GitPullRequestArrow
-                                                        aria-hidden='true'
-                                                        size={24}
+                                                        aria-label='Pull request'
+                                                        size={22}
                                                     />
-                                                </div>
-                                                <div className='login-wall__pr-copy'>
-                                                    <h3>
-                                                        Redesign landing benefit
-                                                        section
-                                                    </h3>
-                                                    <p>
-                                                        Hsiii/repomux #129
-                                                        opened from issue #128
-                                                    </p>
-                                                    <span>
-                                                        Uses your prompt:
-                                                        multiplexing, queue,
-                                                        automation, PR review.
+                                                </span>
+                                                <span className='queue-row__content login-wall__pr-copy'>
+                                                    <span className='queue-row__title'>
+                                                        Add user menu pop up
                                                     </span>
-                                                </div>
+                                                    <span className='queue-row__meta'>
+                                                        <span className='queue-row__repo'>
+                                                            Hsiii/create-hsi-app
+                                                        </span>
+                                                        <span className='queue-row__number'>
+                                                            #72
+                                                        </span>
+                                                    </span>
+                                                </span>
                                                 <button
                                                     className='login-wall__pr-button'
                                                     type='button'
                                                 >
-                                                    <ExternalLink
-                                                        aria-hidden='true'
-                                                        size={14}
-                                                    />
                                                     Review
                                                 </button>
                                             </div>
@@ -808,118 +973,6 @@ export function App(): JSX.Element {
                                 </div>
                             </div>
                         </section>
-
-                        <footer className='login-wall__footer'>
-                            <div className='login-wall__footer-actions'>
-                                <a
-                                    className='login-wall__footer-link'
-                                    href='https://github.com/Hsiii/LazyHub'
-                                    rel='noreferrer'
-                                    target='_blank'
-                                >
-                                    <GitHubMark className='login-wall__github-icon' />
-                                    <span>GitHub</span>
-                                    <ExternalLink
-                                        aria-hidden='true'
-                                        size={14}
-                                    />
-                                </a>
-
-                                <div className='login-wall__language'>
-                                    <button
-                                        aria-expanded={isLanguageMenuOpen}
-                                        aria-haspopup='menu'
-                                        className='login-wall__language-trigger'
-                                        onClick={() => {
-                                            setIsLanguageMenuOpen(
-                                                (current) => !current
-                                            );
-                                        }}
-                                        type='button'
-                                    >
-                                        <Languages
-                                            aria-hidden='true'
-                                            size={16}
-                                        />
-                                        <span>
-                                            {selectedLoginLanguage.shortLabel}
-                                        </span>
-                                        <ChevronDown
-                                            aria-hidden='true'
-                                            size={14}
-                                        />
-                                    </button>
-
-                                    {isLanguageMenuOpen ? (
-                                        <div
-                                            className='login-wall__language-menu'
-                                            role='menu'
-                                        >
-                                            {loginLanguages.map((language) => (
-                                                <button
-                                                    aria-checked={
-                                                        language.value ===
-                                                        loginLanguage
-                                                    }
-                                                    className='login-wall__language-option'
-                                                    key={language.value}
-                                                    onClick={() => {
-                                                        setLoginLanguage(
-                                                            language.value
-                                                        );
-                                                        setIsLanguageMenuOpen(
-                                                            false
-                                                        );
-                                                    }}
-                                                    role='menuitemradio'
-                                                    type='button'
-                                                >
-                                                    <span>
-                                                        {language.label}
-                                                    </span>
-                                                    {language.value ===
-                                                    loginLanguage ? (
-                                                        <Check
-                                                            aria-hidden='true'
-                                                            size={14}
-                                                        />
-                                                    ) : undefined}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    ) : undefined}
-                                </div>
-
-                                <button
-                                    aria-label={
-                                        loginTheme === 'dark'
-                                            ? 'Switch to light mode'
-                                            : 'Switch to dark mode'
-                                    }
-                                    aria-pressed={loginTheme === 'light'}
-                                    className='login-wall__theme-toggle'
-                                    onClick={() => {
-                                        setLoginTheme((current) =>
-                                            current === 'dark'
-                                                ? 'light'
-                                                : 'dark'
-                                        );
-                                    }}
-                                    type='button'
-                                >
-                                    {loginTheme === 'dark' ? (
-                                        <Sun aria-hidden='true' size={16} />
-                                    ) : (
-                                        <Moon aria-hidden='true' size={16} />
-                                    )}
-                                    <span>
-                                        {loginTheme === 'dark'
-                                            ? 'Light'
-                                            : 'Dark'}
-                                    </span>
-                                </button>
-                            </div>
-                        </footer>
                     </div>
                 </main>
             )}

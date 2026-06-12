@@ -76,7 +76,7 @@
     min-height: auto;
     margin: 0 auto;
     display: grid;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto;
     align-content: start;
     gap: var(--space-16);
 }
@@ -84,11 +84,18 @@
 .login-wall__topbar {
     width: min(100%, var(--size-login-topbar));
     margin: var(--space-4) auto 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    justify-content: space-between;
     gap: var(--space-16);
     padding: 0 var(--space-8);
+}
+
+.login-wall__topbar-controls {
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-12);
 }
 
 .login-wall__wordmark {
@@ -117,6 +124,7 @@
 }
 
 .login-wall__topbar-login {
+    justify-self: end;
     min-height: var(--size-login-topbar-button);
     padding: 0 var(--space-12);
 }
@@ -251,7 +259,7 @@
     stroke-width: 4;
     stroke-dasharray: 280;
     stroke-dashoffset: 280;
-    animation: login-wall-draw 4.8s ease-in-out infinite;
+    animation: login-wall-draw-left 6.8s ease-in-out infinite;
 }
 
 .login-wall__mux-line--blue {
@@ -260,17 +268,17 @@
 
 .login-wall__mux-line--red {
     stroke: var(--clr-login-flow-red);
-    animation-delay: 120ms;
+    animation-delay: 160ms;
 }
 
 .login-wall__mux-line--yellow {
     stroke: var(--clr-login-flow-yellow);
-    animation-delay: 240ms;
+    animation-delay: 320ms;
 }
 
 .login-wall__mux-line--green {
     stroke: var(--clr-login-flow-green);
-    animation-delay: 360ms;
+    animation-delay: 480ms;
 }
 
 .login-wall__mux-line--cyan {
@@ -279,14 +287,15 @@
 }
 
 .login-wall__mux-line--pink {
-    stroke: var(--clr-login-flow-pink);
-    animation-delay: 600ms;
+    stroke: var(--clr-accent);
+    animation-name: login-wall-draw-codex;
+    animation-delay: 0ms;
 }
 
 .login-wall__mux-repo rect,
 .login-wall__mux-output rect {
-    fill: var(--clr-login-control);
-    stroke: var(--clr-login-border);
+    fill: var(--clr-login-card-strong);
+    stroke: var(--clr-login-border-strong);
     stroke-width: var(--size-border-1);
 }
 
@@ -307,16 +316,16 @@
 }
 
 .login-wall__mux-logo {
-    width: var(--space-80);
-    height: var(--space-80);
+    width: calc(var(--space-80) + var(--space-16));
+    height: calc(var(--space-80) + var(--space-16));
     display: block;
     filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
         hue-rotate(204deg) brightness(104%) contrast(97%);
 }
 
 .login-wall__mux-codex {
-    width: var(--space-32);
-    height: var(--space-32);
+    width: var(--space-64);
+    height: var(--space-64);
     display: block;
     color: var(--clr-login-text);
 }
@@ -331,6 +340,12 @@
     overflow: hidden;
 }
 
+.login-wall__feature--queue .login-wall__app-preview {
+    border: 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+
 .work-panel.login-wall__work-panel-preview {
     grid-template-rows: auto auto;
     align-content: start;
@@ -341,7 +356,17 @@
     overflow: visible;
 }
 
+.login-wall__work-panel-preview .work-panel__queue-scroll {
+    overflow: visible;
+    padding-right: 0;
+}
+
+.login-wall__work-panel-preview .queue-row:last-child {
+    border-bottom: 0;
+}
+
 .login-wall__prompt-preview {
+    position: relative;
     min-height: calc(var(--size-login-prompt-compact) + var(--space-24));
     padding: var(--space-16);
     display: grid;
@@ -351,6 +376,18 @@
     line-height: 1.45;
     overflow: hidden;
     background-color: var(--clr-login-control);
+}
+
+.login-wall__prompt-preview::after {
+    content: '';
+    position: absolute;
+    top: var(--space-16);
+    left: var(--space-16);
+    width: var(--size-border-1);
+    height: var(--space-20);
+    background-color: var(--clr-login-text);
+    opacity: 0;
+    animation: login-wall-single-caret 8.8s steps(1, end) infinite;
 }
 
 .login-wall__assign-preview {
@@ -434,28 +471,24 @@
     width: 0;
     max-width: 100%;
     overflow: hidden;
-    border-right: var(--size-border-1) solid transparent;
     color: var(--clr-login-text-muted);
     white-space: nowrap;
     opacity: 0.2;
 }
 
 .login-wall__typing-line--1 {
-    animation:
-        login-wall-type-line-1 8.8s steps(var(--login-wall-step-count)) infinite,
-        login-wall-caret-line-1 920ms steps(1, end) infinite;
+    animation: login-wall-type-line-1 8.8s steps(var(--login-wall-step-count))
+        infinite;
 }
 
 .login-wall__typing-line--2 {
-    animation:
-        login-wall-type-line-2 8.8s steps(var(--login-wall-step-count)) infinite,
-        login-wall-caret-line-2 920ms steps(1, end) infinite;
+    animation: login-wall-type-line-2 8.8s steps(var(--login-wall-step-count))
+        infinite;
 }
 
 .login-wall__typing-line--3 {
-    animation:
-        login-wall-type-line-3 8.8s steps(var(--login-wall-step-count)) infinite,
-        login-wall-caret-line-3 920ms steps(1, end) infinite;
+    animation: login-wall-type-line-3 8.8s steps(var(--login-wall-step-count))
+        infinite;
 }
 
 .login-wall__automation-stage,
@@ -483,20 +516,15 @@
 .login-wall__automation-graphic {
     width: min(100%, 520px);
     display: grid;
-    gap: var(--space-20);
+    gap: var(--space-24);
 }
 
 .login-wall__automation-stage-head {
-    padding: var(--space-20);
-    border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-12);
+    padding: 0;
+    border: 0;
     display: grid;
     gap: var(--space-8);
-    background-color: color-mix(
-        in srgb,
-        var(--clr-login-card) 76%,
-        transparent
-    );
+    background-color: transparent;
 }
 
 .login-wall__automation-stage-label {
@@ -517,13 +545,13 @@
 
 .login-wall__automation-flow {
     display: grid;
-    gap: var(--space-16);
+    justify-items: center;
+    gap: var(--space-12);
 }
 
 .login-wall__automation-issue,
 .login-wall__automation-codex,
 .login-wall__automation-outcome {
-    padding: var(--space-20);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
     background-color: color-mix(
@@ -533,10 +561,10 @@
     );
 }
 
-.login-wall__automation-issue,
-.login-wall__automation-outcome {
-    display: grid;
-    gap: var(--space-8);
+.login-wall__automation-issue.queue-row {
+    width: min(100%, 440px);
+    border-bottom: var(--size-border-1) solid var(--clr-login-border);
+    background-color: var(--clr-login-card);
 }
 
 .login-wall__automation-kicker,
@@ -572,9 +600,11 @@
 }
 
 .login-wall__automation-codex {
-    display: flex;
-    align-items: center;
-    gap: var(--space-16);
+    width: var(--space-72);
+    height: var(--space-72);
+    padding: 0;
+    display: grid;
+    place-items: center;
     border-color: var(--clr-login-border-strong);
     box-shadow: var(--clr-login-shadow);
 }
@@ -586,12 +616,23 @@
 }
 
 .login-wall__automation-outcome {
+    width: var(--space-72);
+    height: var(--space-72);
+    padding: 0;
+    display: grid;
+    place-items: center;
     border: var(--size-border-1) solid var(--clr-login-border-strong);
+    border-radius: var(--radius-pill);
+    color: var(--clr-login-success-text);
     background-color: color-mix(
         in srgb,
         var(--clr-login-accent) 12%,
         var(--clr-login-card)
     );
+}
+
+.login-wall__automation-arrow {
+    color: var(--clr-accent);
 }
 
 .login-wall__automation-outcome-value {
@@ -619,22 +660,19 @@
     gap: var(--space-24);
 }
 
-.login-wall__pr-card {
+.login-wall__pr-card.queue-row {
     position: relative;
     isolation: isolate;
     width: min(100%, var(--size-login-pr-card));
-    min-height: var(--size-login-result-card);
-    padding: var(--space-24);
-    display: grid;
+    min-height: var(--size-row);
     grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--space-16);
     opacity: 0;
+    background-color: var(--clr-login-card);
     animation: login-wall-pr-enter 920ms cubic-bezier(0.18, 0.84, 0.32, 1) 1
         forwards;
 }
 
-.login-wall__pr-card::after {
+.login-wall__pr-card.queue-row::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -650,9 +688,9 @@
 }
 
 .login-wall__pr-icon {
-    width: var(--space-56);
-    height: var(--space-56);
-    border-radius: var(--radius-8);
+    width: var(--space-48);
+    height: var(--space-48);
+    border-radius: var(--radius-pill);
     display: grid;
     place-items: center;
     color: var(--clr-login-success-text);
@@ -665,8 +703,6 @@
     gap: var(--space-4);
 }
 
-.login-wall__pr-copy h3,
-.login-wall__pr-copy p,
 .login-wall__pr-copy span {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -733,28 +769,11 @@
     font: var(--font-body-sm);
 }
 
-.login-wall__footer {
-    width: min(100%, var(--size-login-preview));
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: var(--space-16);
-    padding: var(--space-8) 0;
-    color: var(--clr-login-text-muted);
-    font: var(--font-body-sm);
-}
-
-.login-wall__footer-actions,
 .login-wall__footer-link,
 .login-wall__language-trigger,
 .login-wall__theme-toggle {
     display: inline-flex;
     align-items: center;
-}
-
-.login-wall__footer-actions {
-    gap: var(--space-12);
 }
 
 .login-wall__footer-link,
@@ -844,14 +863,30 @@
     }
 }
 
-@keyframes login-wall-draw {
+@keyframes login-wall-draw-left {
     0%,
-    12% {
+    8% {
         stroke-dashoffset: 280;
     }
 
-    44%,
-    72% {
+    32%,
+    82% {
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-dashoffset: -280;
+    }
+}
+
+@keyframes login-wall-draw-codex {
+    0%,
+    42% {
+        stroke-dashoffset: 280;
+    }
+
+    56%,
+    82% {
         stroke-dashoffset: 0;
     }
 
@@ -902,45 +937,61 @@
     }
 }
 
-@keyframes login-wall-caret-line-1 {
+@keyframes login-wall-single-caret {
     0%,
     8%,
     28%,
-    100% {
-        border-color: transparent;
-    }
-
-    10%,
-    26% {
-        border-color: var(--clr-login-text);
-    }
-}
-
-@keyframes login-wall-caret-line-2 {
-    0%,
     30%,
     56%,
-    100% {
-        border-color: transparent;
-    }
-
-    32%,
-    54% {
-        border-color: var(--clr-login-text);
-    }
-}
-
-@keyframes login-wall-caret-line-3 {
-    0%,
     58%,
     84%,
     100% {
-        border-color: transparent;
+        opacity: 0;
+    }
+
+    10%,
+    16% {
+        opacity: 1;
+        transform: translate(calc(var(--space-64) * 2), 0);
+    }
+
+    18%,
+    26% {
+        opacity: 1;
+        transform: translate(calc(var(--space-80) * 5 + var(--space-32)), 0);
+    }
+
+    32%,
+    40% {
+        opacity: 1;
+        transform: translate(
+            calc(var(--space-80) * 2 + var(--space-8)),
+            var(--space-28)
+        );
+    }
+
+    42%,
+    54% {
+        opacity: 1;
+        transform: translate(
+            calc(var(--space-80) * 6 + var(--space-8)),
+            var(--space-28)
+        );
     }
 
     60%,
+    68% {
+        opacity: 1;
+        transform: translate(calc(var(--space-64) * 3), var(--space-56));
+    }
+
+    70%,
     82% {
-        border-color: var(--clr-login-text);
+        opacity: 1;
+        transform: translate(
+            calc(var(--space-80) * 5 + var(--space-56)),
+            var(--space-56)
+        );
     }
 }
 
@@ -1012,7 +1063,7 @@
 .login-wall__language-menu {
     position: absolute;
     right: 0;
-    bottom: calc(100% + var(--space-8));
+    top: calc(100% + var(--space-8));
     width: 176px;
     padding: var(--space-4);
     border: var(--size-border-1) solid var(--clr-login-border);
@@ -1076,9 +1127,14 @@
         max-width: none;
     }
 
-    .login-wall__footer {
-        align-items: flex-start;
-        flex-direction: column;
+    .login-wall__topbar {
+        grid-template-columns: 1fr auto;
+    }
+
+    .login-wall__topbar-controls {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: center;
     }
 }
 
@@ -1095,8 +1151,9 @@
         padding: var(--space-32) 0 var(--space-16);
     }
 
-    .login-wall__footer-actions {
+    .login-wall__topbar-controls {
         width: 100%;
+        justify-content: center;
         flex-wrap: wrap;
     }
 
