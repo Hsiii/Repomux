@@ -45,7 +45,6 @@ function ensureRepomuxCheckout(repoRoot) {
 async function main() {
     const options = parseArgs(process.argv.slice(2));
     const repoRoot = path.resolve(options.get('repo-root') ?? process.cwd());
-    const codexHome = resolveCodexHome(options.get('codex-home'));
     const appUrl = options.get('app-url') ?? 'http://localhost:5173';
     const worktreeRoot = path.resolve(
         options.get('worktree-root') ?? path.dirname(repoRoot)
@@ -55,18 +54,9 @@ async function main() {
         'codex',
         'repomux-automation.template.md'
     );
-    const promptDir = path.join(codexHome, 'repomux');
-    const promptPath = path.join(promptDir, 'repomux-automation.prompt.md');
-    const installedSkillDir = path.join(
-        codexHome,
-        'skills',
-        'repomux-codex-automation'
-    );
-    const sourceSkillDir = path.join(
-        repoRoot,
-        '.agents',
-        'skills',
-        'repomux-codex-automation'
+    const outputPath = path.resolve(
+        options.get('output') ??
+            path.join(repoRoot, '.codex', 'repomux-automation.prompt.md')
     );
 
     await ensureRepomuxCheckout(repoRoot);
@@ -77,25 +67,20 @@ async function main() {
         .replaceAll('__REPOMUX_REPO_ROOT__', repoRoot)
         .replaceAll('__WORKTREE_ROOT__', worktreeRoot);
 
-    await mkdir(promptDir, { recursive: true });
-    await writeFile(promptPath, renderedTemplate);
-
-    await mkdir(path.dirname(installedSkillDir), { recursive: true });
-    await cp(sourceSkillDir, installedSkillDir, {
-        force: true,
-        recursive: true,
-    });
+    await mkdir(path.dirname(outputPath), { recursive: true });
+    await writeFile(outputPath, renderedTemplate);
 
     process.stdout.write(
         [
-            'Repomux Codex automation installed.',
-            `Prompt: ${promptPath}`,
-            `Skill: ${installedSkillDir}`,
+            'Repomux automation prompt rendered.',
+            `Prompt: ${outputPath}`,
             '',
-            'Next steps:',
-            '1. Open the Codex automation UI.',
-            `2. Paste the prompt from ${promptPath}.`,
-            '3. Use your preferred schedule or run it manually.',
+            'Preferred setup:',
+            '1. In this checkout, ask Codex to set up the Repomux automation.',
+            '2. Let Codex create a suggested automation in the app for review.',
+            '',
+            'Manual fallback:',
+            `- Paste the prompt from ${outputPath} into a Codex automation yourself.`,
         ].join('\n')
     );
 }
