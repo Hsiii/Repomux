@@ -1,28 +1,43 @@
 ---
 name: repomux-codex-automation
-description: Use when a user wants to install, refresh, inspect, or customize the reusable Codex automation prompt for Repomux in their own Codex setup.
+description: Use when a user wants Codex to create, update, or inspect a Repomux automation in the Codex app for the current checkout.
 ---
 
 # Repomux Codex automation
 
-Use this skill when the user wants a local Codex automation that can pick up Repomux work without hardcoded personal paths or one-off prompt text.
+Use this skill when the user wants the native Codex automation flow for Repomux instead of a manual copy-paste setup.
 
-## Workflow
+## Default approach
 
-1. Locate a Repomux checkout.
-   The checkout must contain `scripts/setup-repomux-codex-automation.mjs`.
-2. Run the installer from that checkout:
-   `bun scripts/setup-repomux-codex-automation.mjs`
-3. Only add flags when needed:
-    - `--app-url <url>` when Repomux is not running at `http://localhost:5173`
-    - `--worktree-root <absolute-path>` when target repositories should live somewhere other than the parent of the Repomux checkout
-    - `--codex-home <absolute-path>` when `CODEX_HOME` or `~/.codex` should not be used
-    - `--repo-root <absolute-path>` when the installer is launched outside the Repomux checkout
-4. Tell the user where the generated prompt file and installed skill were written.
-5. Tell the user to paste the generated prompt into a Codex automation.
+1. Read `codex/repomux-automation.template.md`.
+2. Replace the template placeholders with the current checkout values:
+    - `__REPOMUX_APP_URL__`: default `http://localhost:5173` unless the user provides another URL
+    - `__REPOMUX_REPO_ROOT__`: the absolute path of the current Repomux checkout
+    - `__WORKTREE_ROOT__`: default to the parent directory of the Repomux checkout unless the user provides another path
+3. Use `codex_app.automation_update` to create or update a cron automation.
+4. Prefer `mode=suggested_create` or `mode=suggested_update` so the user can review the automation in the app before saving it.
 
-## Customization
+## Automation defaults
 
-- The reusable prompt template lives at `codex/repomux-automation.template.md` in the Repomux checkout.
-- Re-run the installer after editing the template so the generated prompt stays in sync.
-- If the user wants different queue-selection rules, change the template instead of editing a single user's local prompt by hand.
+- `kind`: `cron`
+- `executionEnvironment`: `local`
+- `cwds`: the current Repomux checkout
+- `reasoningEffort`: `medium`
+- `model`: omit unless the user explicitly asks for one
+- `status`: `ACTIVE` unless the user asks to start paused
+- `name`: `Repomux Queue`
+
+## Prompt requirements
+
+- Keep the automation prompt self-sufficient.
+- Do not include schedule details in the prompt text.
+- Tell the automation to process at most one item per run.
+- Keep the GitHub comment and validation reporting requirements from the template.
+
+## Fallback
+
+If the user explicitly wants a manual prompt file instead of native automation creation, run:
+
+`bun scripts/setup-repomux-codex-automation.mjs`
+
+That fallback should not be the default recommendation.

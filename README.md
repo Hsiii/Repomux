@@ -35,7 +35,7 @@ Run the full local check:
 bun run check
 ```
 
-Install the reusable Codex automation files for this checkout:
+Render the fallback Codex automation prompt for this checkout:
 
 ```bash
 bun run setup:codex
@@ -68,12 +68,20 @@ If you only need public repositories, set `VITE_GITHUB_OAUTH_SCOPE=public_repo`.
 
 ## Codex Automation
 
-Repomux now ships a reusable automation template instead of a single-user prompt.
+Repomux now ships a reusable automation template and a repo-local skill for native Codex automation setup.
 
-Run `bun run setup:codex` from your Repomux checkout to:
+Preferred setup:
 
-- install the `repomux-codex-automation` skill into `CODEX_HOME` or `~/.codex`
-- generate a local prompt file at `~/.codex/repomux/repomux-automation.prompt.md`
+1. Open this Repomux checkout in Codex.
+2. Ask Codex to set up the Repomux automation for you.
+3. Codex should create a suggested in-app automation for review instead of asking you to copy a prompt by hand.
+
+The repo-local skill at [.agents/skills/repomux-codex-automation/SKILL.md](.agents/skills/repomux-codex-automation/SKILL.md) tells Codex to use the native automation flow and prefill the current checkout path, worktree root, and Repomux URL.
+
+Manual fallback:
+
+- Run `bun run setup:codex` to render a prompt file at `.codex/repomux-automation.prompt.md` inside the checkout.
+- Paste that rendered prompt into a Codex automation only if you do not want Codex to create the automation directly.
 
 By default the generated prompt assumes:
 
