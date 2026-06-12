@@ -147,6 +147,12 @@ input:disabled {
     width: var(--size-login-mark);
     height: var(--size-login-mark);
     flex: 0 0 auto;
+    filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
+        hue-rotate(204deg) brightness(104%) contrast(97%);
+}
+
+.login-wall--light .login-wall__wordmark-mark {
+    filter: brightness(0);
 }
 
 .login-wall__wordmark-text {
