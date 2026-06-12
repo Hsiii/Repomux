@@ -3,17 +3,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
+    Bot,
     Check,
     ChevronDown,
     CircleArrowUp,
     CircleDot,
-    CircleDotDashed,
     ExternalLink,
     GitBranch,
     GitPullRequestArrow,
     Languages,
     MessageSquareText,
     Moon,
+    Settings,
     Sun,
 } from 'lucide-react';
 
@@ -33,6 +34,7 @@ import { supabase } from '../lib/supabase.js';
 import type { Repository, WorkItem } from '../types/app.js';
 import { BrandLogo } from './brand-logo.js';
 import { RepositorySidebar } from './repository-sidebar.js';
+import type { WorkFilter } from './repository-sidebar.js';
 import { WorkPanel } from './work-panel.js';
 
 export function App(): JSX.Element {
@@ -40,8 +42,9 @@ export function App(): JSX.Element {
     const [activeRepositoryNames, setActiveRepositoryNames] = useState<
         readonly string[] | undefined
     >(getStoredActiveRepositories);
-    const [includeUnassignedIssues, setIncludeUnassignedIssues] =
-        useState(true);
+    const [workFilter, setWorkFilter] = useState<WorkFilter>(
+        'assigned-or-unassigned'
+    );
     const [selectedItem, setSelectedItem] = useState(
         supabase === undefined ? mockWorkItems[0] : undefined
     );
@@ -52,6 +55,7 @@ export function App(): JSX.Element {
     const [loginTheme, setLoginTheme] = useState<'dark' | 'light'>('dark');
     const [loginLanguage, setLoginLanguage] = useState('en');
     const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+    const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
 
     const {
         connectGitHub,
@@ -136,11 +140,18 @@ export function App(): JSX.Element {
             return true;
         }
 
+        if (workFilter === 'all') {
+            return true;
+        }
+
         if (item.assigneeLogins.includes(githubLogin)) {
             return true;
         }
 
-        return includeUnassignedIssues && item.assigneeLogins.length === 0;
+        return (
+            workFilter === 'assigned-or-unassigned' &&
+            item.assigneeLogins.length === 0
+        );
     });
 
     const selectedPrompt =
@@ -230,7 +241,7 @@ export function App(): JSX.Element {
     const isGitHubConnected = githubToken.trim() !== '';
     const loginWallBenefits = [
         {
-            icon: CircleDotDashed,
+            icon: CircleDot,
             label: 'See the queue',
             value: 'Issues and PRs from the repos you maintain.',
         },
@@ -242,7 +253,7 @@ export function App(): JSX.Element {
         {
             icon: GitPullRequestArrow,
             label: 'Review the result',
-            value: 'Return to PRs ready for a focused pass.',
+            value: 'Step away and come back when Codex has a PR ready.',
         },
     ] as const;
     const loginWallPreviewItems = [
@@ -278,36 +289,58 @@ export function App(): JSX.Element {
     const selectedLoginLanguage =
         loginLanguages.find((language) => language.value === loginLanguage) ??
         loginLanguages[0];
+    const loginPreviewAvatar = 'https://github.com/Hsiii.png';
+
+    function setupAutomation() {
+        setStatusMessage(
+            'Automation setup starts from the Codex-ready GitHub automation prompt.'
+        );
+        setIsSettingsMenuOpen(false);
+    }
 
     return (
         <>
             {isGitHubConnected ? (
-                <main className='app-shell'>
+                <main className={`app-shell app-shell--${loginTheme}`}>
                     <RepositorySidebar
                         filteredRepositories={filteredRepositories}
                         githubToken={githubToken}
                         githubUser={githubUserQuery.data}
                         hasGitHubError={githubUserQuery.isError}
+                        isSettingsMenuOpen={isSettingsMenuOpen}
+                        language={loginLanguage}
                         onConnectGitHub={connectGitHub}
                         onDisconnectGitHub={disconnectGitHub}
                         onSelectRepository={selectRepository}
+                        onSetLanguage={setLoginLanguage}
+                        onSetupAutomation={setupAutomation}
+                        onToggleSettingsMenu={() => {
+                            setIsSettingsMenuOpen((current) => !current);
+                        }}
+                        onToggleTheme={() => {
+                            setLoginTheme((current) =>
+                                current === 'dark' ? 'light' : 'dark'
+                            );
+                        }}
                         onUpdateRepositorySearchQuery={setRepositorySearchQuery}
+                        onUpdateWorkFilter={(filter) => {
+                            setWorkFilter(filter);
+                            setIsSettingsMenuOpen(false);
+                        }}
                         repositorySearchQuery={repositorySearchQuery}
                         selectedRepositoryNames={effectiveActiveRepositoryNames}
+                        theme={loginTheme}
+                        workFilter={workFilter}
                     />
 
                     <WorkPanel
                         filteredWorkItems={filteredWorkItems}
                         githubToken={githubToken}
-                        includeUnassignedIssues={includeUnassignedIssues}
                         isAssigning={assignMutation.isPending}
                         onAssign={() => {
                             assignMutation.mutate(undefined);
                         }}
                         onSelectItem={selectItem}
-                        onUpdateIncludeUnassignedIssues={
-                            setIncludeUnassignedIssues
-                        }
                         onUpdatePrompt={updatePrompt}
                         selectedItem={selectedItem}
                         selectedPrompt={selectedPrompt}
@@ -422,7 +455,7 @@ export function App(): JSX.Element {
                                                                 </span>
                                                                 <span className='repo-row__label'>
                                                                     <span className='repo-row__owner'>
-                                                                        hsi
+                                                                        Hsiii
                                                                     </span>
                                                                     <span className='repo-row__slash'>
                                                                         /
@@ -445,7 +478,7 @@ export function App(): JSX.Element {
                                                                 </span>
                                                                 <span className='repo-row__label'>
                                                                     <span className='repo-row__owner'>
-                                                                        hsi
+                                                                        Hsiii
                                                                     </span>
                                                                     <span className='repo-row__slash'>
                                                                         /
@@ -468,7 +501,7 @@ export function App(): JSX.Element {
                                                                 </span>
                                                                 <span className='repo-row__label'>
                                                                     <span className='repo-row__owner'>
-                                                                        hsi
+                                                                        Hsiii
                                                                     </span>
                                                                     <span className='repo-row__slash'>
                                                                         /
@@ -482,19 +515,23 @@ export function App(): JSX.Element {
                                                     </div>
 
                                                     <div className='repo-user-card'>
-                                                        <span className='repo-user-card__mark'>
-                                                            HS
-                                                        </span>
+                                                        <img
+                                                            alt=''
+                                                            className='repo-user-card__avatar'
+                                                            src={
+                                                                loginPreviewAvatar
+                                                            }
+                                                        />
                                                         <div className='repo-user-card__main'>
                                                             <span className='repo-user-card__name'>
-                                                                Hsi
+                                                                Hsiii (Hsi)
                                                             </span>
                                                             <span className='repo-user-card__meta'>
-                                                                @hsi
+                                                                @Hsiii
                                                             </span>
                                                         </div>
                                                         <span className='repo-user-card__icon-button'>
-                                                            <Check
+                                                            <Settings
                                                                 aria-hidden='true'
                                                                 size={16}
                                                             />
@@ -508,18 +545,6 @@ export function App(): JSX.Element {
                                                     <h2 className='work-title'>
                                                         Work queue
                                                     </h2>
-                                                    <div className='work-filters'>
-                                                        <span className='work-filter work-filter--check'>
-                                                            <input
-                                                                checked
-                                                                readOnly
-                                                                type='checkbox'
-                                                            />
-                                                            <span>
-                                                                Unassigned
-                                                            </span>
-                                                        </span>
-                                                    </div>
                                                 </div>
 
                                                 <div className='queue-list'>
@@ -642,12 +667,12 @@ export function App(): JSX.Element {
 
                                     <section className='login-wall__automation'>
                                         <div className='login-wall__section-heading'>
-                                            <h2>
-                                                Add prompt. Codex picks it up.
-                                            </h2>
+                                            <h2>Let Codex picks it up.</h2>
                                             <p>
-                                                Repomux keeps context, prompts,
-                                                and review state in one queue.
+                                                Turn the queue into a
+                                                Codex-ready automation so work
+                                                keeps moving after you step
+                                                away.
                                             </p>
                                         </div>
                                         <button
@@ -655,7 +680,8 @@ export function App(): JSX.Element {
                                             onClick={connectGitHub}
                                             type='button'
                                         >
-                                            Connect GitHub
+                                            <Bot aria-hidden='true' size={16} />
+                                            Set up automation
                                             <ArrowRight
                                                 aria-hidden='true'
                                                 size={16}

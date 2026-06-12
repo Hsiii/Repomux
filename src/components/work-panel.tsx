@@ -12,11 +12,9 @@ import type { WorkItem } from '../types/app.js';
 interface WorkPanelProps {
     filteredWorkItems: readonly WorkItem[];
     githubToken: string;
-    includeUnassignedIssues: boolean;
     isAssigning: boolean;
     onAssign: () => void;
     onSelectItem: (item: Readonly<WorkItem> | undefined) => void;
-    onUpdateIncludeUnassignedIssues: (checked: boolean) => void;
     onUpdatePrompt: (value: string) => void;
     selectedItem: Readonly<WorkItem> | undefined;
     selectedPrompt: string;
@@ -67,35 +65,14 @@ function WorkQueueRow(props: {
 
 function WorkQueue(props: {
     filteredWorkItems: readonly WorkItem[];
-    includeUnassignedIssues: boolean;
     onSelectItem: (item: Readonly<WorkItem>) => void;
-    onUpdateIncludeUnassignedIssues: (checked: boolean) => void;
 }): JSX.Element {
-    const {
-        filteredWorkItems,
-        includeUnassignedIssues,
-        onSelectItem,
-        onUpdateIncludeUnassignedIssues,
-    } = props;
+    const { filteredWorkItems, onSelectItem } = props;
 
     return (
         <>
             <div className='work-panel__header'>
                 <h2 className='work-title'>Work queue</h2>
-                <div className='work-filters'>
-                    <label className='work-filter work-filter--check'>
-                        <input
-                            checked={includeUnassignedIssues}
-                            onChange={(event) => {
-                                onUpdateIncludeUnassignedIssues(
-                                    event.target.checked
-                                );
-                            }}
-                            type='checkbox'
-                        />
-                        <span>Unassigned</span>
-                    </label>
-                </div>
             </div>
 
             <div
@@ -219,11 +196,9 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
     const {
         filteredWorkItems,
         githubToken,
-        includeUnassignedIssues,
         isAssigning,
         onAssign,
         onSelectItem,
-        onUpdateIncludeUnassignedIssues,
         onUpdatePrompt,
         selectedItem,
         selectedPrompt,
@@ -235,13 +210,9 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
             {selectedItem === undefined ? (
                 <WorkQueue
                     filteredWorkItems={filteredWorkItems}
-                    includeUnassignedIssues={includeUnassignedIssues}
                     onSelectItem={(item) => {
                         onSelectItem(item);
                     }}
-                    onUpdateIncludeUnassignedIssues={
-                        onUpdateIncludeUnassignedIssues
-                    }
                 />
             ) : (
                 <WorkDetail

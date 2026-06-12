@@ -1,20 +1,51 @@
 import type { JSX } from 'react';
-import { GitBranch, LogOut } from 'lucide-react';
+import {
+    Bot,
+    Check,
+    GitBranch,
+    Languages,
+    LogOut,
+    Moon,
+    Settings,
+    Sun,
+} from 'lucide-react';
 
 import type { GitHubUser, Repository } from '../types/app.js';
+
+export type WorkFilter = 'assigned' | 'assigned-or-unassigned' | 'all';
 
 interface RepositorySidebarProps {
     filteredRepositories: readonly Repository[];
     githubToken: string;
     githubUser: GitHubUser | undefined;
     hasGitHubError: boolean;
+    isSettingsMenuOpen: boolean;
+    language: string;
     onConnectGitHub: () => void;
     onDisconnectGitHub: () => void;
+    onSetLanguage: (language: string) => void;
+    onSetupAutomation: () => void;
     onSelectRepository: (repository: Readonly<Repository>) => void;
+    onToggleSettingsMenu: () => void;
+    onToggleTheme: () => void;
     onUpdateRepositorySearchQuery: (value: string) => void;
+    onUpdateWorkFilter: (filter: WorkFilter) => void;
     repositorySearchQuery: string;
     selectedRepositoryNames: readonly string[];
+    theme: 'dark' | 'light';
+    workFilter: WorkFilter;
 }
+
+const workFilterOptions = [
+    { label: 'Assigned to me', value: 'assigned' },
+    { label: 'Include unassigned', value: 'assigned-or-unassigned' },
+    { label: 'All work', value: 'all' },
+] as const;
+
+const languageOptions = [
+    { label: 'English', value: 'en' },
+    { label: 'Chinese', value: 'zh' },
+] as const;
 
 export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
     const {
@@ -22,12 +53,21 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
         githubToken,
         githubUser,
         hasGitHubError,
+        isSettingsMenuOpen,
+        language,
         onConnectGitHub,
         onDisconnectGitHub,
+        onSetLanguage,
+        onSetupAutomation,
         onSelectRepository,
+        onToggleSettingsMenu,
+        onToggleTheme,
         onUpdateRepositorySearchQuery,
+        onUpdateWorkFilter,
         repositorySearchQuery,
         selectedRepositoryNames,
+        theme,
+        workFilter,
     } = props;
 
     function renderRepositoryName(fullName: string) {
@@ -45,6 +85,35 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                 )}
             </>
         );
+    }
+
+    function renderGitHubDisplayName() {
+        if (githubUser?.login === undefined) {
+            return 'GitHub';
+        }
+
+        if (
+            githubUser.name === undefined ||
+            githubUser.name === null ||
+            githubUser.name === '' ||
+            githubUser.name === githubUser.login
+        ) {
+            return githubUser.login;
+        }
+
+        return `${githubUser.login} (${githubUser.name})`;
+    }
+
+    function renderGitHubMeta() {
+        if (hasGitHubError) {
+            return 'Auth needs attention';
+        }
+
+        if (githubUser?.login === undefined) {
+            return 'Connected';
+        }
+
+        return `@${githubUser.login}`;
     }
 
     let repoContent: JSX.Element;
@@ -157,24 +226,131 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                         <>
                             <div className='repo-user-card__main'>
                                 <span className='repo-user-card__name'>
-                                    {githubUser?.name ??
-                                        githubUser?.login ??
-                                        'GitHub'}
+                                    {renderGitHubDisplayName()}
                                 </span>
                                 <span className='repo-user-card__meta'>
-                                    {hasGitHubError
-                                        ? 'Auth needs attention'
-                                        : (githubUser?.login ?? 'Connected')}
+                                    {renderGitHubMeta()}
                                 </span>
                             </div>
                             <button
-                                aria-label='Disconnect GitHub'
+                                aria-expanded={isSettingsMenuOpen}
+                                aria-haspopup='menu'
+                                aria-label='Open settings'
                                 className='repo-user-card__icon-button'
-                                onClick={onDisconnectGitHub}
+                                onClick={onToggleSettingsMenu}
                                 type='button'
                             >
-                                <LogOut aria-hidden='true' size={18} />
+                                <Settings aria-hidden='true' size={18} />
                             </button>
+                            {isSettingsMenuOpen ? (
+                                <div
+                                    className='repo-user-card__settings-menu'
+                                    role='menu'
+                                >
+                                    <button
+                                        className='repo-user-card__settings-item'
+                                        onClick={onSetupAutomation}
+                                        role='menuitem'
+                                        type='button'
+                                    >
+                                        <Bot aria-hidden='true' size={16} />
+                                        <span>Set up automation</span>
+                                    </button>
+
+                                    <div className='repo-user-card__settings-group'>
+                                        <span className='repo-user-card__settings-label'>
+                                            Queue filter
+                                        </span>
+                                        {workFilterOptions.map((option) => (
+                                            <button
+                                                aria-checked={
+                                                    option.value === workFilter
+                                                }
+                                                className='repo-user-card__settings-item'
+                                                key={option.value}
+                                                onClick={() => {
+                                                    onUpdateWorkFilter(
+                                                        option.value
+                                                    );
+                                                }}
+                                                role='menuitemradio'
+                                                type='button'
+                                            >
+                                                <span>{option.label}</span>
+                                                {option.value === workFilter ? (
+                                                    <Check
+                                                        aria-hidden='true'
+                                                        size={14}
+                                                    />
+                                                ) : undefined}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        className='repo-user-card__settings-item'
+                                        onClick={onToggleTheme}
+                                        role='menuitem'
+                                        type='button'
+                                    >
+                                        {theme === 'dark' ? (
+                                            <Sun aria-hidden='true' size={16} />
+                                        ) : (
+                                            <Moon
+                                                aria-hidden='true'
+                                                size={16}
+                                            />
+                                        )}
+                                        <span>
+                                            {theme === 'dark'
+                                                ? 'Light mode'
+                                                : 'Dark mode'}
+                                        </span>
+                                    </button>
+
+                                    <div className='repo-user-card__settings-group'>
+                                        <span className='repo-user-card__settings-label'>
+                                            Language
+                                        </span>
+                                        {languageOptions.map((option) => (
+                                            <button
+                                                aria-checked={
+                                                    option.value === language
+                                                }
+                                                className='repo-user-card__settings-item'
+                                                key={option.value}
+                                                onClick={() => {
+                                                    onSetLanguage(option.value);
+                                                }}
+                                                role='menuitemradio'
+                                                type='button'
+                                            >
+                                                <Languages
+                                                    aria-hidden='true'
+                                                    size={16}
+                                                />
+                                                <span>{option.label}</span>
+                                                {option.value === language ? (
+                                                    <Check
+                                                        aria-hidden='true'
+                                                        size={14}
+                                                    />
+                                                ) : undefined}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        className='repo-user-card__settings-item'
+                                        onClick={onDisconnectGitHub}
+                                        role='menuitem'
+                                        type='button'
+                                    >
+                                        <LogOut aria-hidden='true' size={16} />
+                                        <span>Log out</span>
+                                    </button>
+                                </div>
+                            ) : undefined}
                         </>
                     )}
                 </div>

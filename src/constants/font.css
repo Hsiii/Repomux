@@ -52,9 +52,11 @@
     --size-login-mark: 40px;
     --size-login-preview-sidebar: 168px;
     --size-login-preview: 1088px;
+    --size-login-topbar: 1080px;
     --size-login-preview-height: 560px;
     --size-login-prompt-preview: 160px;
     --size-login-topbar-button: 36px;
+    --size-settings-menu: 248px;
     --size-assign-button: 176px;
     --size-repo-add-button: 44px;
     --size-repo-row: 44px;
