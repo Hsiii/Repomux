@@ -93,7 +93,7 @@ function WorkQueue(props: {
                             }}
                             type='checkbox'
                         />
-                        <span>Include unassigned</span>
+                        <span>Unassigned</span>
                     </label>
                 </div>
             </div>
@@ -106,9 +106,7 @@ function WorkQueue(props: {
                 }
             >
                 {filteredWorkItems.length === 0 ? (
-                    <p className='empty-state'>
-                        No open issues or pull requests found.
-                    </p>
+                    <p className='empty-state'>No open work found.</p>
                 ) : (
                     filteredWorkItems.map((item) => (
                         <WorkQueueRow
@@ -183,12 +181,12 @@ function WorkDetail(props: {
 
             <div className='issue-body'>
                 {selectedItem.body === ''
-                    ? 'No body provided.'
+                    ? 'No description.'
                     : selectedItem.body}
             </div>
 
             <label className='prompt-label' htmlFor='prompt'>
-                Prompt / context
+                Prompt
             </label>
             <textarea
                 className='prompt-input'
@@ -196,7 +194,7 @@ function WorkDetail(props: {
                 onChange={(event) => {
                     onUpdatePrompt(event.target.value);
                 }}
-                placeholder='Add any additional context or instructions for Codex...'
+                placeholder='Add intent, constraints, and acceptance criteria.'
                 value={selectedPrompt}
             />
 
@@ -210,7 +208,7 @@ function WorkDetail(props: {
                 onClick={onAssign}
                 type='button'
             >
-                <span>{isAssigning ? 'Assigning' : 'Assign to Codex'}</span>
+                <span>{isAssigning ? 'Assigning...' : 'Assign to Codex'}</span>
                 <CircleArrowUp aria-hidden='true' size={20} />
             </button>
         </article>

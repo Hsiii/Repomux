@@ -154,7 +154,7 @@ export function App(): JSX.Element {
             await assignToCodex(selectedItem, selectedPrompt, githubToken);
         },
         onSuccess: () => {
-            setStatusMessage('Assigned to Codex.');
+            setStatusMessage('Queued for Codex.');
             setSelectedItem(undefined);
             workItemsQuery.refetch().catch((error: unknown) => {
                 setStatusMessage(
@@ -229,22 +229,22 @@ export function App(): JSX.Element {
     const isGitHubConnected = githubToken.trim() !== '';
     const loginWallBenefits = [
         {
-            detail: 'Repository context',
+            detail: 'Clarity',
             icon: GitBranch,
-            label: 'Connect the work',
-            value: 'Pull issues and PRs from the repos you actively maintain.',
+            label: 'See the queue',
+            value: 'Issues and PRs from the repos you maintain.',
         },
         {
-            detail: 'Prompt handoff',
+            detail: 'Pragmatism',
             icon: MessageSquareText,
-            label: 'Add intent once',
-            value: 'Turn scattered tickets into clear instructions Codex can execute.',
+            label: 'Add intent',
+            value: 'Scope the work before Codex starts.',
         },
         {
-            detail: 'Async review loop',
+            detail: 'Rigor',
             icon: GitPullRequestArrow,
-            label: 'Review the return',
-            value: 'Come back to pull requests, follow up, or send the work around again.',
+            label: 'Review the result',
+            value: 'Return to PRs ready for a focused pass.',
         },
     ] as const;
     const loginWallPreviewItems = [
@@ -253,7 +253,7 @@ export function App(): JSX.Element {
             meta: 'Hsiii/repomux',
             number: 128,
             status: 'Ready',
-            title: 'Queue GitHub issues by maintainer intent',
+            title: 'Clarify issue scope',
             type: 'issue',
         },
         {
@@ -261,7 +261,7 @@ export function App(): JSX.Element {
             meta: 'Prompt added',
             number: 124,
             status: 'Prepared',
-            title: 'Explain acceptance criteria before execution',
+            title: 'Confirm acceptance criteria',
             type: 'issue',
         },
         {
@@ -269,7 +269,7 @@ export function App(): JSX.Element {
             meta: 'Codex run',
             number: 72,
             status: 'Assigned',
-            title: 'Ship a focused implementation pass',
+            title: 'Ship the implementation',
             type: 'pr',
         },
     ] as const;
@@ -342,7 +342,7 @@ export function App(): JSX.Element {
                                 >
                                     <path d='M12 .5C5.65.5.5 5.65.5 12A11.5 11.5 0 0 0 8.36 22.1c.58.1.79-.25.79-.56v-2.17c-3.18.69-3.85-1.35-3.85-1.35-.52-1.31-1.27-1.66-1.27-1.66-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.33.96.1-.74.4-1.25.72-1.54-2.54-.29-5.22-1.27-5.22-5.64 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.19 1.18a11.1 11.1 0 0 1 5.82 0c2.22-1.49 3.19-1.18 3.19-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.38-2.68 5.34-5.24 5.63.41.35.78 1.03.78 2.08v3.08c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z' />
                                 </svg>
-                                <span>Log in</span>
+                                <span>Connect</span>
                             </button>
                         </header>
 
@@ -372,7 +372,7 @@ export function App(): JSX.Element {
                                     >
                                         <path d='M12 .5C5.65.5.5 5.65.5 12A11.5 11.5 0 0 0 8.36 22.1c.58.1.79-.25.79-.56v-2.17c-3.18.69-3.85-1.35-3.85-1.35-.52-1.31-1.27-1.66-1.27-1.66-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.33.96.1-.74.4-1.25.72-1.54-2.54-.29-5.22-1.27-5.22-5.64 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.19 1.18a11.1 11.1 0 0 1 5.82 0c2.22-1.49 3.19-1.18 3.19-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.38-2.68 5.34-5.24 5.63.41.35.78 1.03.78 2.08v3.08c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z' />
                                     </svg>
-                                    <span>Continue with GitHub</span>
+                                    <span>Connect GitHub</span>
                                     <ArrowRight aria-hidden='true' size={16} />
                                 </button>
 
@@ -394,7 +394,7 @@ export function App(): JSX.Element {
                                                 <span />
                                             </div>
                                             <span className='login-wall__product-path'>
-                                                real app surface / work queue
+                                                work queue
                                             </span>
                                         </div>
 
@@ -409,8 +409,7 @@ export function App(): JSX.Element {
                                                                 </h2>
                                                             </div>
                                                             <div className='modal-input repo-search-input login-wall__search-preview'>
-                                                                Find a
-                                                                repository...
+                                                                Find repo...
                                                             </div>
                                                         </div>
 
@@ -593,14 +592,12 @@ export function App(): JSX.Element {
 
                                                 <div className='login-wall__detail-preview'>
                                                     <label className='prompt-label'>
-                                                        Prompt / context
+                                                        Prompt
                                                     </label>
                                                     <div className='prompt-input login-wall__prompt-preview'>
-                                                        Preserve the current
-                                                        auth flow, add the
-                                                        missing review state,
-                                                        and include a smoke
-                                                        check.
+                                                        Keep auth flow. Add
+                                                        review state. Run a
+                                                        smoke check.
                                                     </div>
                                                     <div className='assign-button login-wall__assign-preview'>
                                                         <span>
@@ -660,31 +657,23 @@ export function App(): JSX.Element {
                                     <section className='login-wall__automation'>
                                         <div className='login-wall__section-heading'>
                                             <span className='login-wall__benefit-detail'>
-                                                Codex automation
+                                                Codex queue
                                             </span>
                                             <h2>
-                                                Prompt work here, then let the
-                                                automation pick it up.
+                                                Add intent. Codex picks it up.
                                             </h2>
                                             <p>
-                                                Repomux is the workspace where
-                                                maintainers add the intent Codex
-                                                needs. The automation watches
-                                                that prompted queue and starts
-                                                work from the items you prepared
-                                                here.
+                                                Repomux keeps context, prompts,
+                                                and review state in one queue.
                                             </p>
                                         </div>
                                         <div className='login-wall__automation-flow'>
                                             <div className='login-wall__automation-copy-card'>
                                                 <span className='login-wall__benefit-detail'>
-                                                    Workspace queue
+                                                    Prepared work
                                                 </span>
                                                 <p>
-                                                    Issues and PRs become
-                                                    automation candidates only
-                                                    after you add the prompt and
-                                                    context in Repomux.
+                                                    Add scope before execution.
                                                 </p>
                                             </div>
                                             <ArrowRight
@@ -697,10 +686,8 @@ export function App(): JSX.Element {
                                                     Codex run
                                                 </span>
                                                 <p>
-                                                    The automation pulls from
-                                                    that prepared work queue and
-                                                    sends Codex the exact intent
-                                                    you captured.
+                                                    Codex gets the prepared
+                                                    issue and returns a PR.
                                                 </p>
                                             </div>
                                         </div>
@@ -709,7 +696,7 @@ export function App(): JSX.Element {
                                             onClick={connectGitHub}
                                             type='button'
                                         >
-                                            Connect GitHub and prepare work
+                                            Connect GitHub
                                             <ArrowRight
                                                 aria-hidden='true'
                                                 size={16}

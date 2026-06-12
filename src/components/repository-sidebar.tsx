@@ -53,16 +53,14 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
         repoContent = (
             <div className='repo-panel__empty-state'>
                 <p className='repo-panel__message'>
-                    Connect GitHub to load your repositories.
+                    Connect GitHub to load repos.
                 </p>
             </div>
         );
     } else if (filteredRepositories.length === 0) {
         repoContent = (
             <div className='repo-panel__empty-state'>
-                <p className='repo-panel__message'>
-                    No repositories match that search.
-                </p>
+                <p className='repo-panel__message'>No matching repos.</p>
             </div>
         );
     } else {
@@ -106,14 +104,14 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                         </div>
 
                         <input
-                            aria-label='Find a repository'
+                            aria-label='Find repo'
                             className='modal-input repo-search-input'
                             onChange={(event) => {
                                 onUpdateRepositorySearchQuery(
                                     event.target.value
                                 );
                             }}
-                            placeholder='Find a repository...'
+                            placeholder='Find repo...'
                             type='search'
                             value={repositorySearchQuery}
                         />
@@ -165,12 +163,12 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                                 </span>
                                 <span className='repo-user-card__meta'>
                                     {hasGitHubError
-                                        ? 'Token needs attention'
+                                        ? 'Auth needs attention'
                                         : (githubUser?.login ?? 'Connected')}
                                 </span>
                             </div>
                             <button
-                                aria-label='Log out of GitHub'
+                                aria-label='Disconnect GitHub'
                                 className='repo-user-card__icon-button'
                                 onClick={onDisconnectGitHub}
                                 type='button'
