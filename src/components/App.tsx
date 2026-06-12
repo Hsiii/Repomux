@@ -7,6 +7,7 @@ import {
     ChevronDown,
     CircleArrowUp,
     CircleDot,
+    CircleDotDashed,
     ExternalLink,
     GitBranch,
     GitPullRequestArrow,
@@ -229,19 +230,16 @@ export function App(): JSX.Element {
     const isGitHubConnected = githubToken.trim() !== '';
     const loginWallBenefits = [
         {
-            detail: 'Clarity',
-            icon: GitBranch,
+            icon: CircleDotDashed,
             label: 'See the queue',
             value: 'Issues and PRs from the repos you maintain.',
         },
         {
-            detail: 'Pragmatism',
             icon: MessageSquareText,
-            label: 'Add intent',
-            value: 'Scope the work before Codex starts.',
+            label: 'Prompt the work',
+            value: 'Add scope, constraints, and acceptance criteria.',
         },
         {
-            detail: 'Rigor',
             icon: GitPullRequestArrow,
             label: 'Review the result',
             value: 'Return to PRs ready for a focused pass.',
@@ -253,12 +251,12 @@ export function App(): JSX.Element {
             meta: 'Hsiii/repomux',
             number: 128,
             status: 'Ready',
-            title: 'Clarify issue scope',
+            title: 'Polish landing page',
             type: 'issue',
         },
         {
-            icon: MessageSquareText,
-            meta: 'Prompt added',
+            icon: CircleDot,
+            meta: 'Hsiii/repomux',
             number: 124,
             status: 'Prepared',
             title: 'Confirm acceptance criteria',
@@ -266,7 +264,7 @@ export function App(): JSX.Element {
         },
         {
             icon: GitPullRequestArrow,
-            meta: 'Codex run',
+            meta: 'Hsiii/repomux',
             number: 72,
             status: 'Assigned',
             title: 'Ship the implementation',
@@ -393,9 +391,6 @@ export function App(): JSX.Element {
                                                 <span />
                                                 <span />
                                             </div>
-                                            <span className='login-wall__product-path'>
-                                                work queue
-                                            </span>
                                         </div>
 
                                         <div className='app-shell login-wall__app-shell-preview'>
@@ -488,14 +483,14 @@ export function App(): JSX.Element {
 
                                                     <div className='repo-user-card'>
                                                         <span className='repo-user-card__mark'>
-                                                            GH
+                                                            HS
                                                         </span>
                                                         <div className='repo-user-card__main'>
                                                             <span className='repo-user-card__name'>
-                                                                GitHub
+                                                                Hsi
                                                             </span>
                                                             <span className='repo-user-card__meta'>
-                                                                Connected
+                                                                @hsi
                                                             </span>
                                                         </div>
                                                         <span className='repo-user-card__icon-button'>
@@ -515,7 +510,14 @@ export function App(): JSX.Element {
                                                     </h2>
                                                     <div className='work-filters'>
                                                         <span className='work-filter work-filter--check'>
-                                                            Include unassigned
+                                                            <input
+                                                                checked
+                                                                readOnly
+                                                                type='checkbox'
+                                                            />
+                                                            <span>
+                                                                Unassigned
+                                                            </span>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -575,13 +577,9 @@ export function App(): JSX.Element {
                                                                             }
                                                                         />
                                                                     ) : (
-                                                                        <CircleArrowUp
-                                                                            aria-label={
-                                                                                status
-                                                                            }
-                                                                            size={
-                                                                                18
-                                                                            }
+                                                                        <span
+                                                                            aria-label='Not codex ready'
+                                                                            className='readiness__empty'
                                                                         />
                                                                     )}
                                                                 </span>
@@ -595,9 +593,9 @@ export function App(): JSX.Element {
                                                         Prompt
                                                     </label>
                                                     <div className='prompt-input login-wall__prompt-preview'>
-                                                        Keep auth flow. Add
-                                                        review state. Run a
-                                                        smoke check.
+                                                        Remove purple gradients,
+                                                        and prevent the showcase
+                                                        UI from overflowing
                                                     </div>
                                                     <div className='assign-button login-wall__assign-preview'>
                                                         <span>
@@ -618,15 +616,7 @@ export function App(): JSX.Element {
                                         className='login-wall__benefit-stack'
                                     >
                                         {loginWallBenefits.map(
-                                            (
-                                                {
-                                                    detail,
-                                                    icon: Icon,
-                                                    label,
-                                                    value,
-                                                },
-                                                index
-                                            ) => (
+                                            ({ icon: Icon, label, value }) => (
                                                 <article
                                                     className='login-wall__benefit-card'
                                                     key={label}
@@ -638,10 +628,6 @@ export function App(): JSX.Element {
                                                         />
                                                     </div>
                                                     <div className='login-wall__benefit-copy'>
-                                                        <span className='login-wall__benefit-detail'>
-                                                            0{index + 1} /{' '}
-                                                            {detail}
-                                                        </span>
                                                         <h2 className='login-wall__benefit-label'>
                                                             {label}
                                                         </h2>
@@ -656,40 +642,13 @@ export function App(): JSX.Element {
 
                                     <section className='login-wall__automation'>
                                         <div className='login-wall__section-heading'>
-                                            <span className='login-wall__benefit-detail'>
-                                                Codex queue
-                                            </span>
                                             <h2>
-                                                Add intent. Codex picks it up.
+                                                Add prompt. Codex picks it up.
                                             </h2>
                                             <p>
                                                 Repomux keeps context, prompts,
                                                 and review state in one queue.
                                             </p>
-                                        </div>
-                                        <div className='login-wall__automation-flow'>
-                                            <div className='login-wall__automation-copy-card'>
-                                                <span className='login-wall__benefit-detail'>
-                                                    Prepared work
-                                                </span>
-                                                <p>
-                                                    Add scope before execution.
-                                                </p>
-                                            </div>
-                                            <ArrowRight
-                                                aria-hidden='true'
-                                                className='login-wall__automation-arrow'
-                                                size={20}
-                                            />
-                                            <div className='login-wall__automation-copy-card'>
-                                                <span className='login-wall__benefit-detail'>
-                                                    Codex run
-                                                </span>
-                                                <p>
-                                                    Codex gets the prepared
-                                                    issue and returns a PR.
-                                                </p>
-                                            </div>
                                         </div>
                                         <button
                                             className='login-wall__value-button'
