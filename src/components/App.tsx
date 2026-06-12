@@ -513,11 +513,9 @@ export function App(): JSX.Element {
                                                 repository tabs.
                                             </h2>
                                             <p>
-                                                The work queue keeps issues and
-                                                pull requests from active repos
-                                                side by side, with readiness
-                                                visible before you open the
-                                                detail pane.
+                                                See issues and PRs from active
+                                                repos in one queue before you
+                                                dive into the detail pane.
                                             </p>
                                         </div>
                                         <article
@@ -609,17 +607,12 @@ export function App(): JSX.Element {
 
                                     <article className='login-wall__feature login-wall__feature--prompt'>
                                         <div className='login-wall__feature-copy'>
-                                            <h2>
-                                                Add the intent Codex needs
-                                                before automation touches
-                                                GitHub.
-                                            </h2>
+                                            <h2>Add the prompt.</h2>
                                             <p>
-                                                Repomux turns a plain issue into
-                                                a Codex-ready assignment by
-                                                adding scope, constraints, and
-                                                the label your automation
-                                                watches.
+                                                Write the handoff the same way
+                                                you would in Codex: what to
+                                                change, what to keep, and what a
+                                                good result looks like.
                                             </p>
                                         </div>
 
@@ -641,11 +634,17 @@ export function App(): JSX.Element {
                                                     >
                                                         <span className='login-wall__typing-line'>
                                                             Redesign the benefit
-                                                            section around repo
+                                                            section to show repo
                                                             multiplexing, queue
-                                                            triage, Codex-ready
-                                                            prompts, automation,
-                                                            and PR review.
+                                                            triage, prompt
+                                                            handoff, automation
+                                                            pickup, and PR
+                                                            review. Keep each
+                                                            panel direct, remove
+                                                            decorative clutter,
+                                                            and make the preview
+                                                            easy to scan at a
+                                                            glance.
                                                         </span>
                                                     </div>
                                                     <div className='assign-button login-wall__assign-preview'>

@@ -345,7 +345,7 @@
 }
 
 .login-wall__prompt-preview {
-    min-height: var(--size-login-prompt-compact);
+    min-height: calc(var(--size-login-prompt-compact) + var(--space-24));
     padding: var(--space-16);
     font: var(--font-body-sm);
     line-height: 1.45;
@@ -430,13 +430,12 @@
 
 .login-wall__typing-line {
     display: block;
-    width: 0;
-    max-width: max-content;
-    overflow: hidden;
+    max-width: 100%;
     border-right: var(--size-border-1) solid var(--clr-login-text);
-    white-space: nowrap;
+    padding-right: var(--space-4);
+    white-space: normal;
     animation:
-        login-wall-type 5.8s steps(98, end) infinite,
+        login-wall-type 6.4s ease-in-out infinite,
         login-wall-caret 960ms steps(1, end) infinite;
 }
 
@@ -775,16 +774,19 @@
 @keyframes login-wall-type {
     0%,
     12% {
-        width: 0;
+        opacity: 0;
+        transform: translateY(var(--space-8));
     }
 
     52%,
     82% {
-        width: 100%;
+        opacity: 1;
+        transform: translateY(0);
     }
 
     100% {
-        width: 0;
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -989,7 +991,8 @@
     }
 
     .login-wall__typing-line {
-        width: 100%;
+        opacity: 1;
+        transform: none;
     }
 
     .login-wall__pr-card {
