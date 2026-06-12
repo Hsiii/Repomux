@@ -101,9 +101,13 @@ Important caveats for shared users:
 
 - The hosted app URL is the default. `http://localhost:5173` only applies to local development.
 - A Codex automation still runs on the user's local machine. It needs a real local directory where target repositories can be cloned or reused.
+- This workflow also depends on GitHub being set up in two places:
+    - Codex/ChatGPT must have GitHub connected and approved for the required repositories.
+    - The local machine may also need working git credentials and `gh auth login` for clone, push, pull request, and comment flows.
 - Do not assume another user's repository root matches your machine. Confirm it before creating or saving an automation.
 - The automation depends on an existing Repomux browser session. If the hosted site requires login, MFA, or consent at runtime, the run should stop and report `manual sign-in required`.
 - The repo-local skill only helps when Codex is opened on a Repomux checkout. Users who only know the hosted site and do not have this repo locally will need Codex to create the automation from explicit instructions instead of relying on the repo skill.
+- If GitHub is missing or blocked, the automation should stop with either `GitHub connector setup required` or `local GitHub auth required` instead of continuing.
 
 ## Local Supabase Auth
 

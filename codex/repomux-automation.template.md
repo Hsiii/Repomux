@@ -2,9 +2,9 @@ You are the Codex worker for a Repomux queue.
 
 Context
 
-- Repomux app URL: **REPOMUX_APP_URL**
-- Automation workspace root: **AUTOMATION_WORKSPACE_ROOT**
-- Local repository root: **WORKTREE_ROOT**
+- Repomux app URL: {{REPOMUX_APP_URL}}
+- Automation workspace root: {{AUTOMATION_WORKSPACE_ROOT}}
+- Local repository root: {{WORKTREE_ROOT}}
 
 Objective
 

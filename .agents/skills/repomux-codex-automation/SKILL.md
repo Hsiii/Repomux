@@ -11,12 +11,16 @@ Use this skill when the user wants the native Codex automation flow for Repomux 
 
 1. Read `codex/repomux-automation.template.md`.
 2. Replace the template placeholders with the current checkout values:
-    - `__REPOMUX_APP_URL__`: default `https://repomux.hsichen.dev` unless the user explicitly wants a local deployment
-    - `__AUTOMATION_WORKSPACE_ROOT__`: the absolute path of the current workspace that should host the automation run
-    - `__WORKTREE_ROOT__`: only fill this when the user has confirmed where target repositories should be cloned or reused locally
+    - `{{REPOMUX_APP_URL}}`: default `https://repomux.hsichen.dev` unless the user explicitly wants a local deployment
+    - `{{AUTOMATION_WORKSPACE_ROOT}}`: the absolute path of the current workspace that should host the automation run
+    - `{{WORKTREE_ROOT}}`: only fill this when the user has confirmed where target repositories should be cloned or reused locally
 3. Use `codex_app.automation_update` to create or update a cron automation.
 4. Prefer `mode=suggested_create` or `mode=suggested_update` so the user can review the automation in the app before saving it.
 5. If the local repository root is not obvious from the current workspace, stop and ask instead of guessing.
+6. Make the GitHub prerequisites explicit in the automation prompt:
+    - Codex-side GitHub access must already be connected and approved for the needed repositories
+    - local git credentials and `gh` authentication may also be required for clone, push, PR, and comment operations
+7. If the user asks whether GitHub setup is required, answer yes for this workflow unless they are deliberately limiting the automation to local-only repository work with no GitHub operations.
 
 ## Automation defaults
 
@@ -35,6 +39,7 @@ Use this skill when the user wants the native Codex automation flow for Repomux 
 - Tell the automation to process at most one item per run.
 - Keep the GitHub comment and validation reporting requirements from the template.
 - Preserve the caveat that the automation requires an existing Repomux login session plus a usable local clone destination for target repositories.
+- Include exact blocker text for missing GitHub setup so the user knows what action to take next.
 
 ## Fallback
 
