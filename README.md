@@ -85,16 +85,25 @@ Manual fallback:
 
 By default the generated prompt assumes:
 
-- Repomux runs at `http://localhost:5173`
-- target repositories can be checked out under the parent directory of your Repomux checkout
+- Repomux runs at `https://repomux.hsichen.dev`
+- the automation workspace root is the current checkout
+- the local repository root must be set explicitly before the automation is safe to save
 
 Override those defaults when needed:
 
 ```bash
-bun run setup:codex -- --app-url https://repomux.example.com --worktree-root /absolute/path/for/repos --output /absolute/path/repomux-automation.prompt.md
+bun run setup:codex -- --app-url https://repomux.example.com --automation-workspace-root /absolute/path/to/workspace --worktree-root /absolute/path/for/repos --output /absolute/path/repomux-automation.prompt.md
 ```
 
 The checked-in template stays generic for every Repomux user. Codex or the fallback renderer writes machine-specific paths only at setup time.
+
+Important caveats for shared users:
+
+- The hosted app URL is the default. `http://localhost:5173` only applies to local development.
+- A Codex automation still runs on the user's local machine. It needs a real local directory where target repositories can be cloned or reused.
+- Do not assume another user's repository root matches your machine. Confirm it before creating or saving an automation.
+- The automation depends on an existing Repomux browser session. If the hosted site requires login, MFA, or consent at runtime, the run should stop and report `manual sign-in required`.
+- The repo-local skill only helps when Codex is opened on a Repomux checkout. Users who only know the hosted site and do not have this repo locally will need Codex to create the automation from explicit instructions instead of relying on the repo skill.
 
 ## Local Supabase Auth
 

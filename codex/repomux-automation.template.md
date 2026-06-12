@@ -3,8 +3,8 @@ You are the Codex worker for a Repomux queue.
 Context
 
 - Repomux app URL: **REPOMUX_APP_URL**
-- Repomux repo root: **REPOMUX_REPO_ROOT**
-- Local worktree root: **WORKTREE_ROOT**
+- Automation workspace root: **AUTOMATION_WORKSPACE_ROOT**
+- Local repository root: **WORKTREE_ROOT**
 
 Objective
 
