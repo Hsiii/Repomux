@@ -428,12 +428,21 @@ input:disabled {
     background-color: var(--clr-login-accent);
 }
 
-.login-wall__button-icon {
+.login-wall__github-icon {
     display: block;
-    flex: 0 0 var(--space-16);
-    width: var(--space-16);
-    height: var(--space-16);
+    flex: 0 0 var(--size-login-github-icon);
+    width: var(--size-login-github-icon);
+    height: var(--size-login-github-icon);
     overflow: hidden;
+}
+
+.login-wall__github-icon-pad {
+    flex-basis: var(--size-login-github-icon-cta);
+    width: var(--size-login-github-icon-cta);
+    height: var(--size-login-github-icon-cta);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .login-wall__hero-button {
@@ -498,12 +507,6 @@ input:disabled {
     border-color: var(--clr-login-border-strong);
     color: var(--clr-login-text);
     background-color: var(--clr-login-control-hover);
-}
-
-.login-wall__footer-link .login-wall__button-icon {
-    flex-basis: var(--space-12);
-    width: var(--space-12);
-    height: var(--space-12);
 }
 
 .login-wall__value-button {
