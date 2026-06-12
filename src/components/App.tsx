@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
-    Boxes,
     CheckCheck,
     Clock3,
     GitBranch,
@@ -25,6 +24,7 @@ import {
 } from '../lib/repositories.js';
 import { supabase } from '../lib/supabase.js';
 import type { Repository, WorkItem } from '../types/app.js';
+import { BrandLogo } from './brand-logo.js';
 import { GitHubAuthModal } from './modals/github-auth-modal.js';
 import { RepositorySidebar } from './repository-sidebar.js';
 import { WorkPanel } from './work-panel.js';
@@ -292,7 +292,10 @@ export function App(): JSX.Element {
                         <header className='login-wall__topbar'>
                             <div className='login-wall__wordmark'>
                                 <span className='login-wall__wordmark-mark'>
-                                    <Boxes aria-hidden='true' size={16} />
+                                    <BrandLogo
+                                        alt='repomux'
+                                        className='login-wall__brand-logo'
+                                    />
                                 </span>
                                 <span className='login-wall__wordmark-text'>
                                     repomux

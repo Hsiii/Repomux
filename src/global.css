@@ -52,6 +52,21 @@ input:disabled {
     height: 100vh;
 }
 
+.brand-logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.brand-logo--dark {
+    filter: brightness(0);
+}
+
+.brand-logo--light {
+    filter: brightness(0) invert(1);
+}
+
 .sr-only {
     position: absolute;
     width: var(--size-border-1);
@@ -147,6 +162,11 @@ input:disabled {
     border-radius: var(--radius-8);
     background-color: var(--clr-login-spotlight);
     box-shadow: var(--clr-login-shadow);
+}
+
+.login-wall__brand-logo {
+    width: var(--space-20);
+    height: var(--space-20);
 }
 
 .login-wall__wordmark-text {
