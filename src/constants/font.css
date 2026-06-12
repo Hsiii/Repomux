@@ -8,6 +8,7 @@
     --fs-auth-sm: 0.875rem;
     --fs-md: 1rem;
     --fs-auth-lg: 1.125rem;
+    --fs-wordmark: 1.5rem;
     --fs-lg: 1.75rem;
     --fs-display: 2.5rem;
 
@@ -22,6 +23,7 @@
     --font-body-md: var(--fw-medium) var(--fs-md) / 1.6 var(--ff-body);
     --font-body-lg: var(--fw-medium) var(--fs-auth-lg) / 1.6 var(--ff-body);
     --font-title-sm: var(--fw-semibold) var(--fs-md) / 1.2 var(--ff-body);
+    --font-wordmark: var(--fw-semibold) var(--fs-wordmark) / 1 var(--ff-body);
     --font-title-md: var(--fw-bold) var(--fs-lg) / 1.1 var(--ff-body);
     --font-display: var(--fw-bold) var(--fs-display) / 1.04 var(--ff-body);
 
@@ -44,7 +46,7 @@
     --size-border-1: 1px;
     --size-outline: 2px;
     --size-icon-button: 52px;
-    --size-login-button: 48px;
+    --size-login-button: 32px;
     --size-login-mark: 40px;
     --size-repo-add-button: 44px;
     --size-repo-row: 44px;

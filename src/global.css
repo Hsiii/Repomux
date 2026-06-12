@@ -149,22 +149,22 @@ input:disabled {
     display: inline-flex;
     align-items: center;
     gap: var(--space-8);
-    font: var(--font-label);
+    font: var(--font-wordmark);
     letter-spacing: 0.01em;
 }
 
 .login-wall__wordmark-mark {
-    width: 1.5em;
-    height: 1.5em;
+    width: 36px;
+    height: 36px;
 }
 
 .login-wall__wordmark-text {
-    font: var(--font-title-sm);
+    font: var(--font-wordmark);
 }
 
 .login-wall__topbar-login {
-    min-height: var(--space-40);
-    padding: 0 var(--space-16);
+    min-height: var(--size-login-button);
+    padding: 0 var(--space-12);
 }
 
 .login-wall__layout {
@@ -275,7 +275,7 @@ input:disabled {
 
 .login-wall__button {
     min-height: var(--size-login-button);
-    padding: 0 var(--space-16);
+    padding: 0 var(--space-12);
     border: var(--size-border-1) solid var(--clr-login-border-strong);
     border-radius: var(--radius-8);
     display: inline-flex;
@@ -285,15 +285,6 @@ input:disabled {
     color: var(--clr-login-action-text);
     font: var(--font-label);
     background-color: var(--clr-login-accent);
-    transition:
-        transform 120ms ease,
-        box-shadow 120ms ease,
-        background-color 120ms ease;
-}
-
-.login-wall__button:hover {
-    transform: translateY(calc(var(--size-border-1) * -1));
-    box-shadow: var(--clr-login-shadow-press);
 }
 
 .login-wall__button-icon {
