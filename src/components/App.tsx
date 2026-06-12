@@ -511,10 +511,10 @@ export function App(): JSX.Element {
                                                         />
                                                         <div className='repo-user-card__main'>
                                                             <span className='repo-user-card__name'>
-                                                                Hsiii (Hsi)
+                                                                Hsi
                                                             </span>
                                                             <span className='repo-user-card__meta'>
-                                                                @Hsiii
+                                                                Hsiii
                                                             </span>
                                                         </div>
                                                         <span className='repo-user-card__icon-button'>

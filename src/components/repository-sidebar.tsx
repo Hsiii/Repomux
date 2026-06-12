@@ -93,15 +93,15 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
         }
 
         if (
-            githubUser.name === undefined ||
-            githubUser.name === null ||
-            githubUser.name === '' ||
-            githubUser.name === githubUser.login
+            githubUser.name !== undefined &&
+            githubUser.name !== null &&
+            githubUser.name !== '' &&
+            githubUser.name !== githubUser.login
         ) {
-            return githubUser.login;
+            return githubUser.name;
         }
 
-        return `${githubUser.login} (${githubUser.name})`;
+        return githubUser.login;
     }
 
     function renderGitHubMeta() {
@@ -113,7 +113,7 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
             return 'Connected';
         }
 
-        return `@${githubUser.login}`;
+        return githubUser.login;
     }
 
     let repoContent: JSX.Element;
