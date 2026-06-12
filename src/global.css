@@ -518,7 +518,7 @@ input:disabled {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-8);
+    gap: var(--space-12);
     color: var(--clr-login-action-text);
     font: var(--font-label);
     background-color: transparent;

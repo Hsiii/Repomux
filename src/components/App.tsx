@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
-    Bot,
     Check,
     ChevronDown,
     CircleArrowUp,
@@ -667,8 +666,7 @@ export function App(): JSX.Element {
                                             onClick={connectGitHub}
                                             type='button'
                                         >
-                                            <Bot aria-hidden='true' size={16} />
-                                            Set up automation
+                                            <span>Set up automation</span>
                                             <ArrowRight
                                                 aria-hidden='true'
                                                 size={16}
