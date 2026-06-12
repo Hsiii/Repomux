@@ -67,7 +67,7 @@ async function main() {
     const template = await readFile(templatePath, 'utf8');
     const renderedTemplate = template
         .replaceAll('__REPOMUX_APP_URL__', appUrl)
-        .replaceAll('__REPOMUX_REPO_ROOT__', repoRoot)
+        .replaceAll('__AUTOMATION_WORKSPACE_ROOT__', automationWorkspaceRoot)
         .replaceAll('__WORKTREE_ROOT__', worktreeRoot);
 
     await mkdir(path.dirname(outputPath), { recursive: true });
