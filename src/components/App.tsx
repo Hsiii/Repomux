@@ -12,16 +12,12 @@ import {
     CircleDot,
     ExternalLink,
     GitBranch,
-    GitCommitHorizontal,
-    GitFork,
     GitPullRequestArrow,
     Languages,
     ListTodo,
     Moon,
     Play,
-    Sparkles,
     Sun,
-    Workflow,
 } from 'lucide-react';
 
 import { useGitHubConnection } from '../hooks/use-github-connection';
@@ -643,69 +639,39 @@ export function App(): JSX.Element {
                                         </div>
 
                                         <div className='login-wall__prompt-stage'>
-                                            <div className='login-wall__github-card'>
-                                                <div className='login-wall__github-header'>
-                                                    <GitHubMark className='login-wall__github-icon' />
-                                                    <span>GitHub issue</span>
-                                                    <span className='login-wall__issue-number'>
-                                                        #128
-                                                    </span>
-                                                </div>
-                                                <h3>
-                                                    Polish landing page benefit
-                                                    section
-                                                </h3>
-                                                <p>
-                                                    Current section is too
-                                                    generic. Show the queue,
-                                                    prompt, automation, and PR
-                                                    review flow.
-                                                </p>
-                                                <div className='login-wall__github-labels'>
-                                                    <span className='login-wall__github-label'>
-                                                        enhancement
-                                                    </span>
-                                                    <span className='login-wall__github-label login-wall__github-label--ready'>
-                                                        codex-ready
-                                                    </span>
-                                                </div>
-                                                <div className='login-wall__github-comment'>
-                                                    <Sparkles
-                                                        aria-hidden='true'
-                                                        size={16}
-                                                    />
-                                                    <span>
-                                                        Repomux prompt attached
-                                                        scope, acceptance
-                                                        criteria, and visual
-                                                        reference.
-                                                    </span>
-                                                </div>
-                                            </div>
-
                                             <div className='login-wall__prompt-card'>
-                                                <label className='prompt-label'>
-                                                    Prompt
-                                                </label>
-                                                <div
-                                                    aria-label='Animated prompt text'
-                                                    className='prompt-input login-wall__prompt-preview'
-                                                >
-                                                    <span className='login-wall__typing-line'>
-                                                        Redesign the benefit
-                                                        section around repo
-                                                        multiplexing, queue
-                                                        triage, Codex-ready
-                                                        prompts, automation, and
-                                                        PR review.
+                                                <div className='login-wall__prompt-issue'>
+                                                    <span className='login-wall__prompt-issue-label'>
+                                                        GitHub issue #128
+                                                    </span>
+                                                    <span className='login-wall__prompt-issue-title'>
+                                                        Polish landing page
+                                                        benefit section
                                                     </span>
                                                 </div>
-                                                <div className='assign-button login-wall__assign-preview'>
-                                                    <span>Assign to Codex</span>
-                                                    <CircleArrowUp
-                                                        aria-hidden='true'
-                                                        size={24}
-                                                    />
+                                                <div className='login-wall__prompt-editor'>
+                                                    <div
+                                                        aria-label='Animated prompt text'
+                                                        className='prompt-input login-wall__prompt-preview'
+                                                    >
+                                                        <span className='login-wall__typing-line'>
+                                                            Redesign the benefit
+                                                            section around repo
+                                                            multiplexing, queue
+                                                            triage, Codex-ready
+                                                            prompts, automation,
+                                                            and PR review.
+                                                        </span>
+                                                    </div>
+                                                    <div className='assign-button login-wall__assign-preview'>
+                                                        <span>
+                                                            Assign to Codex
+                                                        </span>
+                                                        <CircleArrowUp
+                                                            aria-hidden='true'
+                                                            size={24}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -713,10 +679,7 @@ export function App(): JSX.Element {
 
                                     <article className='login-wall__feature login-wall__feature--automation'>
                                         <div className='login-wall__feature-copy'>
-                                            <h2>
-                                                Let Codex pick up prepared work
-                                                while you are elsewhere.
-                                            </h2>
+                                            <h2>Let Codex pick up the work.</h2>
                                             <p>
                                                 The automation watches for the
                                                 codex-ready label, reads the
@@ -737,37 +700,58 @@ export function App(): JSX.Element {
                                             </button>
                                         </div>
 
-                                        <div className='login-wall__automation-flow'>
-                                            <div className='login-wall__automation-node'>
-                                                <GitFork
-                                                    aria-hidden='true'
-                                                    size={24}
-                                                />
-                                                <span>GitHub repos</span>
+                                        <div className='login-wall__automation-stage'>
+                                            <div className='login-wall__automation-stage-head'>
+                                                <span className='login-wall__automation-stage-label'>
+                                                    Automation rule
+                                                </span>
+                                                <span className='login-wall__automation-stage-value'>
+                                                    When an item becomes
+                                                    codex-ready
+                                                </span>
                                             </div>
-                                            <GitCommitHorizontal
-                                                aria-hidden='true'
-                                                className='login-wall__automation-arrow'
-                                                size={28}
-                                            />
-                                            <div className='login-wall__automation-node login-wall__automation-node--active'>
-                                                <Workflow
-                                                    aria-hidden='true'
-                                                    size={24}
-                                                />
-                                                <span>codex-ready</span>
-                                            </div>
-                                            <GitCommitHorizontal
-                                                aria-hidden='true'
-                                                className='login-wall__automation-arrow'
-                                                size={28}
-                                            />
-                                            <div className='login-wall__automation-node'>
-                                                <Bot
-                                                    aria-hidden='true'
-                                                    size={24}
-                                                />
-                                                <span>Codex</span>
+                                            <div className='login-wall__automation-list'>
+                                                <div className='login-wall__automation-step login-wall__automation-step--active'>
+                                                    <span className='login-wall__automation-step-index'>
+                                                        01
+                                                    </span>
+                                                    <div>
+                                                        <h3>Read the issue</h3>
+                                                        <p>
+                                                            Capture scope,
+                                                            acceptance criteria,
+                                                            and repo context.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className='login-wall__automation-step'>
+                                                    <span className='login-wall__automation-step-index'>
+                                                        02
+                                                    </span>
+                                                    <div>
+                                                        <h3>
+                                                            Pick up the prompt
+                                                        </h3>
+                                                        <p>
+                                                            Use the Repomux
+                                                            prompt as the exact
+                                                            handoff to Codex.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className='login-wall__automation-step'>
+                                                    <span className='login-wall__automation-step-index'>
+                                                        03
+                                                    </span>
+                                                    <div>
+                                                        <h3>Start the pass</h3>
+                                                        <p>
+                                                            Run asynchronously
+                                                            and return with a PR
+                                                            for review.
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </article>
