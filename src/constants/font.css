@@ -47,9 +47,12 @@
     --size-outline: 2px;
     --size-icon-button: 52px;
     --size-login-button: 32px;
+    --size-login-hero-button: 48px;
+    --size-login-hero-width: 260px;
     --size-login-mark: 40px;
     --size-login-preview-sidebar: 168px;
     --size-login-preview: 1088px;
+    --size-login-topbar-button: 36px;
     --size-repo-add-button: 44px;
     --size-repo-row: 44px;
     --size-repo-panel: 416px;

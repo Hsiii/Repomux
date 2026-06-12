@@ -162,7 +162,7 @@ input:disabled {
 }
 
 .login-wall__topbar-login {
-    min-height: var(--size-login-button);
+    min-height: var(--size-login-topbar-button);
     padding: 0 var(--space-12);
 }
 
@@ -193,7 +193,7 @@ input:disabled {
 .login-wall__title {
     max-width: 12ch;
     font: var(--font-display);
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
 }
 
 .login-wall__lede {
@@ -209,15 +209,13 @@ input:disabled {
     width: 100%;
     max-width: var(--size-login-preview);
     display: grid;
-    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-    align-items: stretch;
-    gap: var(--space-16);
+    gap: var(--space-20);
 }
 
 .login-wall__benefit-stack {
     display: grid;
-    align-content: stretch;
-    gap: var(--space-12);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-16);
 }
 
 .login-wall__benefit-card {
@@ -243,20 +241,6 @@ input:disabled {
 
 .login-wall__benefit-card:nth-child(3) {
     animation-delay: 240ms;
-}
-
-.login-wall__benefit-card::before {
-    position: absolute;
-    top: var(--space-16);
-    bottom: calc(var(--space-16) * -1);
-    left: calc(var(--space-16) + var(--space-20));
-    width: var(--size-border-1);
-    background: var(--clr-login-border);
-    content: '';
-}
-
-.login-wall__benefit-card:last-child::before {
-    display: none;
 }
 
 .login-wall__benefit-step {
@@ -354,23 +338,22 @@ input:disabled {
     background-color: var(--clr-login-surface-soft);
 }
 
-.login-wall__repo-chip {
-    min-height: var(--space-40);
-    padding: 0 var(--space-12);
-    border: var(--size-border-1) solid transparent;
-    border-radius: var(--radius-8);
-    display: inline-flex;
-    align-items: center;
+.login-wall__product-repos {
     gap: var(--space-8);
-    color: var(--clr-login-text-muted);
-    font: var(--font-label);
-    background-color: transparent;
 }
 
-.login-wall__repo-chip--active {
+.login-wall__product-repo-row {
     border-color: var(--clr-login-border);
-    color: var(--clr-login-text);
+    background-color: var(--clr-login-control);
+}
+
+.login-wall__product-repo-row.repo-row--selected {
+    border-color: var(--clr-login-border-strong);
     background-color: var(--clr-login-control-hover);
+}
+
+.login-wall__product-repo-row .repo-row__label {
+    color: var(--clr-login-text);
 }
 
 .login-wall__product-main {
@@ -485,7 +468,15 @@ input:disabled {
 }
 
 .login-wall__hero-button {
-    min-width: var(--size-prompt);
+    min-width: var(--size-login-hero-width);
+    min-height: var(--size-login-hero-button);
+    margin: var(--space-16) 0 var(--space-56);
+    padding: 0;
+    font: var(--font-body-md);
+}
+
+.login-wall__button.login-wall__topbar-login {
+    min-height: var(--size-login-topbar-button);
 }
 
 .login-wall__status {
@@ -544,10 +535,54 @@ input:disabled {
     height: var(--space-12);
 }
 
-.login-wall__topbar-login .login-wall__button-icon,
-.login-wall__hero-button .login-wall__button-icon {
-    transform: scale(0.875);
-    transform-origin: center;
+.login-wall__value-cta {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-16);
+    padding: var(--space-16);
+    border: var(--size-border-1) solid var(--clr-login-border-strong);
+    border-radius: var(--radius-16);
+    color: var(--clr-login-text);
+    background:
+        radial-gradient(
+            circle at left,
+            var(--clr-login-spotlight),
+            transparent 36%
+        ),
+        var(--clr-login-control);
+    animation: value-cta-glow 5200ms ease-in-out infinite;
+}
+
+.login-wall__value-orbit {
+    width: var(--space-48);
+    height: var(--space-48);
+    display: inline-grid;
+    place-items: center;
+    border: var(--size-border-1) solid var(--clr-login-border-strong);
+    border-radius: 50%;
+    background-color: var(--clr-login-accent-soft);
+}
+
+.login-wall__value-cta p {
+    color: var(--clr-login-text-muted);
+    font: var(--font-title-sm);
+}
+
+.login-wall__value-button {
+    min-height: var(--space-40);
+    padding: 0 var(--space-16);
+    border: var(--size-border-1) solid var(--clr-login-border-strong);
+    border-radius: var(--radius-8);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    color: var(--clr-login-action-text);
+    font: var(--font-label);
+    background-color: var(--clr-login-accent);
 }
 
 .login-wall__language {
@@ -632,12 +667,29 @@ input:disabled {
     }
 }
 
+@keyframes value-cta-glow {
+    0%,
+    100% {
+        box-shadow: none;
+        transform: translateY(0);
+    }
+
+    50% {
+        box-shadow: var(--clr-login-shadow);
+        transform: translateY(calc(var(--space-4) * -1));
+    }
+}
+
 @media (max-width: 960px) {
     .login-wall__frame {
         gap: var(--space-20);
     }
 
     .login-wall__benefits {
+        grid-template-columns: 1fr;
+    }
+
+    .login-wall__benefit-stack {
         grid-template-columns: 1fr;
     }
 
@@ -690,12 +742,22 @@ input:disabled {
         grid-column: 2;
         justify-self: start;
     }
+
+    .login-wall__value-cta {
+        grid-template-columns: 1fr;
+    }
+
+    .login-wall__value-orbit {
+        width: var(--space-40);
+        height: var(--space-40);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .login-wall__benefit-card,
     .login-wall__product-card,
-    .login-wall__preview-row {
+    .login-wall__preview-row,
+    .login-wall__value-cta {
         animation: none;
     }
 }

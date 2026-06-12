@@ -7,12 +7,13 @@ import {
     ChevronDown,
     CircleArrowUp,
     ExternalLink,
+    GitBranch,
     GitPullRequestArrow,
     Languages,
     ListTodo,
     MessageSquareText,
     Moon,
-    Network,
+    Radar,
     Sun,
 } from 'lucide-react';
 
@@ -232,16 +233,19 @@ export function App(): JSX.Element {
     const loginWallBenefits = [
         {
             detail: 'Repository context',
+            icon: GitBranch,
             label: 'Connect the work',
             value: 'Pull issues and PRs from the repos you actively maintain.',
         },
         {
             detail: 'Prompt handoff',
+            icon: MessageSquareText,
             label: 'Add intent once',
             value: 'Turn scattered tickets into clear instructions Codex can execute.',
         },
         {
             detail: 'Async review loop',
+            icon: GitPullRequestArrow,
             label: 'Review the return',
             value: 'Come back to pull requests, follow up, or send the work around again.',
         },
@@ -382,38 +386,6 @@ export function App(): JSX.Element {
                                 )}
 
                                 <div className='login-wall__benefits'>
-                                    <div
-                                        aria-label='Repomux workflow benefits'
-                                        className='login-wall__benefit-stack'
-                                    >
-                                        {loginWallBenefits.map(
-                                            (
-                                                { detail, label, value },
-                                                index
-                                            ) => (
-                                                <article
-                                                    className='login-wall__benefit-card'
-                                                    key={label}
-                                                >
-                                                    <div className='login-wall__benefit-step'>
-                                                        0{index + 1}
-                                                    </div>
-                                                    <div className='login-wall__benefit-copy'>
-                                                        <span className='login-wall__benefit-detail'>
-                                                            {detail}
-                                                        </span>
-                                                        <h2 className='login-wall__benefit-label'>
-                                                            {label}
-                                                        </h2>
-                                                        <p className='login-wall__benefit-value'>
-                                                            {value}
-                                                        </p>
-                                                    </div>
-                                                </article>
-                                            )
-                                        )}
-                                    </div>
-
                                     <aside
                                         aria-label='Repomux workspace preview'
                                         className='login-wall__product-card'
@@ -434,19 +406,25 @@ export function App(): JSX.Element {
                                                 <span className='login-wall__product-kicker'>
                                                     Active repos
                                                 </span>
-                                                <div className='login-wall__repo-chip login-wall__repo-chip--active'>
-                                                    <Network
-                                                        aria-hidden='true'
-                                                        size={14}
-                                                    />
-                                                    <span>Hsiii/repomux</span>
-                                                </div>
-                                                <div className='login-wall__repo-chip'>
-                                                    <GitPullRequestArrow
-                                                        aria-hidden='true'
-                                                        size={14}
-                                                    />
-                                                    <span>website</span>
+                                                <div className='repo-list login-wall__product-repos'>
+                                                    <button
+                                                        aria-pressed='true'
+                                                        className='repo-row repo-row--selected login-wall__product-repo-row'
+                                                        type='button'
+                                                    >
+                                                        <span className='repo-row__label'>
+                                                            Hsiii/repomux
+                                                        </span>
+                                                    </button>
+                                                    <button
+                                                        aria-pressed='false'
+                                                        className='repo-row login-wall__product-repo-row'
+                                                        type='button'
+                                                    >
+                                                        <span className='repo-row__label'>
+                                                            website
+                                                        </span>
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -507,6 +485,78 @@ export function App(): JSX.Element {
                                             </div>
                                         </div>
                                     </aside>
+
+                                    <div
+                                        aria-label='Repomux workflow benefits'
+                                        className='login-wall__benefit-stack'
+                                    >
+                                        {loginWallBenefits.map(
+                                            (
+                                                {
+                                                    detail,
+                                                    icon: Icon,
+                                                    label,
+                                                    value,
+                                                },
+                                                index
+                                            ) => (
+                                                <article
+                                                    className='login-wall__benefit-card'
+                                                    key={label}
+                                                >
+                                                    <div className='login-wall__benefit-step'>
+                                                        <Icon
+                                                            aria-hidden='true'
+                                                            size={16}
+                                                        />
+                                                    </div>
+                                                    <div className='login-wall__benefit-copy'>
+                                                        <span className='login-wall__benefit-detail'>
+                                                            0{index + 1} /{' '}
+                                                            {detail}
+                                                        </span>
+                                                        <h2 className='login-wall__benefit-label'>
+                                                            {label}
+                                                        </h2>
+                                                        <p className='login-wall__benefit-value'>
+                                                            {value}
+                                                        </p>
+                                                    </div>
+                                                </article>
+                                            )
+                                        )}
+                                    </div>
+
+                                    <div className='login-wall__value-cta'>
+                                        <div className='login-wall__value-orbit'>
+                                            <Radar
+                                                aria-hidden='true'
+                                                size={20}
+                                            />
+                                        </div>
+                                        <div>
+                                            <span className='login-wall__benefit-detail'>
+                                                Built for async maintainers
+                                            </span>
+                                            <p>
+                                                Keep repos moving without
+                                                staying in every Codex loop.
+                                            </p>
+                                        </div>
+                                        <button
+                                            className='login-wall__value-button'
+                                            onClick={() => {
+                                                setIsGitHubDialogOpen(true);
+                                            }}
+                                            type='button'
+                                        >
+                                            Queue your first task
+                                            <ArrowRight
+                                                aria-hidden='true'
+                                                size={16}
+                                            />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </section>
