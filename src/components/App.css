@@ -100,7 +100,9 @@
 .login-wall__wordmark-mark {
     width: var(--size-login-mark);
     height: var(--size-login-mark);
+    margin-top: var(--size-outline);
     flex: 0 0 auto;
+    display: block;
     filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
         hue-rotate(204deg) brightness(104%) contrast(97%);
 }
@@ -282,7 +284,6 @@
 }
 
 .login-wall__mux-repo rect,
-.login-wall__mux-hub rect,
 .login-wall__mux-output rect {
     fill: var(--clr-login-control);
     stroke: var(--clr-login-border);
@@ -305,21 +306,17 @@
     font: var(--font-label);
 }
 
-.login-wall__mux-hub rect {
-    fill: var(--clr-login-card-strong);
-    stroke: var(--clr-login-border-strong);
-}
-
 .login-wall__mux-logo {
-    width: var(--space-88);
-    height: var(--space-88);
+    width: var(--space-80);
+    height: var(--space-80);
+    display: block;
     filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
         hue-rotate(204deg) brightness(104%) contrast(97%);
 }
 
 .login-wall__mux-codex {
-    width: var(--space-28);
-    height: var(--space-28);
+    width: var(--space-32);
+    height: var(--space-32);
     display: block;
     color: var(--clr-login-text);
 }
@@ -347,9 +344,13 @@
 .login-wall__prompt-preview {
     min-height: calc(var(--size-login-prompt-compact) + var(--space-24));
     padding: var(--space-16);
+    display: grid;
+    align-content: start;
+    gap: var(--space-8);
     font: var(--font-body-sm);
     line-height: 1.45;
     overflow: hidden;
+    background-color: var(--clr-login-control);
 }
 
 .login-wall__assign-preview {
@@ -430,13 +431,10 @@
 
 .login-wall__typing-line {
     display: block;
-    max-width: 100%;
-    border-right: var(--size-border-1) solid var(--clr-login-text);
-    padding-right: var(--space-4);
-    white-space: normal;
-    animation:
-        login-wall-type 6.4s ease-in-out infinite,
-        login-wall-caret 960ms steps(1, end) infinite;
+    opacity: 0;
+    transform: translateY(var(--space-8));
+    animation: login-wall-type 6.4s ease-in-out infinite;
+    animation-delay: calc(var(--login-wall-line-index) * 180ms);
 }
 
 .login-wall__automation-stage,
@@ -461,8 +459,13 @@
         );
 }
 
+.login-wall__automation-graphic {
+    width: min(100%, 520px);
+    display: grid;
+    gap: var(--space-20);
+}
+
 .login-wall__automation-stage-head {
-    width: min(100%, 480px);
     padding: var(--space-20);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
@@ -491,76 +494,83 @@
     font: var(--font-body-sm);
 }
 
-.login-wall__automation-list {
-    width: min(100%, 480px);
+.login-wall__automation-flow {
     display: grid;
-    gap: var(--space-12);
-    position: relative;
+    gap: var(--space-16);
 }
 
-.login-wall__automation-list::before {
-    content: '';
-    position: absolute;
-    top: var(--space-20);
-    bottom: var(--space-20);
-    left: var(--space-38);
-    width: var(--size-border-1);
-    background-color: var(--clr-login-border);
-}
-
-.login-wall__automation-step {
-    position: relative;
-    width: 100%;
+.login-wall__automation-issue,
+.login-wall__automation-codex,
+.login-wall__automation-outcome {
     padding: var(--space-20);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
+    background-color: color-mix(
+        in srgb,
+        var(--clr-login-card) 76%,
+        transparent
+    );
+}
+
+.login-wall__automation-issue,
+.login-wall__automation-outcome {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
-    gap: var(--space-12);
-    color: var(--clr-login-text-muted);
-    background-color: var(--clr-login-control);
+    gap: var(--space-8);
 }
 
-.login-wall__automation-step--active {
-    border-color: var(--clr-login-border-strong);
-    color: var(--clr-login-text);
-    background-color: var(--clr-login-card);
-    box-shadow:
-        inset 0 0 0 var(--size-border-1) var(--clr-login-border),
-        var(--clr-login-shadow);
+.login-wall__automation-kicker,
+.login-wall__automation-outcome-label {
+    color: var(--clr-login-text-dim);
+    font: var(--font-label);
 }
 
-.login-wall__automation-step-index {
-    position: relative;
-    z-index: 1;
-    min-width: var(--space-36);
-    min-height: var(--space-36);
+.login-wall__automation-chip {
+    width: fit-content;
+    padding: 0 var(--space-12);
     border-radius: var(--radius-pill);
-    display: inline-grid;
-    place-items: center;
     color: var(--clr-login-text);
     font: var(--font-label);
-    background-color: var(--clr-login-card-strong);
+    line-height: var(--space-32);
+    background-color: color-mix(
+        in srgb,
+        var(--clr-accent) 20%,
+        var(--clr-login-card)
+    );
+}
+
+.login-wall__automation-rail {
+    width: var(--space-4);
+    height: var(--space-24);
+    margin-left: var(--space-24);
+    border-radius: var(--radius-pill);
+    background-color: var(--clr-accent);
+}
+
+.login-wall__automation-rail--result {
+    background-color: var(--clr-login-border-strong);
+}
+
+.login-wall__automation-codex {
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
+    border-color: var(--clr-login-border-strong);
+    box-shadow: var(--clr-login-shadow);
+}
+
+.login-wall__automation-codex-mark {
+    width: var(--space-40);
+    height: var(--space-40);
+    color: var(--clr-login-text);
 }
 
 .login-wall__automation-outcome {
-    width: min(100%, 480px);
-    padding: var(--space-20);
     border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: var(--radius-12);
-    display: grid;
-    gap: var(--space-8);
     background-color: color-mix(
         in srgb,
         var(--clr-login-accent) 12%,
         var(--clr-login-card)
     );
-}
-
-.login-wall__automation-outcome-label {
-    color: var(--clr-login-text-dim);
-    font: var(--font-label);
 }
 
 .login-wall__automation-outcome-value {
@@ -593,7 +603,7 @@
     isolation: isolate;
     width: min(100%, var(--size-login-pr-card));
     min-height: var(--size-login-result-card);
-    padding: var(--space-20);
+    padding: var(--space-24);
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
@@ -619,8 +629,8 @@
 }
 
 .login-wall__pr-icon {
-    width: var(--space-48);
-    height: var(--space-48);
+    width: var(--space-56);
+    height: var(--space-56);
     border-radius: var(--radius-8);
     display: grid;
     place-items: center;
@@ -643,9 +653,9 @@
 }
 
 .login-wall__pr-button {
-    min-height: var(--space-36);
+    min-height: var(--space-40);
     gap: var(--space-8);
-    padding: 0 var(--space-12);
+    padding: 0 var(--space-16);
     border: var(--size-border-1) solid var(--clr-login-border-strong);
     border-radius: var(--radius-8);
     color: var(--clr-login-text);
@@ -831,26 +841,21 @@
 
 @keyframes login-wall-type {
     0%,
-    12% {
+    14% {
         opacity: 0;
         transform: translateY(var(--space-8));
     }
 
-    52%,
-    82% {
+    22%,
+    72% {
         opacity: 1;
         transform: translateY(0);
     }
 
+    86%,
     100% {
-        opacity: 1;
+        opacity: 0;
         transform: translateY(0);
-    }
-}
-
-@keyframes login-wall-caret {
-    50% {
-        border-color: transparent;
     }
 }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import type { JSX } from 'react';
+import type { CSSProperties, JSX } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
@@ -221,20 +221,25 @@ export function App(): JSX.Element {
         },
         {
             icon: CircleDot,
-            meta: 'Hsiii/repomux',
-            number: 124,
+            meta: 'Hsiii/comux',
+            number: 41,
             status: 'Prepared',
             title: 'Consider supporting Claude',
             type: 'issue',
         },
         {
             icon: GitPullRequestArrow,
-            meta: 'Hsiii/repomux',
+            meta: 'Hsiii/create-hsi-app',
             number: 72,
             status: 'Assigned',
             title: 'Add user menu pop up',
             type: 'pr',
         },
+    ] as const;
+    const loginWallPromptLines = [
+        'Redesign the benefit section to show repo multiplexing.',
+        'Keep the queue, prompt handoff, and automation states easy to scan.',
+        'Remove decorative clutter and keep the review path obvious.',
     ] as const;
     const loginWallRepositoryNodes = [
         { name: 'repomux', owner: 'Hsiii' },
@@ -391,27 +396,23 @@ export function App(): JSX.Element {
                                                 </title>
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--blue'
-                                                    d='M140 88 C220 88 224 168 304 168'
+                                                    d='M140 88 C208 88 230 160 270 200'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--red'
-                                                    d='M140 144 C220 144 224 176 304 176'
+                                                    d='M140 144 C214 144 234 176 270 200'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--yellow'
-                                                    d='M140 216 C220 216 224 184 304 184'
+                                                    d='M140 216 C214 216 234 224 270 200'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--green'
-                                                    d='M140 280 C220 280 224 192 304 192'
-                                                />
-                                                <path
-                                                    className='login-wall__mux-line login-wall__mux-line--cyan'
-                                                    d='M356 200 C404 200 414 132 472 132'
+                                                    d='M140 280 C208 280 230 240 270 200'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--pink'
-                                                    d='M530 164 C530 208 530 228 530 260'
+                                                    d='M356 200 C404 200 414 132 472 132'
                                                 />
                                                 {loginWallRepositoryNodes.map(
                                                     (
@@ -452,18 +453,11 @@ export function App(): JSX.Element {
                                                     )
                                                 )}
                                                 <g className='login-wall__mux-hub'>
-                                                    <rect
-                                                        height='152'
-                                                        rx='24'
-                                                        width='152'
-                                                        x='228'
-                                                        y='124'
-                                                    />
                                                     <foreignObject
-                                                        height='88'
-                                                        width='88'
-                                                        x='260'
-                                                        y='156'
+                                                        height='80'
+                                                        width='80'
+                                                        x='270'
+                                                        y='160'
                                                     >
                                                         <BrandLogo
                                                             alt=''
@@ -481,49 +475,31 @@ export function App(): JSX.Element {
                                                         width='116'
                                                     />
                                                     <foreignObject
-                                                        height='28'
-                                                        width='28'
-                                                        x='18'
-                                                        y='22'
+                                                        height='32'
+                                                        width='32'
+                                                        x='16'
+                                                        y='20'
                                                     >
-                                                        <CodexMark className='login-wall__mux-codex' />
+                                                        <CodexMark
+                                                            className='login-wall__mux-codex'
+                                                            theme={loginTheme}
+                                                        />
                                                     </foreignObject>
                                                     <text x='62' y='44'>
                                                         Codex
-                                                    </text>
-                                                </g>
-                                                <g
-                                                    className='login-wall__mux-output'
-                                                    transform='translate(472 260)'
-                                                >
-                                                    <rect
-                                                        height='72'
-                                                        rx='12'
-                                                        width='116'
-                                                    />
-                                                    <GitPullRequestArrow
-                                                        aria-hidden='true'
-                                                        size={24}
-                                                        x={18}
-                                                        y={22}
-                                                    />
-                                                    <text x='62' y='44'>
-                                                        GitHub PR
                                                     </text>
                                                 </g>
                                             </svg>
                                         </div>
                                         <div className='login-wall__feature-copy'>
                                             <h2>
-                                                One workspace for every repo
-                                                that needs attention.
+                                                One workspace for every repo.
                                             </h2>
                                             <p>
                                                 Repomux connects your GitHub
-                                                repositories, surfaces the
-                                                scattered issues and PRs, and
-                                                turns them into one queue you
-                                                can hand to Codex.
+                                                repositories and surfaces the
+                                                scattered issues and PRs you
+                                                need to work through.
                                             </p>
                                         </div>
                                     </article>
@@ -654,20 +630,22 @@ export function App(): JSX.Element {
                                                         aria-label='Animated prompt text'
                                                         className='prompt-input login-wall__prompt-preview'
                                                     >
-                                                        <span className='login-wall__typing-line'>
-                                                            Redesign the benefit
-                                                            section to show repo
-                                                            multiplexing, queue
-                                                            triage, prompt
-                                                            handoff, automation
-                                                            pickup, and PR
-                                                            review. Keep each
-                                                            panel direct, remove
-                                                            decorative clutter,
-                                                            and make the preview
-                                                            easy to scan at a
-                                                            glance.
-                                                        </span>
+                                                        {loginWallPromptLines.map(
+                                                            (line, index) => (
+                                                                <span
+                                                                    className='login-wall__typing-line'
+                                                                    key={line}
+                                                                    style={
+                                                                        {
+                                                                            '--login-wall-line-index':
+                                                                                index,
+                                                                        } as CSSProperties
+                                                                    }
+                                                                >
+                                                                    {line}
+                                                                </span>
+                                                            )
+                                                        )}
                                                     </div>
                                                     <div className='assign-button login-wall__assign-preview'>
                                                         <span>
@@ -705,69 +683,56 @@ export function App(): JSX.Element {
                                         </div>
 
                                         <div className='login-wall__automation-stage'>
-                                            <div className='login-wall__automation-stage-head'>
-                                                <span className='login-wall__automation-stage-label'>
-                                                    Automation rule
-                                                </span>
-                                                <span className='login-wall__automation-stage-value'>
-                                                    Start a Codex pass when an
-                                                    item becomes codex-ready
-                                                </span>
-                                                <p className='login-wall__automation-stage-copy'>
-                                                    Repomux keeps the issue,
-                                                    prompt, and result connected
-                                                    so the handoff stays clear.
-                                                </p>
-                                            </div>
-                                            <div className='login-wall__automation-list'>
-                                                <div className='login-wall__automation-step login-wall__automation-step--active'>
-                                                    <span className='login-wall__automation-step-index'>
-                                                        01
+                                            <div className='login-wall__automation-graphic'>
+                                                <div className='login-wall__automation-stage-head'>
+                                                    <span className='login-wall__automation-stage-label'>
+                                                        Automation rule
                                                     </span>
-                                                    <div>
-                                                        <h3>Read the issue</h3>
-                                                        <p>
-                                                            Pull in the repo,
-                                                            scope, and
-                                                            acceptance criteria.
-                                                        </p>
+                                                    <span className='login-wall__automation-stage-value'>
+                                                        Start a Codex pass when
+                                                        an item becomes
+                                                        codex-ready
+                                                    </span>
+                                                    <p className='login-wall__automation-stage-copy'>
+                                                        Repomux keeps the issue,
+                                                        prompt, and result
+                                                        connected so the handoff
+                                                        stays clear.
+                                                    </p>
+                                                </div>
+                                                <div className='login-wall__automation-flow'>
+                                                    <div className='login-wall__automation-issue'>
+                                                        <span className='login-wall__automation-kicker'>
+                                                            Issue
+                                                        </span>
+                                                        <strong>
+                                                            Support Claude in
+                                                            comux
+                                                        </strong>
+                                                        <span className='login-wall__automation-chip'>
+                                                            codex-ready
+                                                        </span>
+                                                    </div>
+                                                    <div className='login-wall__automation-rail' />
+                                                    <div className='login-wall__automation-codex'>
+                                                        <CodexMark
+                                                            className='login-wall__automation-codex-mark'
+                                                            theme={loginTheme}
+                                                        />
+                                                        <span>Codex</span>
+                                                    </div>
+                                                    <div className='login-wall__automation-rail login-wall__automation-rail--result' />
+                                                    <div className='login-wall__automation-outcome'>
+                                                        <span className='login-wall__automation-outcome-label'>
+                                                            Result
+                                                        </span>
+                                                        <strong className='login-wall__automation-outcome-value'>
+                                                            Review-ready PR
+                                                            linked back to the
+                                                            issue.
+                                                        </strong>
                                                     </div>
                                                 </div>
-                                                <div className='login-wall__automation-step'>
-                                                    <span className='login-wall__automation-step-index'>
-                                                        02
-                                                    </span>
-                                                    <div>
-                                                        <h3>Use your prompt</h3>
-                                                        <p>
-                                                            Pass the exact
-                                                            instructions you
-                                                            wrote for Codex.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div className='login-wall__automation-step'>
-                                                    <span className='login-wall__automation-step-index'>
-                                                        03
-                                                    </span>
-                                                    <div>
-                                                        <h3>Open a PR</h3>
-                                                        <p>
-                                                            Run asynchronously
-                                                            and return a review
-                                                            ready pull request.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='login-wall__automation-outcome'>
-                                                <span className='login-wall__automation-outcome-label'>
-                                                    Result
-                                                </span>
-                                                <strong className='login-wall__automation-outcome-value'>
-                                                    You come back to a PR, not a
-                                                    loose task.
-                                                </strong>
                                             </div>
                                         </div>
                                     </article>
@@ -778,10 +743,9 @@ export function App(): JSX.Element {
                                                 Come back to a pull request.
                                             </h2>
                                             <p>
-                                                Codex sends the result back as a
-                                                PR tied to the prompt it saw, so
-                                                you can review, add follow-up
-                                                direction, or merge.
+                                                Simply review, add follow-up
+                                                direction, or merge the PR
+                                                submitted by Codex.
                                             </p>
                                         </div>
                                         <div className='login-wall__result-stage'>
