@@ -16,6 +16,7 @@
         "check": "tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && next build"
     },
     "dependencies": {
+        "@vercel/analytics": "2.0.1",
         "@tanstack/react-query": "5.100.11",
         "lucide-react": "1.17.0",
         "next": "^16.2.9",
