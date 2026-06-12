@@ -34,8 +34,14 @@ export default [
     },
 
     {
-        files: ['src/app/**/layout.tsx', 'src/app/**/page.tsx'],
+        files: [
+            'src/app/**/layout.tsx',
+            'src/app/**/page.tsx',
+            'src/app/robots.ts',
+            'src/app/sitemap.ts',
+        ],
         rules: {
+            'complete/no-mutable-return': 'off',
             'import-x/no-default-export': 'off',
         },
     },
