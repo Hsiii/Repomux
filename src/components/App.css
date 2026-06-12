@@ -294,21 +294,15 @@
     color: var(--clr-login-text-muted);
 }
 
-.login-wall__mux-repo-owner,
-.login-wall__mux-repo-branch {
+.login-wall__mux-repo-owner {
     fill: var(--clr-login-text-dim);
     font: var(--font-label);
 }
 
 .login-wall__mux-repo-name,
-.login-wall__mux-hub-label,
 .login-wall__mux-output text {
     fill: var(--clr-login-text);
     font: var(--font-label);
-}
-
-.login-wall__mux-repo-branch {
-    opacity: 0.72;
 }
 
 .login-wall__mux-hub rect {
@@ -317,10 +311,17 @@
 }
 
 .login-wall__mux-logo {
-    width: var(--space-48);
-    height: var(--space-48);
+    width: var(--space-88);
+    height: var(--space-88);
     filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
         hue-rotate(204deg) brightness(104%) contrast(97%);
+}
+
+.login-wall__mux-codex {
+    width: var(--space-28);
+    height: var(--space-28);
+    display: block;
+    color: var(--clr-login-text);
 }
 
 .login-wall--light .login-wall__mux-logo {

@@ -5,15 +5,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
+    BookMarked,
     Check,
     ChevronDown,
     CircleArrowUp,
     CircleDot,
     ExternalLink,
-    GitBranch,
     GitPullRequestArrow,
     Languages,
-    ListTodo,
     Moon,
     Sun,
 } from 'lucide-react';
@@ -30,6 +29,7 @@ import {
 } from '../lib/repositories';
 import type { Repository, WorkItem } from '../types/app';
 import { BrandLogo } from './BrandLogo';
+import { CodexMark } from './CodexMark';
 import { GitHubMark } from './GitHubMark';
 import { RepositorySidebar } from './RepositorySidebar';
 import type { WorkFilter } from './RepositorySidebar';
@@ -235,10 +235,10 @@ export function App(): JSX.Element {
         },
     ] as const;
     const loginWallRepositoryNodes = [
-        { branch: 'main', name: 'repomux', owner: 'Hsiii' },
-        { branch: 'auth', name: 'create-hsi-app', owner: 'Hsiii' },
-        { branch: 'docs', name: 'dotfiles', owner: 'Hsiii' },
-        { branch: 'infra', name: 'agent-runtime', owner: 'Hsiii' },
+        { name: 'repomux', owner: 'Hsiii' },
+        { name: 'create-hsi-app', owner: 'Hsiii' },
+        { name: 'comux', owner: 'Hsiii' },
+        { name: 'fish-git-alias', owner: 'Hsiii' },
     ] as const;
     const loginLanguages = [
         { label: 'English', shortLabel: 'EN', value: 'en' },
@@ -360,7 +360,7 @@ export function App(): JSX.Element {
                                                 aria-labelledby='mux-diagram-title'
                                                 className='login-wall__mux-diagram'
                                                 role='img'
-                                                viewBox='0 0 620 360'
+                                                viewBox='0 0 620 400'
                                             >
                                                 <title id='mux-diagram-title'>
                                                     Multiple repositories
@@ -385,121 +385,108 @@ export function App(): JSX.Element {
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--cyan'
-                                                    d='M316 180 C392 180 400 104 480 104'
+                                                    d='M356 200 C404 200 414 132 472 132'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--pink'
-                                                    d='M316 180 C392 180 400 252 480 252'
+                                                    d='M530 164 C530 208 530 228 530 260'
                                                 />
                                                 {loginWallRepositoryNodes.map(
                                                     (
-                                                        { branch, name, owner },
+                                                        { name, owner },
                                                         index
                                                     ) => (
                                                         <g
                                                             className='login-wall__mux-repo'
                                                             key={name}
-                                                            transform={`translate(24 ${48 + index * 64})`}
+                                                            transform={`translate(20 ${44 + index * 72})`}
                                                         >
                                                             <rect
-                                                                height='56'
-                                                                rx='8'
-                                                                width='132'
+                                                                height='60'
+                                                                rx='12'
+                                                                width='156'
                                                             />
-                                                            <GitBranch
+                                                            <BookMarked
                                                                 aria-hidden='true'
-                                                                size={16}
-                                                                x={12}
-                                                                y={16}
+                                                                size={18}
+                                                                x={16}
+                                                                y={18}
                                                             />
                                                             <text
                                                                 className='login-wall__mux-repo-owner'
-                                                                x='36'
-                                                                y='20'
+                                                                x='44'
+                                                                y='24'
                                                             >
                                                                 {owner}
                                                             </text>
                                                             <text
                                                                 className='login-wall__mux-repo-name'
-                                                                x='36'
-                                                                y='38'
+                                                                x='44'
+                                                                y='42'
                                                             >
                                                                 {name}
-                                                            </text>
-                                                            <text
-                                                                className='login-wall__mux-repo-branch'
-                                                                x='12'
-                                                                y='50'
-                                                            >
-                                                                {branch}
                                                             </text>
                                                         </g>
                                                     )
                                                 )}
                                                 <g className='login-wall__mux-hub'>
                                                     <rect
-                                                        height='120'
-                                                        rx='20'
-                                                        width='120'
-                                                        x='258'
-                                                        y='120'
+                                                        height='152'
+                                                        rx='24'
+                                                        width='152'
+                                                        x='228'
+                                                        y='124'
                                                     />
                                                     <foreignObject
-                                                        height='48'
-                                                        width='48'
-                                                        x='294'
-                                                        y='144'
+                                                        height='88'
+                                                        width='88'
+                                                        x='260'
+                                                        y='156'
                                                     >
                                                         <BrandLogo
                                                             alt=''
                                                             className='login-wall__mux-logo'
                                                         />
                                                     </foreignObject>
-                                                    <text
-                                                        className='login-wall__mux-hub-label'
-                                                        textAnchor='middle'
-                                                        x='320'
-                                                        y='216'
-                                                    >
-                                                        Workspace
-                                                    </text>
                                                 </g>
                                                 <g
                                                     className='login-wall__mux-output'
-                                                    transform='translate(480 64)'
+                                                    transform='translate(472 92)'
                                                 >
                                                     <rect
-                                                        height='80'
+                                                        height='72'
                                                         rx='12'
                                                         width='116'
                                                     />
-                                                    <ListTodo
-                                                        aria-hidden='true'
-                                                        size={24}
-                                                        x={46}
-                                                        y={18}
-                                                    />
-                                                    <text x='58' y='60'>
-                                                        Queue
+                                                    <foreignObject
+                                                        height='28'
+                                                        width='28'
+                                                        x='18'
+                                                        y='22'
+                                                    >
+                                                        <CodexMark className='login-wall__mux-codex' />
+                                                    </foreignObject>
+                                                    <text x='62' y='44'>
+                                                        Codex
                                                     </text>
                                                 </g>
                                                 <g
                                                     className='login-wall__mux-output'
-                                                    transform='translate(480 212)'
+                                                    transform='translate(472 260)'
                                                 >
                                                     <rect
-                                                        height='80'
+                                                        height='72'
                                                         rx='12'
                                                         width='116'
                                                     />
                                                     <GitPullRequestArrow
                                                         aria-hidden='true'
                                                         size={24}
-                                                        x={46}
-                                                        y={18}
+                                                        x={18}
+                                                        y={22}
                                                     />
-                                                    <text x='58' y='60'>
-                                                        PRs
+                                                    <text x='62' y='44'>
+                                                        GitHub PR
                                                     </text>
                                                 </g>
                                             </svg>
