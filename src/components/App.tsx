@@ -4,13 +4,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
     CircleArrowUp,
-    Clock3,
     ExternalLink,
-    Inbox,
     Languages,
+    LibraryBig,
+    ListTodo,
+    MessageSquareText,
     Moon,
     Sun,
-    Workflow,
 } from 'lucide-react';
 
 import { useGitHubConnection } from '../hooks/use-github-connection.js';
@@ -227,24 +227,24 @@ export function App(): JSX.Element {
     const isGitHubConnected = githubToken.trim() !== '';
     const loginWallQueue = [
         {
-            icon: Inbox,
+            icon: LibraryBig,
             label: 'Repositories',
-            value: 'Connect GitHub and choose the repos that matter now.',
+            value: 'Connect GitHub to access repositories.',
         },
         {
-            icon: Workflow,
+            icon: ListTodo,
             label: 'Work queue',
             value: 'Browse open issues and pull requests in one view.',
         },
         {
-            icon: Clock3,
-            label: 'Prompt / context',
+            icon: MessageSquareText,
+            label: 'Prompt',
             value: 'Add the intent Codex needs before execution.',
         },
         {
             icon: CircleArrowUp,
             label: 'Assign to Codex',
-            value: 'Send the selected work item into the async queue.',
+            value: 'Let codex handle the prompted work item.',
         },
     ] as const;
 
@@ -302,7 +302,7 @@ export function App(): JSX.Element {
                                 </span>
                             </div>
                             <button
-                                className='login-wall__topbar-login'
+                                className='login-wall__button login-wall__topbar-login'
                                 onClick={() => {
                                     setIsGitHubDialogOpen(true);
                                 }}
@@ -327,8 +327,7 @@ export function App(): JSX.Element {
                                         Assign work. Wake up to results.
                                     </h1>
                                     <p className='login-wall__lede'>
-                                        Centralizes work and queues execution so
-                                        you can step away.
+                                        Stop babysitting coding agents.
                                     </p>
                                 </div>
 
@@ -394,29 +393,11 @@ export function App(): JSX.Element {
                                             {statusText}
                                         </p>
                                     )}
-
-                                    <div className='login-wall__auth-foot'>
-                                        <p className='login-wall__auth-note'>
-                                            GitHub is required to load
-                                            repositories and assign work.
-                                        </p>
-                                    </div>
                                 </div>
                             </section>
                         </section>
 
                         <footer className='login-wall__footer'>
-                            <div className='login-wall__footer-brand'>
-                                <BrandLogo
-                                    alt='Repomux'
-                                    className='login-wall__footer-logo'
-                                    tone={
-                                        loginTheme === 'dark' ? 'light' : 'dark'
-                                    }
-                                />
-                                <span>Repomux</span>
-                            </div>
-
                             <div className='login-wall__footer-actions'>
                                 <a
                                     className='login-wall__footer-link'

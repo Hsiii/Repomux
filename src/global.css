@@ -154,8 +154,8 @@ input:disabled {
 }
 
 .login-wall__wordmark-mark {
-    width: var(--space-20);
-    height: var(--space-20);
+    width: 1.5em;
+    height: 1.5em;
 }
 
 .login-wall__wordmark-text {
@@ -165,23 +165,6 @@ input:disabled {
 .login-wall__topbar-login {
     min-height: var(--space-40);
     padding: 0 var(--space-16);
-    border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-8);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-8);
-    color: var(--clr-login-text);
-    font: var(--font-label);
-    background-color: var(--clr-login-control);
-    transition:
-        border-color 120ms ease,
-        background-color 120ms ease;
-}
-
-.login-wall__topbar-login:hover {
-    border-color: var(--clr-login-border-strong);
-    background-color: var(--clr-login-control-hover);
 }
 
 .login-wall__layout {
@@ -202,6 +185,11 @@ input:disabled {
 .login-wall__auth-copy {
     display: grid;
     gap: var(--space-16);
+}
+
+.login-wall__headline-group {
+    justify-items: center;
+    text-align: center;
 }
 
 .login-wall__title {
@@ -268,7 +256,7 @@ input:disabled {
 .login-wall__auth-card {
     width: min(100%, 432px);
     display: grid;
-    gap: var(--space-20);
+    gap: var(--space-16);
     padding: var(--space-32);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-16);
@@ -318,26 +306,16 @@ input:disabled {
     font: var(--font-body-sm);
 }
 
-.login-wall__auth-foot {
-    display: grid;
-    gap: var(--space-8);
-}
-
-.login-wall__auth-note {
-    font: var(--font-body-sm);
-}
-
 .login-wall__footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: var(--space-16);
     padding: var(--space-8) 0;
     color: var(--clr-login-text-muted);
     font: var(--font-body-sm);
 }
 
-.login-wall__footer-brand,
 .login-wall__footer-actions,
 .login-wall__footer-link,
 .login-wall__language,
@@ -346,14 +324,8 @@ input:disabled {
     align-items: center;
 }
 
-.login-wall__footer-brand,
 .login-wall__footer-actions {
     gap: var(--space-12);
-}
-
-.login-wall__footer-logo {
-    width: var(--space-20);
-    height: var(--space-20);
 }
 
 .login-wall__footer-link,
