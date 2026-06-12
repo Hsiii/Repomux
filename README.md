@@ -35,6 +35,12 @@ Run the full local check:
 bun run check
 ```
 
+Install the reusable Codex automation files for this checkout:
+
+```bash
+bun run setup:codex
+```
+
 ## Configure
 
 Create `.env.local` or `.env` with:
@@ -59,6 +65,28 @@ https://tfcypevhielaycatojoo.supabase.co/auth/v1/callback
 Repomux signs in through Supabase GitHub OAuth, stores the GitHub provider token in browser session storage, then uses that token to read the queue, post the prompt comment, and add the `codex-ready` label.
 
 If you only need public repositories, set `VITE_GITHUB_OAUTH_SCOPE=public_repo`. Use `repo` when private repository access is required.
+
+## Codex Automation
+
+Repomux now ships a reusable automation template instead of a single-user prompt.
+
+Run `bun run setup:codex` from your Repomux checkout to:
+
+- install the `repomux-codex-automation` skill into `CODEX_HOME` or `~/.codex`
+- generate a local prompt file at `~/.codex/repomux/repomux-automation.prompt.md`
+
+By default the generated prompt assumes:
+
+- Repomux runs at `http://localhost:5173`
+- target repositories can be checked out under the parent directory of your Repomux checkout
+
+Override those defaults when needed:
+
+```bash
+bun run setup:codex -- --app-url https://repomux.example.com --worktree-root /absolute/path/for/repos
+```
+
+Then paste the generated prompt into a Codex automation in the app UI. The prompt is written with local paths for the current machine, but the checked-in template stays generic for every Repomux user.
 
 ## Local Supabase Auth
 

@@ -11,6 +11,7 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier . --write",
         "format:check": "prettier . --check",
+        "setup:codex": "bun scripts/setup-repomux-codex-automation.mjs",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "smoke": "bun scripts/smoke-supabase-auth-repo-crud.mjs",
         "check": "tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && vite build"
