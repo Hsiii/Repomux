@@ -431,10 +431,31 @@
 
 .login-wall__typing-line {
     display: block;
-    opacity: 0;
-    transform: translateY(var(--space-8));
-    animation: login-wall-type 6.4s ease-in-out infinite;
-    animation-delay: calc(var(--login-wall-line-index) * 180ms);
+    width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    border-right: var(--size-border-1) solid transparent;
+    color: var(--clr-login-text-muted);
+    white-space: nowrap;
+    opacity: 0.2;
+}
+
+.login-wall__typing-line--1 {
+    animation:
+        login-wall-type-line-1 8.8s steps(var(--login-wall-step-count)) infinite,
+        login-wall-caret-line-1 920ms steps(1, end) infinite;
+}
+
+.login-wall__typing-line--2 {
+    animation:
+        login-wall-type-line-2 8.8s steps(var(--login-wall-step-count)) infinite,
+        login-wall-caret-line-2 920ms steps(1, end) infinite;
+}
+
+.login-wall__typing-line--3 {
+    animation:
+        login-wall-type-line-3 8.8s steps(var(--login-wall-step-count)) infinite,
+        login-wall-caret-line-3 920ms steps(1, end) infinite;
 }
 
 .login-wall__automation-stage,
@@ -839,23 +860,87 @@
     }
 }
 
-@keyframes login-wall-type {
+@keyframes login-wall-type-line-1 {
     0%,
-    14% {
-        opacity: 0;
-        transform: translateY(var(--space-8));
+    8% {
+        width: 0;
+        opacity: 0.28;
     }
 
-    22%,
-    72% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    86%,
+    26%,
     100% {
-        opacity: 0;
-        transform: translateY(0);
+        width: min(100%, var(--login-wall-line-width));
+        opacity: 1;
+    }
+}
+
+@keyframes login-wall-type-line-2 {
+    0%,
+    28% {
+        width: 0;
+        opacity: 0.24;
+    }
+
+    54%,
+    100% {
+        width: min(100%, var(--login-wall-line-width));
+        opacity: 0.92;
+    }
+}
+
+@keyframes login-wall-type-line-3 {
+    0%,
+    56% {
+        width: 0;
+        opacity: 0.2;
+    }
+
+    82%,
+    100% {
+        width: min(100%, var(--login-wall-line-width));
+        opacity: 0.88;
+    }
+}
+
+@keyframes login-wall-caret-line-1 {
+    0%,
+    8%,
+    28%,
+    100% {
+        border-color: transparent;
+    }
+
+    10%,
+    26% {
+        border-color: var(--clr-login-text);
+    }
+}
+
+@keyframes login-wall-caret-line-2 {
+    0%,
+    30%,
+    56%,
+    100% {
+        border-color: transparent;
+    }
+
+    32%,
+    54% {
+        border-color: var(--clr-login-text);
+    }
+}
+
+@keyframes login-wall-caret-line-3 {
+    0%,
+    58%,
+    84%,
+    100% {
+        border-color: transparent;
+    }
+
+    60%,
+    82% {
+        border-color: var(--clr-login-text);
     }
 }
 

@@ -237,9 +237,21 @@ export function App(): JSX.Element {
         },
     ] as const;
     const loginWallPromptLines = [
-        'Redesign the benefit section to show repo multiplexing.',
-        'Keep the queue, prompt handoff, and automation states easy to scan.',
-        'Remove decorative clutter and keep the review path obvious.',
+        {
+            steps: 55,
+            text: 'Redesign the benefit section to show repo multiplexing.',
+            width: '55ch',
+        },
+        {
+            steps: 66,
+            text: 'Keep the queue, prompt handoff, and automation states easy to scan.',
+            width: '66ch',
+        },
+        {
+            steps: 62,
+            text: 'Remove decorative clutter and keep the review path obvious.',
+            width: '62ch',
+        },
     ] as const;
     const loginWallRepositoryNodes = [
         { name: 'repomux', owner: 'Hsiii' },
@@ -631,18 +643,27 @@ export function App(): JSX.Element {
                                                         className='prompt-input login-wall__prompt-preview'
                                                     >
                                                         {loginWallPromptLines.map(
-                                                            (line, index) => (
+                                                            (
+                                                                {
+                                                                    steps,
+                                                                    text,
+                                                                    width,
+                                                                },
+                                                                index
+                                                            ) => (
                                                                 <span
-                                                                    className='login-wall__typing-line'
-                                                                    key={line}
+                                                                    className={`login-wall__typing-line login-wall__typing-line--${index + 1}`}
+                                                                    key={text}
                                                                     style={
                                                                         {
-                                                                            '--login-wall-line-index':
-                                                                                index,
+                                                                            '--login-wall-line-width':
+                                                                                width,
+                                                                            '--login-wall-step-count':
+                                                                                steps,
                                                                         } as CSSProperties
                                                                     }
                                                                 >
-                                                                    {line}
+                                                                    {text}
                                                                 </span>
                                                             )
                                                         )}
