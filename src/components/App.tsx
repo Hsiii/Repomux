@@ -31,13 +31,10 @@ import {
     fetchAccessibleRepositories,
     fetchWorkItems,
 } from '../lib/github';
-import { mockRepositories, mockWorkItems } from '../lib/mock-data';
 import {
     getStoredActiveRepositories,
-    loadRepositories,
     setStoredActiveRepositories,
 } from '../lib/repositories';
-import { supabase } from '../lib/supabase';
 import type { Repository, WorkItem } from '../types/app';
 import { BrandLogo } from './BrandLogo';
 import { GitHubMark } from './GitHubMark';
@@ -53,9 +50,7 @@ export function App(): JSX.Element {
     const [workFilter, setWorkFilter] = useState<WorkFilter>(
         'assigned-or-unassigned'
     );
-    const [selectedItem, setSelectedItem] = useState(
-        supabase === undefined ? mockWorkItems[0] : undefined
-    );
+    const [selectedItem, setSelectedItem] = useState<WorkItem | undefined>();
     const [promptDrafts, setPromptDrafts] = useState<Record<string, string>>(
         {}
     );
@@ -68,35 +63,18 @@ export function App(): JSX.Element {
     const {
         connectGitHub,
         disconnectGitHub,
-        githubSession,
-        githubToken,
         githubUserQuery,
+        isGitHubConnected,
     } = useGitHubConnection(setStatusMessage);
 
-    const repositoriesQuery = useQuery({
-        enabled: supabase !== undefined && githubSession !== undefined,
-        queryFn: loadRepositories,
-        queryKey: ['repositories'],
-    });
-
     const accessibleRepositoriesQuery = useQuery({
-        enabled: githubToken.trim() !== '',
-        queryFn: async () => await fetchAccessibleRepositories(githubToken),
-        queryKey: ['accessible-repositories', githubToken],
+        enabled: isGitHubConnected,
+        queryFn: fetchAccessibleRepositories,
+        queryKey: ['accessible-repositories'],
         staleTime: 60_000,
     });
 
-    const availableRepositories = useMemo(() => {
-        if ((accessibleRepositoriesQuery.data?.length ?? 0) > 0) {
-            return accessibleRepositoriesQuery.data ?? [];
-        }
-
-        if (supabase === undefined) {
-            return mockRepositories;
-        }
-
-        return repositoriesQuery.data ?? [];
-    }, [accessibleRepositoriesQuery.data, repositoriesQuery.data]);
+    const availableRepositories = accessibleRepositoriesQuery.data ?? [];
 
     const effectiveActiveRepositoryNames =
         activeRepositoryNames ??
@@ -121,7 +99,7 @@ export function App(): JSX.Element {
     }, [availableRepositories, repositorySearchQuery]);
 
     const workItemsQuery = useQuery({
-        enabled: supabase !== undefined && activeRepositories.length > 0,
+        enabled: isGitHubConnected && activeRepositories.length > 0,
         queryFn: async () => await fetchWorkItems(activeRepositories),
         queryKey: [
             'work-items',
@@ -132,14 +110,7 @@ export function App(): JSX.Element {
         ],
     });
 
-    const workItems =
-        supabase === undefined
-            ? mockWorkItems.filter((item) =>
-                  activeRepositories.some(
-                      (repository) => repository.fullName === item.repo
-                  )
-              )
-            : (workItemsQuery.data ?? []);
+    const workItems = workItemsQuery.data ?? [];
 
     const filteredWorkItems = workItems.filter((item) => {
         const githubLogin = githubUserQuery.data?.login;
@@ -171,7 +142,7 @@ export function App(): JSX.Element {
                 return;
             }
 
-            await assignToCodex(selectedItem, selectedPrompt, githubToken);
+            await assignToCodex(selectedItem, selectedPrompt);
         },
         onSuccess: () => {
             setStatusMessage('Queued for Codex.');
@@ -240,13 +211,9 @@ export function App(): JSX.Element {
         statusText = assignMutation.error.message;
     } else if (accessibleRepositoriesQuery.error instanceof Error) {
         statusText = accessibleRepositoriesQuery.error.message;
-    } else if (repositoriesQuery.error instanceof Error) {
-        statusText = repositoriesQuery.error.message;
     } else if (workItemsQuery.error instanceof Error) {
         statusText = workItemsQuery.error.message;
     }
-
-    const isGitHubConnected = githubToken.trim() !== '';
     const loginWallQueueItems = [
         {
             icon: CircleDot,
@@ -301,9 +268,9 @@ export function App(): JSX.Element {
                 <main className={`app-shell app-shell--${loginTheme}`}>
                     <RepositorySidebar
                         filteredRepositories={filteredRepositories}
-                        githubToken={githubToken}
                         githubUser={githubUserQuery.data}
                         hasGitHubError={githubUserQuery.isError}
+                        isGitHubConnected={isGitHubConnected}
                         isSettingsMenuOpen={isSettingsMenuOpen}
                         language={loginLanguage}
                         onConnectGitHub={connectGitHub}
@@ -332,8 +299,8 @@ export function App(): JSX.Element {
 
                     <WorkPanel
                         filteredWorkItems={filteredWorkItems}
-                        githubToken={githubToken}
                         isAssigning={assignMutation.isPending}
+                        isGitHubConnected={isGitHubConnected}
                         onAssign={() => {
                             assignMutation.mutate(undefined);
                         }}

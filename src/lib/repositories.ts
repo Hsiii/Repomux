@@ -1,6 +1,3 @@
-import type { Repository } from '../types/app';
-import { supabase } from './supabase';
-
 const activeRepositoriesKey = 'repomux.activeRepositories';
 
 function localStorageOrUndefined(): Storage | undefined {
@@ -63,25 +60,4 @@ export function normalizeRepository(input: string): string {
     } catch {
         return trimmedInput.replace(/\.git$/u, '');
     }
-}
-
-export async function loadRepositories(): Promise<readonly Repository[]> {
-    if (supabase === undefined) {
-        return [];
-    }
-
-    const { data, error } = await supabase
-        .from('repositories')
-        .select('id, full_name')
-        .eq('is_active', true)
-        .order('full_name');
-
-    if (error !== null) {
-        throw new Error(error.message);
-    }
-
-    return data.map((repository) => ({
-        fullName: repository.full_name as string,
-        id: repository.id as string,
-    }));
 }

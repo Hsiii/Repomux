@@ -11,7 +11,7 @@ import type { WorkItem } from '../types/app';
 
 interface WorkPanelProps {
     filteredWorkItems: readonly WorkItem[];
-    githubToken: string;
+    isGitHubConnected: boolean;
     isAssigning: boolean;
     onAssign: () => void;
     onSelectItem: (item: Readonly<WorkItem> | undefined) => void;
@@ -101,7 +101,7 @@ function WorkQueue(props: {
 }
 
 function WorkDetail(props: {
-    githubToken: string;
+    isGitHubConnected: boolean;
     isAssigning: boolean;
     onAssign: () => void;
     onBack: () => void;
@@ -110,7 +110,7 @@ function WorkDetail(props: {
     selectedPrompt: string;
 }): JSX.Element {
     const {
-        githubToken,
+        isGitHubConnected,
         isAssigning,
         onAssign,
         onBack,
@@ -181,7 +181,7 @@ function WorkDetail(props: {
                 className='assign-button'
                 disabled={
                     selectedPrompt.trim() === '' ||
-                    githubToken.trim() === '' ||
+                    !isGitHubConnected ||
                     isAssigning
                 }
                 onClick={onAssign}
@@ -197,7 +197,7 @@ function WorkDetail(props: {
 export function WorkPanel(props: WorkPanelProps): JSX.Element {
     const {
         filteredWorkItems,
-        githubToken,
+        isGitHubConnected,
         isAssigning,
         onAssign,
         onSelectItem,
@@ -218,8 +218,8 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
                 />
             ) : (
                 <WorkDetail
-                    githubToken={githubToken}
                     isAssigning={isAssigning}
+                    isGitHubConnected={isGitHubConnected}
                     onAssign={onAssign}
                     onBack={() => {
                         onSelectItem(undefined);

@@ -16,9 +16,9 @@ export type WorkFilter = 'assigned' | 'assigned-or-unassigned' | 'all';
 
 interface RepositorySidebarProps {
     filteredRepositories: readonly Repository[];
-    githubToken: string;
     githubUser: GitHubUser | undefined;
     hasGitHubError: boolean;
+    isGitHubConnected: boolean;
     isSettingsMenuOpen: boolean;
     language: string;
     onConnectGitHub: () => void;
@@ -50,9 +50,9 @@ const languageOptions = [
 export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
     const {
         filteredRepositories,
-        githubToken,
         githubUser,
         hasGitHubError,
+        isGitHubConnected,
         isSettingsMenuOpen,
         language,
         onConnectGitHub,
@@ -118,7 +118,7 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
 
     let repoContent: JSX.Element;
 
-    if (githubToken.trim() === '') {
+    if (!isGitHubConnected) {
         repoContent = (
             <div className='repo-panel__empty-state'>
                 <p className='repo-panel__message'>
@@ -206,25 +206,7 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                             src={githubUser.avatar_url}
                         />
                     )}
-                    {githubToken.trim() === '' ? (
-                        <>
-                            <div className='repo-user-card__main'>
-                                <span className='repo-user-card__name'>
-                                    GitHub
-                                </span>
-                                <span className='repo-user-card__meta'>
-                                    Not connected
-                                </span>
-                            </div>
-                            <button
-                                className='repo-user-card__button'
-                                onClick={onConnectGitHub}
-                                type='button'
-                            >
-                                Connect
-                            </button>
-                        </>
-                    ) : (
+                    {isGitHubConnected ? (
                         <>
                             <div className='repo-user-card__main'>
                                 <span className='repo-user-card__name'>
@@ -353,6 +335,24 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                                     </button>
                                 </div>
                             ) : undefined}
+                        </>
+                    ) : (
+                        <>
+                            <div className='repo-user-card__main'>
+                                <span className='repo-user-card__name'>
+                                    GitHub
+                                </span>
+                                <span className='repo-user-card__meta'>
+                                    Not connected
+                                </span>
+                            </div>
+                            <button
+                                className='repo-user-card__button'
+                                onClick={onConnectGitHub}
+                                type='button'
+                            >
+                                Connect
+                            </button>
                         </>
                     )}
                 </div>
