@@ -334,7 +334,9 @@ export function App(): JSX.Element {
                                         Stop babysitting coding agents.
                                     </h1>
                                     <p className='login-wall__lede'>
-                                        Add your prompt to issues and PRs across repos, step away, and come back to PRs ready for review.
+                                        Add your prompt to issues and PRs across
+                                        repos, step away, and come back to PRs
+                                        ready for review.
                                     </p>
                                 </div>
 
