@@ -13,11 +13,9 @@
         "format:check": "prettier . --check",
         "setup:codex": "bun scripts/setup-repomux-codex-automation.mjs",
         "typecheck": "tsc -p tsconfig.json --noEmit",
-        "smoke": "bun scripts/smoke-supabase-auth-repo-crud.mjs",
         "check": "tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && next build"
     },
     "dependencies": {
-        "@supabase/supabase-js": "^2.107.0",
         "@tanstack/react-query": "5.100.11",
         "lucide-react": "1.17.0",
         "next": "^16.2.9",

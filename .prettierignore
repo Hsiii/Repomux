@@ -6,7 +6,6 @@ dist/
 .next/
 next-env.d.ts
 *.tsbuildinfo
-supabase/.temp/
 
 # IDE files
 .vscode/
