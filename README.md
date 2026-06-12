@@ -69,6 +69,7 @@ If you only need public repositories, set `VITE_GITHUB_OAUTH_SCOPE=public_repo`.
 ## Codex Automation
 
 Repomux now ships a reusable automation template and a repo-local skill for native Codex automation setup.
+The automation itself is GitHub-driven: it looks for open issues or pull requests labeled `codex-ready` and processes one item at a time. Repomux is optional operator UI, not a runtime dependency.
 
 Preferred setup:
 
@@ -76,7 +77,7 @@ Preferred setup:
 2. Ask Codex to set up the Repomux automation for you.
 3. Codex should create a suggested in-app automation for review instead of asking you to copy a prompt by hand.
 
-The repo-local skill at [.agents/skills/repomux-codex-automation/SKILL.md](.agents/skills/repomux-codex-automation/SKILL.md) tells Codex to use the native automation flow and prefill the current checkout path, worktree root, and Repomux URL.
+The repo-local skill at [.agents/skills/codex-ready-github-automation/SKILL.md](/Users/hsi/Projects/Current/Repomux/.agents/skills/codex-ready-github-automation/SKILL.md) tells Codex to use the native automation flow and prefill the current checkout path, local repository root, and GitHub scope hint.
 
 Manual fallback:
 
@@ -85,27 +86,28 @@ Manual fallback:
 
 By default the generated prompt assumes:
 
-- Repomux runs at `https://repomux.hsichen.dev`
 - the automation workspace root is the current checkout
 - the local repository root must be set explicitly before the automation is safe to save
+- the GitHub search scope must be set explicitly before the automation is safe to save
 
 Override those defaults when needed:
 
 ```bash
-bun run setup:codex -- --app-url https://repomux.example.com --automation-workspace-root /absolute/path/to/workspace --worktree-root /absolute/path/for/repos --output /absolute/path/repomux-automation.prompt.md
+bun run setup:codex -- --automation-workspace-root /absolute/path/to/workspace --worktree-root /absolute/path/for/repos --github-scope-hint org:my-org --output /absolute/path/repomux-automation.prompt.md
 ```
 
 The checked-in template stays generic for every Repomux user. Codex or the fallback renderer writes machine-specific paths only at setup time.
 
 Important caveats for shared users:
 
-- The hosted app URL is the default. `http://localhost:5173` only applies to local development.
+- The automation does not need Repomux. GitHub label search is the queue source of truth.
+- Repomux is optional. Use it when you want queue triage UI or a convenient way to add the `## Codex prompt` comment.
 - A Codex automation still runs on the user's local machine. It needs a real local directory where target repositories can be cloned or reused.
 - This workflow also depends on GitHub being set up in two places:
     - Codex/ChatGPT must have GitHub connected and approved for the required repositories.
     - The local machine may also need working git credentials and `gh auth login` for clone, push, pull request, and comment flows.
+- The automation also needs an explicit GitHub search scope such as `repo:owner/name`, `org:my-org`, or `user:my-user`.
 - Do not assume another user's repository root matches your machine. Confirm it before creating or saving an automation.
-- The automation depends on an existing Repomux browser session. If the hosted site requires login, MFA, or consent at runtime, the run should stop and report `manual sign-in required`.
 - The repo-local skill only helps when Codex is opened on a Repomux checkout. Users who only know the hosted site and do not have this repo locally will need Codex to create the automation from explicit instructions instead of relying on the repo skill.
 - If GitHub is missing or blocked, the automation should stop with either `GitHub connector setup required` or `local GitHub auth required` instead of continuing.
 
