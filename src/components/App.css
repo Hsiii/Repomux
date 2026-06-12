@@ -295,7 +295,7 @@
 .login-wall__mux-repo rect,
 .login-wall__mux-output rect {
     fill: var(--clr-login-card-strong);
-    stroke: var(--clr-login-border-strong);
+    stroke: var(--clr-login-border);
     stroke-width: var(--size-border-1);
 }
 

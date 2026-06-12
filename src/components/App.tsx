@@ -567,23 +567,23 @@ export function App(): JSX.Element {
                                                 </title>
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--blue'
-                                                    d='M192 82 C244 82 258 160 316 206'
+                                                    d='M192 86 C240 86 254 164 300 206'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--red'
-                                                    d='M192 158 C250 158 264 184 316 206'
+                                                    d='M192 162 C246 162 260 186 300 206'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--yellow'
-                                                    d='M192 234 C250 234 264 228 316 206'
+                                                    d='M192 238 C246 238 260 226 300 206'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--green'
-                                                    d='M192 310 C244 310 258 252 316 206'
+                                                    d='M192 314 C240 314 254 248 300 206'
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--pink'
-                                                    d='M374 206 C424 206 438 206 492 206'
+                                                    d='M354 206 C414 206 438 206 492 206'
                                                 />
                                                 {loginWallRepositoryNodes.map(
                                                     (
@@ -593,7 +593,7 @@ export function App(): JSX.Element {
                                                         <g
                                                             className='login-wall__mux-repo'
                                                             key={name}
-                                                            transform={`translate(20 ${48 + index * 76})`}
+                                                            transform={`translate(20 ${52 + index * 76})`}
                                                         >
                                                             <rect
                                                                 height='68'
