@@ -211,7 +211,7 @@ function WorkDetail(props: {
                 type='button'
             >
                 <span>{isAssigning ? 'Assigning' : 'Assign to Codex'}</span>
-                <CircleArrowUp aria-hidden='true' size={28} />
+                <CircleArrowUp aria-hidden='true' size={20} />
             </button>
         </article>
     );

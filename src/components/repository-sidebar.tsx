@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import { LogOut } from 'lucide-react';
+import { GitBranch, LogOut } from 'lucide-react';
 
 import type { GitHubUser, Repository } from '../types/app.js';
 
@@ -29,6 +29,23 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
         repositorySearchQuery,
         selectedRepositoryNames,
     } = props;
+
+    function renderRepositoryName(fullName: string) {
+        const [owner, ...nameParts] = fullName.split('/');
+        const name = nameParts.join('/');
+
+        return (
+            <>
+                <span className='repo-row__owner'>{owner}</span>
+                {name === '' ? undefined : (
+                    <>
+                        <span className='repo-row__slash'>/</span>
+                        <span className='repo-row__name'>{name}</span>
+                    </>
+                )}
+            </>
+        );
+    }
 
     let repoContent: JSX.Element;
 
@@ -66,8 +83,11 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                             }}
                             type='button'
                         >
+                            <span aria-hidden='true' className='repo-row__icon'>
+                                <GitBranch size={16} />
+                            </span>
                             <span className='repo-row__label'>
-                                {repository.fullName}
+                                {renderRepositoryName(repository.fullName)}
                             </span>
                         </button>
                     );
@@ -103,9 +123,20 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                 </div>
 
                 <div className='repo-user-card'>
-                    <span aria-hidden='true' className='repo-user-card__mark'>
-                        GH
-                    </span>
+                    {githubUser?.avatar_url === undefined ? (
+                        <span
+                            aria-hidden='true'
+                            className='repo-user-card__mark'
+                        >
+                            GH
+                        </span>
+                    ) : (
+                        <img
+                            alt=''
+                            className='repo-user-card__avatar'
+                            src={githubUser.avatar_url}
+                        />
+                    )}
                     {githubToken.trim() === '' ? (
                         <>
                             <div className='repo-user-card__main'>

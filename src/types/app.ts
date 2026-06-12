@@ -15,6 +15,7 @@ export interface GitHubIssue {
 }
 
 export interface GitHubUser {
+    avatar_url?: string;
     login: string;
     name?: string | null;
 }

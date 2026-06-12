@@ -31,7 +31,6 @@ import {
 import { supabase } from '../lib/supabase.js';
 import type { Repository, WorkItem } from '../types/app.js';
 import { BrandLogo } from './brand-logo.js';
-import { GitHubAuthModal } from './modals/github-auth-modal.js';
 import { RepositorySidebar } from './repository-sidebar.js';
 import { WorkPanel } from './work-panel.js';
 
@@ -40,7 +39,6 @@ export function App(): JSX.Element {
     const [activeRepositoryNames, setActiveRepositoryNames] = useState<
         readonly string[] | undefined
     >(getStoredActiveRepositories);
-    const [isGitHubDialogOpen, setIsGitHubDialogOpen] = useState(false);
     const [includeUnassignedIssues, setIncludeUnassignedIssues] =
         useState(true);
     const [selectedItem, setSelectedItem] = useState(
@@ -292,9 +290,7 @@ export function App(): JSX.Element {
                         githubToken={githubToken}
                         githubUser={githubUserQuery.data}
                         hasGitHubError={githubUserQuery.isError}
-                        onConnectGitHub={() => {
-                            setIsGitHubDialogOpen(true);
-                        }}
+                        onConnectGitHub={connectGitHub}
                         onDisconnectGitHub={disconnectGitHub}
                         onSelectRepository={selectRepository}
                         onUpdateRepositorySearchQuery={setRepositorySearchQuery}
@@ -335,9 +331,7 @@ export function App(): JSX.Element {
                             </div>
                             <button
                                 className='login-wall__button login-wall__topbar-login'
-                                onClick={() => {
-                                    setIsGitHubDialogOpen(true);
-                                }}
+                                onClick={connectGitHub}
                                 type='button'
                             >
                                 <svg
@@ -367,9 +361,7 @@ export function App(): JSX.Element {
 
                                 <button
                                     className='login-wall__button login-wall__hero-button'
-                                    onClick={() => {
-                                        setIsGitHubDialogOpen(true);
-                                    }}
+                                    onClick={connectGitHub}
                                     type='button'
                                 >
                                     <svg
@@ -424,18 +416,72 @@ export function App(): JSX.Element {
 
                                                         <div className='repo-list repo-list--sidebar'>
                                                             <div className='repo-row repo-row--selected'>
+                                                                <span
+                                                                    aria-hidden='true'
+                                                                    className='repo-row__icon'
+                                                                >
+                                                                    <GitBranch
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                </span>
                                                                 <span className='repo-row__label'>
-                                                                    hsi/Repomux
+                                                                    <span className='repo-row__owner'>
+                                                                        hsi
+                                                                    </span>
+                                                                    <span className='repo-row__slash'>
+                                                                        /
+                                                                    </span>
+                                                                    <span className='repo-row__name'>
+                                                                        Repomux
+                                                                    </span>
                                                                 </span>
                                                             </div>
                                                             <div className='repo-row'>
+                                                                <span
+                                                                    aria-hidden='true'
+                                                                    className='repo-row__icon'
+                                                                >
+                                                                    <GitBranch
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                </span>
                                                                 <span className='repo-row__label'>
-                                                                    hsi/create-hsi-app
+                                                                    <span className='repo-row__owner'>
+                                                                        hsi
+                                                                    </span>
+                                                                    <span className='repo-row__slash'>
+                                                                        /
+                                                                    </span>
+                                                                    <span className='repo-row__name'>
+                                                                        create-hsi-app
+                                                                    </span>
                                                                 </span>
                                                             </div>
                                                             <div className='repo-row'>
+                                                                <span
+                                                                    aria-hidden='true'
+                                                                    className='repo-row__icon'
+                                                                >
+                                                                    <GitBranch
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                </span>
                                                                 <span className='repo-row__label'>
-                                                                    hsi/dotfiles
+                                                                    <span className='repo-row__owner'>
+                                                                        hsi
+                                                                    </span>
+                                                                    <span className='repo-row__slash'>
+                                                                        /
+                                                                    </span>
+                                                                    <span className='repo-row__name'>
+                                                                        dotfiles
+                                                                    </span>
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -660,9 +706,7 @@ export function App(): JSX.Element {
                                         </div>
                                         <button
                                             className='login-wall__value-button'
-                                            onClick={() => {
-                                                setIsGitHubDialogOpen(true);
-                                            }}
+                                            onClick={connectGitHub}
                                             type='button'
                                         >
                                             Connect GitHub and prepare work
@@ -797,14 +841,6 @@ export function App(): JSX.Element {
                     </div>
                 </main>
             )}
-            {isGitHubDialogOpen ? (
-                <GitHubAuthModal
-                    onClose={() => {
-                        setIsGitHubDialogOpen(false);
-                    }}
-                    onSubmit={connectGitHub}
-                />
-            ) : undefined}
         </>
     );
 }
