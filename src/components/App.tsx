@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
+    Check,
     ChevronDown,
     CircleArrowUp,
     ExternalLink,
@@ -50,6 +51,7 @@ export function App(): JSX.Element {
     const [statusMessage, setStatusMessage] = useState('');
     const [loginTheme, setLoginTheme] = useState<'dark' | 'light'>('dark');
     const [loginLanguage, setLoginLanguage] = useState('en');
+    const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
 
     const {
         connectGitHub,
@@ -248,6 +250,13 @@ export function App(): JSX.Element {
             value: 'Let codex handle the prompted work item.',
         },
     ] as const;
+    const loginLanguages = [
+        { label: 'English', shortLabel: 'EN', value: 'en' },
+        { label: 'Chinese', shortLabel: 'ZH', value: 'zh' },
+    ] as const;
+    const selectedLoginLanguage =
+        loginLanguages.find((language) => language.value === loginLanguage) ??
+        loginLanguages[0];
 
     return (
         <>
@@ -421,23 +430,70 @@ export function App(): JSX.Element {
                                     />
                                 </a>
 
-                                <label className='login-wall__language'>
-                                    <Languages aria-hidden='true' size={16} />
-                                    <span className='sr-only'>Language</span>
-                                    <select
-                                        aria-label='Language'
-                                        onChange={(event) => {
-                                            setLoginLanguage(
-                                                event.target.value
+                                <div className='login-wall__language'>
+                                    <button
+                                        aria-expanded={isLanguageMenuOpen}
+                                        aria-haspopup='menu'
+                                        className='login-wall__language-trigger'
+                                        onClick={() => {
+                                            setIsLanguageMenuOpen(
+                                                (current) => !current
                                             );
                                         }}
-                                        value={loginLanguage}
+                                        type='button'
                                     >
-                                        <option value='en'>EN</option>
-                                        <option value='zh'>ZH</option>
-                                    </select>
-                                    <ChevronDown aria-hidden='true' size={14} />
-                                </label>
+                                        <Languages
+                                            aria-hidden='true'
+                                            size={16}
+                                        />
+                                        <span>
+                                            {selectedLoginLanguage.shortLabel}
+                                        </span>
+                                        <ChevronDown
+                                            aria-hidden='true'
+                                            size={14}
+                                        />
+                                    </button>
+
+                                    {isLanguageMenuOpen ? (
+                                        <div
+                                            className='login-wall__language-menu'
+                                            role='menu'
+                                        >
+                                            {loginLanguages.map((language) => (
+                                                <button
+                                                    aria-checked={
+                                                        language.value ===
+                                                        loginLanguage
+                                                    }
+                                                    className='login-wall__language-option'
+                                                    key={language.value}
+                                                    onClick={() => {
+                                                        setLoginLanguage(
+                                                            language.value
+                                                        );
+                                                        setIsLanguageMenuOpen(
+                                                            false
+                                                        );
+                                                    }}
+                                                    role='menuitemradio'
+                                                    type='button'
+                                                >
+                                                    <span>
+                                                        {language.label}
+                                                    </span>
+                                                    {language.value ===
+                                                    loginLanguage ? (
+                                                        <Check
+                                                            aria-hidden='true'
+                                                            size={14}
+                                                        />
+                                                    ) : undefined}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : undefined}
+                                </div>
 
                                 <button
                                     aria-label={

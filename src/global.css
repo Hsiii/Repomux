@@ -318,7 +318,7 @@ input:disabled {
 
 .login-wall__footer-actions,
 .login-wall__footer-link,
-.login-wall__language,
+.login-wall__language-trigger,
 .login-wall__theme-toggle {
     display: inline-flex;
     align-items: center;
@@ -329,7 +329,7 @@ input:disabled {
 }
 
 .login-wall__footer-link,
-.login-wall__language,
+.login-wall__language-trigger,
 .login-wall__theme-toggle {
     min-height: var(--space-40);
     gap: var(--space-8);
@@ -343,27 +343,56 @@ input:disabled {
 }
 
 .login-wall__footer-link:hover,
-.login-wall__language:hover,
+.login-wall__language-trigger:hover,
 .login-wall__theme-toggle:hover {
     border-color: var(--clr-login-border-strong);
     color: var(--clr-login-text);
     background-color: var(--clr-login-control-hover);
 }
 
-.login-wall__language select {
-    min-width: var(--space-32);
-    padding-right: var(--space-4);
-    border: 0;
-    appearance: none;
-    color: inherit;
-    font: inherit;
-    background-color: transparent;
-    outline: 0;
+.login-wall__language {
+    position: relative;
 }
 
-.login-wall__language:focus-within {
-    outline: var(--size-outline) solid var(--clr-accent);
-    outline-offset: var(--size-outline);
+.login-wall__language-trigger[aria-expanded='true'] {
+    border-color: var(--clr-login-border-strong);
+    color: var(--clr-login-text);
+    background-color: var(--clr-login-control-hover);
+}
+
+.login-wall__language-menu {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + var(--space-8));
+    width: 176px;
+    padding: var(--space-4);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-8);
+    display: grid;
+    gap: var(--space-4);
+    background-color: var(--clr-login-card-strong);
+    box-shadow: var(--clr-login-shadow);
+    z-index: 1;
+}
+
+.login-wall__language-option {
+    min-height: var(--space-40);
+    padding: 0 var(--space-12);
+    border: 0;
+    border-radius: var(--radius-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+    color: var(--clr-login-text-muted);
+    font: var(--font-label);
+    background-color: transparent;
+}
+
+.login-wall__language-option:hover,
+.login-wall__language-option[aria-checked='true'] {
+    color: var(--clr-login-text);
+    background-color: var(--clr-login-control-hover);
 }
 
 @media (max-width: 960px) {
