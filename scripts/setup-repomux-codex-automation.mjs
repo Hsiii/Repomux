@@ -66,9 +66,9 @@ async function main() {
 
     const template = await readFile(templatePath, 'utf8');
     const renderedTemplate = template
-        .replaceAll('__REPOMUX_APP_URL__', appUrl)
-        .replaceAll('__AUTOMATION_WORKSPACE_ROOT__', automationWorkspaceRoot)
-        .replaceAll('__WORKTREE_ROOT__', worktreeRoot);
+        .replaceAll('{{REPOMUX_APP_URL}}', appUrl)
+        .replaceAll('{{AUTOMATION_WORKSPACE_ROOT}}', automationWorkspaceRoot)
+        .replaceAll('{{WORKTREE_ROOT}}', worktreeRoot);
 
     await mkdir(path.dirname(outputPath), { recursive: true });
     await writeFile(outputPath, renderedTemplate);
@@ -82,6 +82,7 @@ async function main() {
             '1. In this checkout, ask Codex to set up the Repomux automation.',
             '2. Let Codex create a suggested automation in the app for review.',
             '3. Confirm the local repository root before saving if it is not already known.',
+            '4. Make sure GitHub is connected in Codex and local git or gh auth is ready if the run needs clone or push access.',
             '',
             'Manual fallback:',
             `- Paste the prompt from ${outputPath} into a Codex automation yourself.`,
