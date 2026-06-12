@@ -684,15 +684,6 @@ export function App(): JSX.Element {
                                             className='login-wall__app-preview'
                                         >
                                             <section className='work-panel login-wall__work-panel-preview'>
-                                                <div className='work-panel__header'>
-                                                    <h2 className='work-title'>
-                                                        Work queue
-                                                    </h2>
-                                                    <span className='work-subtitle'>
-                                                        3 active items
-                                                    </span>
-                                                </div>
-
                                                 <div className='custom-scrollbar work-panel__queue-scroll'>
                                                     <div className='queue-list'>
                                                         {loginWallQueueItems.map(
