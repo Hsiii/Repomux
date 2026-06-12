@@ -331,10 +331,10 @@ export function App(): JSX.Element {
                             <div className='login-wall__story'>
                                 <div className='login-wall__headline-group'>
                                     <h1 className='login-wall__title'>
-                                        Assign work. Wake up to results.
+                                        Stop babysitting coding agents.
                                     </h1>
                                     <p className='login-wall__lede'>
-                                        Stop babysitting coding agents.
+                                        Add your prompt to issues and PRs across repos, step away, and come back to PRs ready for review.
                                     </p>
                                 </div>
 
