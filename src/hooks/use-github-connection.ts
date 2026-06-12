@@ -4,18 +4,18 @@ import type { Session } from '@supabase/supabase-js';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { fetchGitHubUser, getOAuthRedirectUri } from '../lib/github';
 import {
     getGitHubOAuthRedirectUrl,
     getGitHubOAuthScope,
-} from '../lib/github-auth.js';
+} from '../lib/github-auth';
 import {
     clearStoredGitHubToken,
     getStoredGitHubToken,
     setStoredGitHubToken,
-} from '../lib/github-session.js';
-import { fetchGitHubUser, getOAuthRedirectUri } from '../lib/github.js';
-import { supabase } from '../lib/supabase.js';
-import type { GitHubUser } from '../types/app.js';
+} from '../lib/github-session';
+import { supabase } from '../lib/supabase';
+import type { GitHubUser } from '../types/app';
 
 interface UseGitHubConnectionResult {
     connectGitHub: () => void;

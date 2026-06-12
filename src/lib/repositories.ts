@@ -1,12 +1,21 @@
-import type { Repository } from '../types/app.js';
-import { supabase } from './supabase.js';
+import type { Repository } from '../types/app';
+import { supabase } from './supabase';
 
 const activeRepositoriesKey = 'repomux.activeRepositories';
 
-export function getStoredActiveRepositories(): readonly string[] | undefined {
-    const storedValue = globalThis.localStorage.getItem(activeRepositoriesKey);
+function localStorageOrUndefined(): Storage | undefined {
+    try {
+        return globalThis.localStorage;
+    } catch {
+        return undefined;
+    }
+}
 
-    if (storedValue === null) {
+export function getStoredActiveRepositories(): readonly string[] | undefined {
+    const storedValue =
+        localStorageOrUndefined()?.getItem(activeRepositoriesKey) ?? undefined;
+
+    if (storedValue === undefined) {
         return undefined;
     }
 
@@ -18,7 +27,7 @@ export function getStoredActiveRepositories(): readonly string[] | undefined {
 export function setStoredActiveRepositories(
     repositoryNames: readonly string[]
 ): void {
-    globalThis.localStorage.setItem(
+    localStorageOrUndefined()?.setItem(
         activeRepositoriesKey,
         repositoryNames.join('\n')
     );

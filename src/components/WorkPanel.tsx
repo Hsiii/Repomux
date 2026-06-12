@@ -7,7 +7,7 @@ import {
     GitPullRequestArrow,
 } from 'lucide-react';
 
-import type { WorkItem } from '../types/app.js';
+import type { WorkItem } from '../types/app';
 
 interface WorkPanelProps {
     filteredWorkItems: readonly WorkItem[];

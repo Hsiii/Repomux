@@ -11,8 +11,8 @@ function getRequiredEnv(name) {
 }
 
 async function main() {
-    const supabaseUrl = getRequiredEnv('VITE_SUPABASE_URL');
-    const supabaseKey = getRequiredEnv('VITE_SUPABASE_PUBLISHABLE_KEY');
+    const supabaseUrl = getRequiredEnv('NEXT_PUBLIC_SUPABASE_URL');
+    const supabaseKey = getRequiredEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY');
     const accessToken = getRequiredEnv('REPO_MUX_SMOKE_ACCESS_TOKEN');
 
     const supabase = createClient(supabaseUrl, supabaseKey, {

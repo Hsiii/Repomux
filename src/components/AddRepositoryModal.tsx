@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 import { Plus, X } from 'lucide-react';
 
-import type { Repository } from '../../types/app.js';
+import type { Repository } from '../types/app';
 
 interface AddRepositoryModalProps {
     accessibleRepositoryCount: number;

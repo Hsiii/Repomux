@@ -46,17 +46,17 @@ bun run setup:codex
 Create `.env.local` or `.env` with:
 
 ```bash
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
-VITE_GITHUB_OAUTH_SCOPE=repo
-VITE_GITHUB_OAUTH_REDIRECT_URL=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_GITHUB_OAUTH_SCOPE=repo
+NEXT_PUBLIC_GITHUB_OAUTH_REDIRECT_URL=
 ```
 
-Leave `VITE_GITHUB_OAUTH_REDIRECT_URL` empty unless you need a local-only override while running on `localhost` or `127.0.0.1`. In production, Repomux now uses the current browser URL as the OAuth return target.
+Leave `NEXT_PUBLIC_GITHUB_OAUTH_REDIRECT_URL` empty unless you need a local-only override while running on `localhost` or `127.0.0.1`. In production, Repomux now uses the current browser URL as the OAuth return target.
 
 Apply the checked-in migration `supabase/migrations/20260612010200_scope_repositories_to_github_users.sql`.
 
-Enable GitHub as a Supabase Auth provider and allow your app URL, such as `http://localhost:5173/`, as a redirect target in Supabase.
+Enable GitHub as a Supabase Auth provider and allow your app URL, such as `http://localhost:3000/`, as a redirect target in Supabase.
 
 If you use hosted Supabase, register the Supabase callback URL on the GitHub OAuth App:
 
@@ -66,7 +66,7 @@ https://tfcypevhielaycatojoo.supabase.co/auth/v1/callback
 
 Repomux signs in through Supabase GitHub OAuth, stores the GitHub provider token in browser session storage, then uses that token to read the queue, post the prompt comment, and add the `codex-ready` label.
 
-If you only need public repositories, set `VITE_GITHUB_OAUTH_SCOPE=public_repo`. Use `repo` when private repository access is required.
+If you only need public repositories, set `NEXT_PUBLIC_GITHUB_OAUTH_SCOPE=public_repo`. Use `repo` when private repository access is required.
 
 ## Codex Automation
 
@@ -122,10 +122,10 @@ Use local Supabase when you want isolated auth configuration for development.
 3. Create `.env.local` from `.env.local.supabase.example`.
 4. Fill in `SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET`.
 5. Start Supabase with `bunx supabase start`.
-6. Copy the local anon key from `bunx supabase status` into `VITE_SUPABASE_PUBLISHABLE_KEY`.
-7. Start the app with `bun run dev -- --host 127.0.0.1 --port 5173`.
+6. Copy the local anon key from `bunx supabase status` into `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+7. Start the app with `bun run dev -- --hostname 127.0.0.1 --port 3000`.
 
-The checked-in `supabase/config.toml` already enables GitHub Auth locally and returns the browser to `http://localhost:5173/`.
+The checked-in `supabase/config.toml` already enables GitHub Auth locally and returns the browser to `http://localhost:3000/`.
 
 ## Smoke Test
 

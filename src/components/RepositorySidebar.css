@@ -1,0 +1,366 @@
+.repo-panel {
+    min-height: 0;
+    padding: var(--space-40) var(--space-28) var(--space-16);
+    overflow: hidden;
+    border-right: var(--size-border-1) solid var(--clr-border);
+    background-color: var(--clr-panel);
+}
+
+.repo-panel__section {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 0;
+}
+
+.repo-panel__main {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0;
+}
+
+.repo-panel__header {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--space-24);
+    padding-bottom: var(--space-16);
+    background-color: var(--clr-panel);
+}
+
+.repo-panel__header::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: var(--space-4);
+    pointer-events: none;
+    transform: translateY(100%);
+    box-shadow: 0 var(--space-4) var(--space-8) calc(var(--space-4) * -1)
+        var(--clr-scroll-fade);
+}
+
+.repo-panel__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+}
+
+.repo-panel__title {
+    font: var(--font-title-sm);
+}
+
+.repo-panel__message {
+    color: var(--clr-text-dim);
+    font: var(--font-body-sm);
+}
+
+.repo-panel__empty-state {
+    display: grid;
+    align-content: start;
+    padding: var(--space-12) 0;
+}
+
+.repo-search-input {
+    height: var(--size-icon-button);
+}
+
+.repo-panel__scroll {
+    min-height: 0;
+    overflow: auto;
+    padding-top: var(--space-16);
+    padding-right: var(--space-8);
+    padding-bottom: var(--space-16);
+}
+
+.repo-list--sidebar {
+    min-height: 0;
+}
+
+.repo-user-card {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-12);
+    margin-top: var(--space-8);
+    padding: var(--space-12);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-12);
+    background-color: var(--clr-panel-soft);
+    box-shadow:
+        0 calc(var(--space-4) * -1) var(--space-8) calc(var(--space-4) * -1)
+            var(--clr-scroll-fade),
+        var(--shadow-surface);
+}
+
+.repo-user-card__settings-menu {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + var(--space-8));
+    z-index: 2;
+    width: var(--size-settings-menu);
+    padding: var(--space-8);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-8);
+    display: grid;
+    gap: var(--space-4);
+    background-color: var(--clr-surface);
+    box-shadow: var(--shadow-surface);
+}
+
+.repo-user-card__settings-group {
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-8);
+    border-top: var(--size-border-1) solid var(--clr-border);
+}
+
+.repo-user-card__settings-label {
+    padding: var(--space-4) var(--space-8);
+    color: var(--clr-text-dim);
+    font: var(--font-auth-eyebrow);
+    text-transform: uppercase;
+}
+
+.repo-user-card__settings-item {
+    min-height: var(--space-40);
+    padding: 0 var(--space-8);
+    border: 0;
+    border-radius: var(--radius-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    color: var(--clr-text-muted);
+    font: var(--font-label);
+    text-align: left;
+    background-color: transparent;
+}
+
+.repo-user-card__settings-item span {
+    flex: 1;
+    min-width: 0;
+}
+
+.repo-user-card__settings-item:hover,
+.repo-user-card__settings-item:focus-visible,
+.repo-user-card__settings-item[aria-checked='true'] {
+    color: var(--clr-text);
+    background-color: var(--clr-surface-muted);
+}
+
+.repo-user-card__mark {
+    width: var(--space-32);
+    height: var(--space-32);
+    display: inline-grid;
+    place-items: center;
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: 50%;
+    color: var(--clr-text-muted);
+    font: var(--font-label);
+}
+
+.repo-user-card__avatar {
+    width: var(--space-32);
+    height: var(--space-32);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.repo-user-card__main {
+    min-width: 0;
+    display: grid;
+    gap: var(--space-4);
+}
+
+.repo-user-card__name,
+.repo-user-card__meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.repo-user-card__name {
+    font: var(--font-label);
+}
+
+.repo-user-card__meta {
+    color: var(--clr-text-dim);
+    font: var(--font-body-sm);
+}
+
+.repo-user-card__button,
+.repo-user-card__icon-button {
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-8);
+    color: var(--clr-text);
+    background-color: var(--clr-surface-muted);
+}
+
+.repo-user-card__button {
+    min-height: var(--space-32);
+    padding: 0 var(--space-12);
+    font: var(--font-label);
+}
+
+.repo-user-card__icon-button {
+    width: var(--space-32);
+    height: var(--space-32);
+    display: inline-grid;
+    place-items: center;
+}
+
+.section-add-button {
+    width: var(--space-32);
+    height: var(--space-32);
+    display: inline-grid;
+    place-items: center;
+    color: var(--clr-text-muted);
+    background-color: transparent;
+    border: 0;
+    border-radius: var(--radius-8);
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+
+.repo-group__header:hover .section-add-button,
+.repo-group__header:focus-within .section-add-button {
+    opacity: 1;
+}
+
+.section-add-button:hover,
+.section-add-button:focus-visible {
+    color: var(--clr-text);
+    background-color: var(--clr-surface-muted);
+}
+
+.repo-groups {
+    grid-area: list;
+    display: grid;
+    gap: var(--space-20);
+    align-content: start;
+    min-height: 0;
+}
+
+.repo-group {
+    display: grid;
+    gap: var(--space-8);
+}
+
+.repo-group__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+}
+
+.repo-group__heading {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8);
+    color: var(--clr-text-dim);
+}
+
+.repo-group__title {
+    color: var(--clr-text-dim);
+    font: var(--font-body-sm);
+}
+
+.repo-list {
+    display: grid;
+    gap: var(--space-8);
+    align-content: start;
+    border-radius: var(--radius-8);
+}
+
+.repo-row {
+    width: 100%;
+    height: var(--size-repo-row);
+    min-width: 0;
+    display: grid;
+    grid-template-columns: var(--space-20) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-8);
+    padding: 0 var(--space-12);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-8);
+    background-color: var(--clr-panel-soft);
+    text-align: left;
+}
+
+.repo-row--selected {
+    border-color: var(--clr-border-strong);
+    background-color: var(--clr-hover);
+}
+
+.repo-row__label {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+    color: var(--clr-text);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.repo-row__icon {
+    display: inline-grid;
+    place-items: center;
+    color: var(--clr-text-dim);
+}
+
+.repo-row__owner,
+.repo-row__slash {
+    flex: 0 1 auto;
+    overflow: hidden;
+    color: var(--clr-text-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.repo-row__slash {
+    padding: 0 var(--space-4);
+}
+
+.repo-row__name {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--clr-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .repo-panel {
+        min-height: auto;
+        display: block;
+        overflow: visible;
+        border-right: 0;
+        border-bottom: var(--size-border-1) solid var(--clr-border);
+    }
+
+    .repo-panel__section {
+        height: auto;
+    }
+
+    .repo-panel__header::after {
+        display: none;
+    }
+
+    .repo-panel__scroll {
+        overflow: visible;
+        padding-right: 0;
+        scrollbar-gutter: auto;
+    }
+}

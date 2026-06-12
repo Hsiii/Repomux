@@ -1,0 +1,30 @@
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-12);
+}
+
+.modal-secondary-button,
+.modal-danger-button {
+    min-height: var(--size-repo-add-button);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    padding: 0 var(--space-16);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-8);
+    font: var(--font-label);
+}
+
+.modal-secondary-button {
+    color: var(--clr-text-muted);
+    background-color: transparent;
+}
+
+.modal-danger-button {
+    color: var(--clr-text);
+    background-color: var(--clr-error);
+    border-color: transparent;
+    box-shadow: var(--shadow-surface);
+}

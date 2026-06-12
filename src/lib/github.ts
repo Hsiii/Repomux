@@ -3,11 +3,8 @@ import type {
     GitHubUser,
     Repository,
     WorkItem,
-} from '../types/app.js';
-import {
-    getStoredGitHubToken,
-    setStoredGitHubToken,
-} from './github-session.js';
+} from '../types/app';
+import { getStoredGitHubToken, setStoredGitHubToken } from './github-session';
 
 export function getOAuthRedirectUri(): string {
     return `${globalThis.location.origin}${globalThis.location.pathname}`;

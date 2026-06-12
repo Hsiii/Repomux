@@ -10,7 +10,7 @@ import {
     Sun,
 } from 'lucide-react';
 
-import type { GitHubUser, Repository } from '../types/app.js';
+import type { GitHubUser, Repository } from '../types/app';
 
 export type WorkFilter = 'assigned' | 'assigned-or-unassigned' | 'all';
 

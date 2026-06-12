@@ -4,9 +4,9 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview",
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier . --write",
@@ -14,12 +14,13 @@
         "setup:codex": "bun scripts/setup-repomux-codex-automation.mjs",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "smoke": "bun scripts/smoke-supabase-auth-repo-crud.mjs",
-        "check": "tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && vite build"
+        "check": "tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && next build"
     },
     "dependencies": {
         "@supabase/supabase-js": "^2.107.0",
         "@tanstack/react-query": "5.100.11",
         "lucide-react": "1.17.0",
+        "next": "16.1.6",
         "react": "19.2.6",
         "react-dom": "19.2.6"
     },
@@ -27,14 +28,12 @@
         "@ianvs/prettier-plugin-sort-imports": "4.7.1",
         "@types/react": "19.2.15",
         "@types/react-dom": "19.2.3",
-        "@vitejs/plugin-react": "6.0.2",
         "complete-lint": "5.11.0",
         "eslint": "10.4.0",
         "eslint-config-complete": "4.7.2",
         "eslint-import-resolver-typescript": "4.4.4",
         "prettier": "3.8.3",
-        "typescript": "6.0.3",
-        "vite": "8.0.13"
+        "typescript": "6.0.3"
     },
     "packageManager": "bun@1.3.9"
 }

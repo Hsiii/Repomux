@@ -1,8 +1,6 @@
-const configuredGitHubOAuthScope = import.meta.env.VITE_GITHUB_OAUTH_SCOPE as
-    | string
-    | undefined;
-const configuredGitHubOAuthRedirectUrl = import.meta.env
-    .VITE_GITHUB_OAUTH_REDIRECT_URL as string | undefined;
+const configuredGitHubOAuthScope = process.env.NEXT_PUBLIC_GITHUB_OAUTH_SCOPE;
+const configuredGitHubOAuthRedirectUrl =
+    process.env.NEXT_PUBLIC_GITHUB_OAUTH_REDIRECT_URL;
 
 function isLoopbackHostname(hostname: string): boolean {
     return hostname === 'localhost' || hostname === '127.0.0.1';

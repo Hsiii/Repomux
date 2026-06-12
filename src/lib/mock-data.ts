@@ -1,4 +1,4 @@
-import type { Repository, WorkItem } from '../types/app.js';
+import type { Repository, WorkItem } from '../types/app';
 
 export const mockRepositories: readonly Repository[] = [
     { id: 'mock-repomux', fullName: 'Hsiii/Repomux' },
