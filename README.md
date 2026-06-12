@@ -91,10 +91,10 @@ By default the generated prompt assumes:
 Override those defaults when needed:
 
 ```bash
-bun run setup:codex -- --app-url https://repomux.example.com --worktree-root /absolute/path/for/repos
+bun run setup:codex -- --app-url https://repomux.example.com --worktree-root /absolute/path/for/repos --output /absolute/path/repomux-automation.prompt.md
 ```
 
-Then paste the generated prompt into a Codex automation in the app UI. The prompt is written with local paths for the current machine, but the checked-in template stays generic for every Repomux user.
+The checked-in template stays generic for every Repomux user. Codex or the fallback renderer writes machine-specific paths only at setup time.
 
 ## Local Supabase Auth
 

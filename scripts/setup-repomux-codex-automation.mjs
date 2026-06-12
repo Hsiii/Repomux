@@ -1,5 +1,4 @@
-import { access, cp, mkdir, readFile, writeFile } from 'node:fs/promises';
-import os from 'node:os';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 function parseArgs(argv) {
@@ -26,23 +25,10 @@ function parseArgs(argv) {
     return options;
 }
 
-function resolveCodexHome(rawValue) {
-    if (rawValue !== undefined) {
-        return path.resolve(rawValue);
-    }
-
-    if (process.env.CODEX_HOME !== undefined && process.env.CODEX_HOME !== '') {
-        return path.resolve(process.env.CODEX_HOME);
-    }
-
-    return path.join(os.homedir(), '.codex');
-}
-
 function ensureRepomuxCheckout(repoRoot) {
     const requiredPaths = [
         path.join(repoRoot, 'package.json'),
         path.join(repoRoot, 'codex', 'repomux-automation.template.md'),
-        path.join(repoRoot, '.agents', 'skills', 'repomux-codex-automation'),
     ];
 
     return Promise.all(
