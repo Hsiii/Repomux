@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
+    ChevronDown,
     CircleArrowUp,
     ExternalLink,
     Languages,
@@ -435,6 +436,7 @@ export function App(): JSX.Element {
                                         <option value='en'>EN</option>
                                         <option value='zh'>ZH</option>
                                     </select>
+                                    <ChevronDown aria-hidden='true' size={14} />
                                 </label>
 
                                 <button

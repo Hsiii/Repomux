@@ -351,10 +351,19 @@ input:disabled {
 }
 
 .login-wall__language select {
+    min-width: var(--space-32);
+    padding-right: var(--space-4);
     border: 0;
+    appearance: none;
     color: inherit;
     font: inherit;
     background-color: transparent;
+    outline: 0;
+}
+
+.login-wall__language:focus-within {
+    outline: var(--size-outline) solid var(--clr-accent);
+    outline-offset: var(--size-outline);
 }
 
 @media (max-width: 960px) {
