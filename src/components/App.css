@@ -225,18 +225,10 @@
     letter-spacing: -0.02em;
 }
 
-.login-wall__feature-copy p:not(.login-wall__feature-kicker) {
+.login-wall__feature-copy p {
     max-width: 34rem;
     color: var(--clr-login-text-muted);
     font: var(--font-body-lg);
-}
-
-.login-wall__feature-kicker,
-.login-wall__product-title {
-    color: var(--clr-login-text-dim);
-    font: var(--font-auth-eyebrow);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
 }
 
 .login-wall__feature-visual {
@@ -334,47 +326,8 @@
     filter: brightness(0);
 }
 
-.login-wall__product-topbar {
-    min-height: var(--space-48);
-    padding: 0 var(--space-16);
-    border-bottom: var(--size-border-1) solid var(--clr-login-border);
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--space-16);
-    background-color: var(--clr-login-control);
-}
-
-.login-wall__window-controls {
-    display: inline-flex;
-    gap: var(--space-8);
-}
-
-.login-wall__window-controls span {
-    width: var(--space-8);
-    height: var(--space-8);
-    border-radius: 50%;
-    background-color: var(--clr-login-border-strong);
-}
-
-.login-wall__app-shell-preview {
-    height: auto;
-    min-height: var(--size-login-preview-compact);
-    display: grid;
-    grid-template-columns: minmax(240px, var(--size-repo-panel)) minmax(0, 1fr);
-    overflow: hidden;
-    background-color: transparent;
-}
-
-.login-wall__repo-panel-preview {
-    min-height: 0;
-    padding: var(--space-24);
-    overflow: hidden;
-    background-color: var(--clr-panel);
-}
-
 .login-wall__work-panel-preview {
-    min-height: 0;
+    min-height: var(--size-login-preview-compact);
     padding: var(--space-24);
     overflow: hidden;
 }
@@ -387,15 +340,6 @@
 
 .login-wall__work-panel-preview .queue-list {
     overflow: visible;
-}
-
-.login-wall__search-preview {
-    height: var(--size-icon-button);
-    display: flex;
-    align-items: center;
-    padding: 0 var(--space-16);
-    color: var(--clr-text-dim);
-    font: var(--font-body-sm);
 }
 
 .login-wall__prompt-preview {

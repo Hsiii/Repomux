@@ -19,7 +19,6 @@ import {
     ListTodo,
     Moon,
     Play,
-    Settings,
     Sparkles,
     Sun,
     Workflow,
@@ -254,8 +253,6 @@ export function App(): JSX.Element {
     const selectedLoginLanguage =
         loginLanguages.find((language) => language.value === loginLanguage) ??
         loginLanguages[0];
-    const loginPreviewAvatar = 'https://github.com/Hsiii.png';
-
     function setupAutomation() {
         setStatusMessage(
             'Automation setup starts from the Codex-ready GitHub automation prompt.'
@@ -361,12 +358,6 @@ export function App(): JSX.Element {
                                     <span>Connect GitHub</span>
                                     <ArrowRight aria-hidden='true' size={16} />
                                 </button>
-
-                                {statusText === '' ? undefined : (
-                                    <p className='login-wall__status'>
-                                        {statusText}
-                                    </p>
-                                )}
 
                                 <div className='login-wall__benefits'>
                                     <article className='login-wall__feature login-wall__feature--mux'>
@@ -520,9 +511,6 @@ export function App(): JSX.Element {
                                             </svg>
                                         </div>
                                         <div className='login-wall__feature-copy'>
-                                            <p className='login-wall__feature-kicker'>
-                                                Repository multiplexing
-                                            </p>
                                             <h2>
                                                 One workspace for every repo
                                                 that needs attention.
@@ -539,9 +527,6 @@ export function App(): JSX.Element {
 
                                     <article className='login-wall__feature login-wall__feature--queue'>
                                         <div className='login-wall__feature-copy'>
-                                            <p className='login-wall__feature-kicker'>
-                                                See the queue
-                                            </p>
                                             <h2>
                                                 Stop context-switching across
                                                 repository tabs.
@@ -558,199 +543,91 @@ export function App(): JSX.Element {
                                             aria-label='Repomux work queue UI'
                                             className='login-wall__app-preview'
                                         >
-                                            <div className='login-wall__product-topbar'>
-                                                <div className='login-wall__window-controls'>
-                                                    <span />
-                                                    <span />
-                                                    <span />
+                                            <section className='work-panel login-wall__work-panel-preview'>
+                                                <div className='work-panel__header'>
+                                                    <h2 className='work-title'>
+                                                        Work queue
+                                                    </h2>
+                                                    <span className='work-subtitle'>
+                                                        3 active items
+                                                    </span>
                                                 </div>
-                                                <span className='login-wall__product-title'>
-                                                    repomux workspace
-                                                </span>
-                                            </div>
 
-                                            <div className='app-shell login-wall__app-shell-preview'>
-                                                <aside className='repo-panel login-wall__repo-panel-preview'>
-                                                    <section className='repo-panel__section'>
-                                                        <div className='repo-panel__main'>
-                                                            <div className='repo-panel__header'>
-                                                                <div className='repo-panel__heading'>
-                                                                    <h2 className='repo-panel__title'>
-                                                                        Repositories
-                                                                    </h2>
-                                                                </div>
-                                                                <div className='modal-input repo-search-input login-wall__search-preview'>
-                                                                    Find repo...
-                                                                </div>
-                                                            </div>
-
-                                                            <div className='custom-scrollbar repo-panel__scroll'>
-                                                                <div className='repo-list repo-list--sidebar'>
-                                                                    {loginWallRepositoryNodes
-                                                                        .slice(
-                                                                            0,
-                                                                            3
-                                                                        )
-                                                                        .map(
-                                                                            ({
-                                                                                name,
-                                                                                owner,
-                                                                            }) => (
-                                                                                <div
-                                                                                    className={`repo-row${name === 'repomux' ? ' repo-row--selected' : ''}`}
-                                                                                    key={
-                                                                                        name
-                                                                                    }
-                                                                                >
-                                                                                    <span
-                                                                                        aria-hidden='true'
-                                                                                        className='repo-row__icon'
-                                                                                    >
-                                                                                        <GitBranch
-                                                                                            size={
-                                                                                                16
-                                                                                            }
-                                                                                        />
-                                                                                    </span>
-                                                                                    <span className='repo-row__label'>
-                                                                                        <span className='repo-row__owner'>
-                                                                                            {
-                                                                                                owner
-                                                                                            }
-                                                                                        </span>
-                                                                                        <span className='repo-row__slash'>
-                                                                                            /
-                                                                                        </span>
-                                                                                        <span className='repo-row__name'>
-                                                                                            {
-                                                                                                name
-                                                                                            }
-                                                                                        </span>
-                                                                                    </span>
-                                                                                </div>
-                                                                            )
-                                                                        )}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className='repo-user-card'>
-                                                            <img
-                                                                alt=''
-                                                                className='repo-user-card__avatar'
-                                                                src={
-                                                                    loginPreviewAvatar
-                                                                }
-                                                            />
-                                                            <div className='repo-user-card__main'>
-                                                                <span className='repo-user-card__name'>
-                                                                    Hsi
-                                                                </span>
-                                                                <span className='repo-user-card__meta'>
-                                                                    Hsiii
-                                                                </span>
-                                                            </div>
-                                                            <span className='repo-user-card__icon-button'>
-                                                                <Settings
-                                                                    aria-hidden='true'
-                                                                    size={16}
-                                                                />
-                                                            </span>
-                                                        </div>
-                                                    </section>
-                                                </aside>
-
-                                                <section className='work-panel login-wall__work-panel-preview'>
-                                                    <div className='work-panel__header'>
-                                                        <h2 className='work-title'>
-                                                            Work queue
-                                                        </h2>
-                                                        <span className='work-subtitle'>
-                                                            3 active items
-                                                        </span>
-                                                    </div>
-
-                                                    <div className='custom-scrollbar work-panel__queue-scroll'>
-                                                        <div className='queue-list'>
-                                                            {loginWallQueueItems.map(
-                                                                ({
-                                                                    icon: Icon,
-                                                                    meta,
-                                                                    number,
-                                                                    status,
-                                                                    title,
-                                                                    type,
-                                                                }) => (
-                                                                    <div
-                                                                        className='queue-row'
-                                                                        key={
-                                                                            title
-                                                                        }
-                                                                    >
-                                                                        <span className='queue-row__type'>
-                                                                            <Icon
-                                                                                aria-label={
-                                                                                    type ===
-                                                                                    'issue'
-                                                                                        ? 'Issue'
-                                                                                        : 'Pull request'
+                                                <div className='custom-scrollbar work-panel__queue-scroll'>
+                                                    <div className='queue-list'>
+                                                        {loginWallQueueItems.map(
+                                                            ({
+                                                                icon: Icon,
+                                                                meta,
+                                                                number,
+                                                                status,
+                                                                title,
+                                                                type,
+                                                            }) => (
+                                                                <div
+                                                                    className='queue-row'
+                                                                    key={title}
+                                                                >
+                                                                    <span className='queue-row__type'>
+                                                                        <Icon
+                                                                            aria-label={
+                                                                                type ===
+                                                                                'issue'
+                                                                                    ? 'Issue'
+                                                                                    : 'Pull request'
+                                                                            }
+                                                                            size={
+                                                                                18
+                                                                            }
+                                                                        />
+                                                                    </span>
+                                                                    <span className='queue-row__content'>
+                                                                        <span className='queue-row__title'>
+                                                                            {
+                                                                                title
+                                                                            }
+                                                                        </span>
+                                                                        <span className='queue-row__meta'>
+                                                                            <span className='queue-row__repo'>
+                                                                                {
+                                                                                    meta
                                                                                 }
+                                                                            </span>
+                                                                            <span className='queue-row__number'>
+                                                                                #
+                                                                                {
+                                                                                    number
+                                                                                }
+                                                                            </span>
+                                                                        </span>
+                                                                    </span>
+                                                                    <span className='readiness'>
+                                                                        {status ===
+                                                                        'Ready' ? (
+                                                                            <Check
+                                                                                aria-label='Codex ready'
                                                                                 size={
                                                                                     18
                                                                                 }
                                                                             />
-                                                                        </span>
-                                                                        <span className='queue-row__content'>
-                                                                            <span className='queue-row__title'>
-                                                                                {
-                                                                                    title
-                                                                                }
-                                                                            </span>
-                                                                            <span className='queue-row__meta'>
-                                                                                <span className='queue-row__repo'>
-                                                                                    {
-                                                                                        meta
-                                                                                    }
-                                                                                </span>
-                                                                                <span className='queue-row__number'>
-                                                                                    #
-                                                                                    {
-                                                                                        number
-                                                                                    }
-                                                                                </span>
-                                                                            </span>
-                                                                        </span>
-                                                                        <span className='readiness'>
-                                                                            {status ===
-                                                                            'Ready' ? (
-                                                                                <Check
-                                                                                    aria-label='Codex ready'
-                                                                                    size={
-                                                                                        18
-                                                                                    }
-                                                                                />
-                                                                            ) : (
-                                                                                <span
-                                                                                    aria-label='Not codex ready'
-                                                                                    className='readiness__empty'
-                                                                                />
-                                                                            )}
-                                                                        </span>
-                                                                    </div>
-                                                                )
-                                                            )}
-                                                        </div>
+                                                                        ) : (
+                                                                            <span
+                                                                                aria-label='Not codex ready'
+                                                                                className='readiness__empty'
+                                                                            />
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        )}
                                                     </div>
-                                                </section>
-                                            </div>
+                                                </div>
+                                            </section>
                                         </article>
                                     </article>
 
                                     <article className='login-wall__feature login-wall__feature--prompt'>
                                         <div className='login-wall__feature-copy'>
-                                            <p className='login-wall__feature-kicker'>
-                                                Prompt the work
-                                            </p>
                                             <h2>
                                                 Add the intent Codex needs
                                                 before automation touches
@@ -836,9 +713,6 @@ export function App(): JSX.Element {
 
                                     <article className='login-wall__feature login-wall__feature--automation'>
                                         <div className='login-wall__feature-copy'>
-                                            <p className='login-wall__feature-kicker'>
-                                                Set up automation
-                                            </p>
                                             <h2>
                                                 Let Codex pick up prepared work
                                                 while you are elsewhere.
@@ -900,9 +774,6 @@ export function App(): JSX.Element {
 
                                     <article className='login-wall__feature login-wall__feature--result'>
                                         <div className='login-wall__feature-copy'>
-                                            <p className='login-wall__feature-kicker'>
-                                                Review the result
-                                            </p>
                                             <h2>
                                                 Come back to a pull request, not
                                                 another loose task.
