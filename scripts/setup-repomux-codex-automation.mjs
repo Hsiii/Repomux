@@ -81,6 +81,7 @@ async function main() {
             'Preferred setup:',
             '1. In this checkout, ask Codex to set up the Repomux automation.',
             '2. Let Codex create a suggested automation in the app for review.',
+            '3. Confirm the local repository root before saving if it is not already known.',
             '',
             'Manual fallback:',
             `- Paste the prompt from ${outputPath} into a Codex automation yourself.`,
