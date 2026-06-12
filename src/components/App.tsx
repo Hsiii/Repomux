@@ -291,20 +291,31 @@ export function App(): JSX.Element {
                     <div className='login-wall__frame'>
                         <header className='login-wall__topbar'>
                             <div className='login-wall__wordmark'>
-                                <span className='login-wall__wordmark-mark'>
-                                    <BrandLogo
-                                        alt='repomux'
-                                        className='login-wall__brand-logo'
-                                    />
-                                </span>
+                                <BrandLogo
+                                    alt='Repomux'
+                                    className='login-wall__wordmark-mark'
+                                />
                                 <span className='login-wall__wordmark-text'>
-                                    repomux
+                                    Repomux
                                 </span>
                             </div>
-                            <p className='login-wall__topbar-copy'>
-                                Your async workspace for delegated software
-                                tasks.
-                            </p>
+                            <button
+                                className='login-wall__topbar-login'
+                                onClick={() => {
+                                    setIsGitHubDialogOpen(true);
+                                }}
+                                type='button'
+                            >
+                                <svg
+                                    aria-hidden='true'
+                                    className='login-wall__button-icon'
+                                    fill='currentColor'
+                                    viewBox='0 0 24 24'
+                                >
+                                    <path d='M12 .5C5.65.5.5 5.65.5 12A11.5 11.5 0 0 0 8.36 22.1c.58.1.79-.25.79-.56v-2.17c-3.18.69-3.85-1.35-3.85-1.35-.52-1.31-1.27-1.66-1.27-1.66-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.33.96.1-.74.4-1.25.72-1.54-2.54-.29-5.22-1.27-5.22-5.64 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.19 1.18a11.1 11.1 0 0 1 5.82 0c2.22-1.49 3.19-1.18 3.19-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.38-2.68 5.34-5.24 5.63.41.35.78 1.03.78 2.08v3.08c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z' />
+                                </svg>
+                                <span>Log in</span>
+                            </button>
                         </header>
 
                         <section className='login-wall__layout'>
