@@ -322,6 +322,12 @@ input:disabled {
     background-color: var(--clr-login-control-hover);
 }
 
+.login-wall__footer-link .login-wall__button-icon {
+    flex-basis: var(--space-12);
+    width: var(--space-12);
+    height: var(--space-12);
+}
+
 .login-wall__language {
     position: relative;
 }
