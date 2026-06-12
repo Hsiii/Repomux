@@ -481,10 +481,13 @@ input:disabled {
 }
 
 .login-wall__value-button {
-    min-height: var(--space-40);
+    position: relative;
+    isolation: isolate;
+    min-height: var(--size-login-hero-button);
     width: fit-content;
-    padding: 0 var(--space-16);
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
+    overflow: hidden;
+    padding: 0 var(--space-24);
+    border: var(--size-border-1) solid transparent;
     border-radius: var(--radius-8);
     display: inline-flex;
     align-items: center;
@@ -492,7 +495,54 @@ input:disabled {
     gap: var(--space-8);
     color: var(--clr-login-action-text);
     font: var(--font-label);
+    background-color: transparent;
+    box-shadow: var(--clr-login-shadow);
+    transition:
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.login-wall__value-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        var(--clr-login-action-ring-soft) 48deg,
+        var(--clr-login-action-ring) 92deg,
+        var(--clr-login-action-ring-soft) 136deg,
+        transparent 160deg,
+        transparent 360deg
+    );
+    animation: login-wall-spin 2.4s linear infinite;
+}
+
+.login-wall__value-button::after {
+    content: '';
+    position: absolute;
+    inset: var(--size-border-1);
+    border-radius: calc(var(--radius-8) - var(--size-border-1));
     background-color: var(--clr-login-accent);
+    z-index: 0;
+}
+
+.login-wall__value-button > * {
+    position: relative;
+    z-index: 1;
+}
+
+.login-wall__value-button:hover,
+.login-wall__value-button:focus-visible {
+    transform: translateY(calc(var(--space-4) * -1));
+    box-shadow: var(--clr-login-shadow-press);
+}
+
+@keyframes login-wall-spin {
+    to {
+        transform: rotate(1turn);
+    }
 }
 
 .login-wall__language {

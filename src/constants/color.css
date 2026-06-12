@@ -35,6 +35,8 @@
     --clr-login-text-dim: var(--clr-text-dim);
     --clr-login-accent: var(--clr-ready);
     --clr-login-action-text: var(--clr-bg);
+    --clr-login-action-ring: #38bdf8;
+    --clr-login-action-ring-soft: rgba(245, 241, 250, 0.18);
     --clr-login-accent-soft: rgba(166, 173, 200, 0.1);
     --clr-login-shadow: 0 24px 80px rgba(4, 6, 14, 0.32);
     --clr-login-shadow-press: 0 12px 24px rgba(4, 6, 14, 0.28);
@@ -62,6 +64,8 @@
     --clr-login-text-dim: #6b7280;
     --clr-login-accent: #111827;
     --clr-login-action-text: #ffffff;
+    --clr-login-action-ring: #111827;
+    --clr-login-action-ring-soft: rgba(255, 255, 255, 0.3);
     --clr-login-accent-soft: #f3f4f6;
     --clr-login-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
     --clr-login-shadow-press: 0 12px 24px rgba(15, 23, 42, 0.16);
