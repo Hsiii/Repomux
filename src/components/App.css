@@ -486,13 +486,30 @@
     font-weight: var(--fw-semibold);
 }
 
+.login-wall__automation-stage-copy {
+    color: var(--clr-login-text-muted);
+    font: var(--font-body-sm);
+}
+
 .login-wall__automation-list {
     width: min(100%, 480px);
     display: grid;
     gap: var(--space-12);
+    position: relative;
+}
+
+.login-wall__automation-list::before {
+    content: '';
+    position: absolute;
+    top: var(--space-20);
+    bottom: var(--space-20);
+    left: var(--space-38);
+    width: var(--size-border-1);
+    background-color: var(--clr-login-border);
 }
 
 .login-wall__automation-step {
+    position: relative;
     width: 100%;
     padding: var(--space-20);
     border: var(--size-border-1) solid var(--clr-login-border);
@@ -515,6 +532,8 @@
 }
 
 .login-wall__automation-step-index {
+    position: relative;
+    z-index: 1;
     min-width: var(--space-36);
     min-height: var(--space-36);
     border-radius: var(--radius-pill);
@@ -523,6 +542,45 @@
     color: var(--clr-login-text);
     font: var(--font-label);
     background-color: var(--clr-login-card-strong);
+}
+
+.login-wall__automation-outcome {
+    width: min(100%, 480px);
+    padding: var(--space-20);
+    border: var(--size-border-1) solid var(--clr-login-border-strong);
+    border-radius: var(--radius-12);
+    display: grid;
+    gap: var(--space-8);
+    background-color: color-mix(
+        in srgb,
+        var(--clr-login-accent) 12%,
+        var(--clr-login-card)
+    );
+}
+
+.login-wall__automation-outcome-label {
+    color: var(--clr-login-text-dim);
+    font: var(--font-label);
+}
+
+.login-wall__automation-outcome-value {
+    color: var(--clr-login-text);
+    font: var(--font-body-lg);
+}
+
+.login-wall__automation-dialog {
+    width: min(100%, 520px);
+}
+
+.login-wall__automation-dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-12);
+}
+
+.login-wall__automation-dialog-dismiss {
+    background-color: var(--clr-surface-muted);
 }
 
 .login-wall__result-stage {
@@ -972,6 +1030,11 @@
     .login-wall__pr-button {
         grid-column: 1 / -1;
         width: fit-content;
+    }
+
+    .login-wall__automation-dialog-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
     }
 }
 

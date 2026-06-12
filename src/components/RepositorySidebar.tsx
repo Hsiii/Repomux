@@ -17,6 +17,7 @@ export type WorkFilter = 'assigned' | 'assigned-or-unassigned' | 'all';
 interface RepositorySidebarProps {
     filteredRepositories: readonly Repository[];
     githubUser: GitHubUser | undefined;
+    hasAutomationReminder: boolean;
     hasGitHubError: boolean;
     isGitHubConnected: boolean;
     isSettingsMenuOpen: boolean;
@@ -51,6 +52,7 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
     const {
         filteredRepositories,
         githubUser,
+        hasAutomationReminder,
         hasGitHubError,
         isGitHubConnected,
         isSettingsMenuOpen,
@@ -224,6 +226,12 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                                 onClick={onToggleSettingsMenu}
                                 type='button'
                             >
+                                {hasAutomationReminder ? (
+                                    <span
+                                        aria-hidden='true'
+                                        className='repo-user-card__settings-dot'
+                                    />
+                                ) : undefined}
                                 <Settings aria-hidden='true' size={18} />
                             </button>
                             {isSettingsMenuOpen ? (

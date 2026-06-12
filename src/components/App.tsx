@@ -52,6 +52,8 @@ export function App(): JSX.Element {
     const [loginLanguage, setLoginLanguage] = useState('en');
     const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
     const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
+    const [isAutomationDialogOpen, setIsAutomationDialogOpen] = useState(false);
+    const [hasAutomationReminder, setHasAutomationReminder] = useState(false);
 
     const {
         connectGitHub,
@@ -247,11 +249,30 @@ export function App(): JSX.Element {
     const selectedLoginLanguage =
         loginLanguages.find((language) => language.value === loginLanguage) ??
         loginLanguages[0];
+    function openAutomationDialog() {
+        setIsSettingsMenuOpen(false);
+        setIsAutomationDialogOpen(true);
+    }
+
+    function dismissAutomationDialog() {
+        setHasAutomationReminder(true);
+        setIsAutomationDialogOpen(false);
+    }
+
     function setupAutomation() {
+        if (!isGitHubConnected) {
+            setHasAutomationReminder(true);
+            setIsAutomationDialogOpen(false);
+            connectGitHub();
+            return;
+        }
+
         setStatusMessage(
             'Automation setup starts from the Codex-ready GitHub automation prompt.'
         );
         setIsSettingsMenuOpen(false);
+        setHasAutomationReminder(false);
+        setIsAutomationDialogOpen(false);
     }
 
     return (
@@ -261,6 +282,7 @@ export function App(): JSX.Element {
                     <RepositorySidebar
                         filteredRepositories={filteredRepositories}
                         githubUser={githubUser}
+                        hasAutomationReminder={hasAutomationReminder}
                         hasGitHubError={githubSessionQuery.isError}
                         isGitHubConnected={isGitHubConnected}
                         isSettingsMenuOpen={isSettingsMenuOpen}
@@ -269,7 +291,7 @@ export function App(): JSX.Element {
                         onDisconnectGitHub={disconnectGitHub}
                         onSelectRepository={selectRepository}
                         onSetLanguage={setLoginLanguage}
-                        onSetupAutomation={setupAutomation}
+                        onSetupAutomation={openAutomationDialog}
                         onToggleSettingsMenu={() => {
                             setIsSettingsMenuOpen((current) => !current);
                         }}
@@ -665,15 +687,13 @@ export function App(): JSX.Element {
                                         <div className='login-wall__feature-copy'>
                                             <h2>Let Codex pick up the work.</h2>
                                             <p>
-                                                The automation watches for the
-                                                codex-ready label, reads the
-                                                Repomux prompt, and starts a
-                                                focused pass without another
-                                                round of hand-holding.
+                                                When an item is codex-ready,
+                                                automation picks up the prompt
+                                                and starts the pass.
                                             </p>
                                             <button
                                                 className='login-wall__value-button'
-                                                onClick={connectGitHub}
+                                                onClick={openAutomationDialog}
                                                 type='button'
                                             >
                                                 <span>Set up automation</span>
@@ -690,9 +710,14 @@ export function App(): JSX.Element {
                                                     Automation rule
                                                 </span>
                                                 <span className='login-wall__automation-stage-value'>
-                                                    When an item becomes
-                                                    codex-ready
+                                                    Start a Codex pass when an
+                                                    item becomes codex-ready
                                                 </span>
+                                                <p className='login-wall__automation-stage-copy'>
+                                                    Repomux keeps the issue,
+                                                    prompt, and result connected
+                                                    so the handoff stays clear.
+                                                </p>
                                             </div>
                                             <div className='login-wall__automation-list'>
                                                 <div className='login-wall__automation-step login-wall__automation-step--active'>
@@ -702,9 +727,9 @@ export function App(): JSX.Element {
                                                     <div>
                                                         <h3>Read the issue</h3>
                                                         <p>
-                                                            Capture scope,
-                                                            acceptance criteria,
-                                                            and repo context.
+                                                            Pull in the repo,
+                                                            scope, and
+                                                            acceptance criteria.
                                                         </p>
                                                     </div>
                                                 </div>
@@ -713,13 +738,11 @@ export function App(): JSX.Element {
                                                         02
                                                     </span>
                                                     <div>
-                                                        <h3>
-                                                            Pick up the prompt
-                                                        </h3>
+                                                        <h3>Use your prompt</h3>
                                                         <p>
-                                                            Use the Repomux
-                                                            prompt as the exact
-                                                            handoff to Codex.
+                                                            Pass the exact
+                                                            instructions you
+                                                            wrote for Codex.
                                                         </p>
                                                     </div>
                                                 </div>
@@ -728,14 +751,23 @@ export function App(): JSX.Element {
                                                         03
                                                     </span>
                                                     <div>
-                                                        <h3>Start the pass</h3>
+                                                        <h3>Open a PR</h3>
                                                         <p>
                                                             Run asynchronously
-                                                            and return with a PR
-                                                            for review.
+                                                            and return a review
+                                                            ready pull request.
                                                         </p>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div className='login-wall__automation-outcome'>
+                                                <span className='login-wall__automation-outcome-label'>
+                                                    Result
+                                                </span>
+                                                <strong className='login-wall__automation-outcome-value'>
+                                                    You come back to a PR, not a
+                                                    loose task.
+                                                </strong>
                                             </div>
                                         </div>
                                     </article>
@@ -906,6 +938,56 @@ export function App(): JSX.Element {
                     </div>
                 </main>
             )}
+            {isAutomationDialogOpen ? (
+                <div
+                    aria-labelledby='automation-dialog-title'
+                    className='modal-backdrop'
+                    role='presentation'
+                >
+                    <div
+                        aria-describedby='automation-dialog-description'
+                        aria-modal='true'
+                        className='modal-card login-wall__automation-dialog'
+                        role='dialog'
+                    >
+                        <div className='modal-header'>
+                            <div>
+                                <h2
+                                    className='modal-title'
+                                    id='automation-dialog-title'
+                                >
+                                    Set up automation after login
+                                </h2>
+                                <p
+                                    className='modal-description'
+                                    id='automation-dialog-description'
+                                >
+                                    Connect GitHub, then open Settings to finish
+                                    the Codex-ready automation handoff.
+                                </p>
+                            </div>
+                        </div>
+                        <div className='login-wall__automation-dialog-actions'>
+                            <button
+                                className='repo-user-card__button login-wall__automation-dialog-dismiss'
+                                onClick={dismissAutomationDialog}
+                                type='button'
+                            >
+                                Remind me later
+                            </button>
+                            <button
+                                className='modal-primary-button'
+                                onClick={setupAutomation}
+                                type='button'
+                            >
+                                {isGitHubConnected
+                                    ? 'Open automation setup'
+                                    : 'Connect GitHub'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ) : undefined}
         </>
     );
 }

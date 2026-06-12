@@ -53,3 +53,5 @@ export function CodexMark(props: CodexMarkProps): JSX.Element {
                 strokeWidth='5'
             />
         </svg>
+    );
+}

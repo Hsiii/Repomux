@@ -213,10 +213,22 @@
 }
 
 .repo-user-card__icon-button {
+    position: relative;
     width: var(--space-32);
     height: var(--space-32);
     display: inline-grid;
     place-items: center;
+}
+
+.repo-user-card__settings-dot {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    width: var(--space-8);
+    height: var(--space-8);
+    border-radius: 50%;
+    background-color: var(--clr-accent);
+    box-shadow: 0 0 0 var(--size-border-1) var(--clr-surface-muted);
 }
 
 .section-add-button {
