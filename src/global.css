@@ -121,11 +121,12 @@ input:disabled {
 }
 
 .login-wall__frame {
-    width: min(100%, 1120px);
-    min-height: calc(100vh - var(--space-24));
+    width: 100%;
+    min-height: auto;
     margin: 0 auto;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto auto auto;
+    align-content: start;
     gap: var(--space-16);
 }
 
@@ -166,14 +167,15 @@ input:disabled {
 }
 
 .login-wall__layout {
-    min-height: 0;
+    min-height: auto;
     display: grid;
-    align-items: center;
+    align-items: start;
     justify-items: center;
+    padding: var(--space-56) 0 var(--space-24);
 }
 
 .login-wall__story {
-    width: min(100%, 920px);
+    width: 100%;
     display: grid;
     gap: var(--space-16);
     align-content: center;
@@ -364,7 +366,6 @@ input:disabled {
 
 @media (max-width: 960px) {
     .login-wall__frame {
-        min-height: auto;
         gap: var(--space-20);
     }
 
@@ -385,6 +386,10 @@ input:disabled {
 
     .login-wall__frame {
         gap: var(--space-16);
+    }
+
+    .login-wall__layout {
+        padding: var(--space-32) 0 var(--space-16);
     }
 
     .login-wall__queue {
