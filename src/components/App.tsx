@@ -304,6 +304,9 @@ export function App(): JSX.Element {
                                     alt='Repomux'
                                     className='login-wall__wordmark-mark'
                                 />
+                                <span className='login-wall__wordmark-text'>
+                                    Repomux
+                                </span>
                             </div>
                             <button
                                 className='login-wall__button login-wall__topbar-login'
