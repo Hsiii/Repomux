@@ -261,8 +261,11 @@ input:disabled {
 }
 
 .login-wall__button-icon {
+    display: block;
+    flex: 0 0 var(--space-16);
     width: var(--space-16);
     height: var(--space-16);
+    overflow: hidden;
 }
 
 .login-wall__hero-button {
