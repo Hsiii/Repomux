@@ -23,6 +23,33 @@
     --clr-error: #f38ba8;
     --shadow-surface: 0 24px 64px rgba(4, 6, 14, 0.28);
 
+    --clr-login-bg: var(--clr-bg);
+    --clr-login-grid: rgba(205, 214, 244, 0.06);
+    --clr-login-spotlight: rgba(245, 241, 250, 0.08);
+    --clr-login-card: rgba(20, 23, 37, 0.88);
+    --clr-login-card-strong: rgba(31, 35, 54, 0.92);
+    --clr-login-border: var(--clr-border);
+    --clr-login-border-strong: var(--clr-border-strong);
+    --clr-login-text: var(--clr-text);
+    --clr-login-text-muted: var(--clr-text-muted);
+    --clr-login-text-dim: var(--clr-text-dim);
+    --clr-login-accent: var(--clr-accent);
+    --clr-login-action-text: var(--clr-ready);
+    --clr-login-accent-soft: rgba(166, 173, 200, 0.1);
+    --clr-login-shadow: 0 24px 80px rgba(4, 6, 14, 0.32);
+    --clr-login-shadow-press: 0 12px 24px rgba(4, 6, 14, 0.28);
+    --clr-login-surface-soft: rgba(20, 23, 37, 0.68);
+    --clr-login-surface-pill: rgba(31, 35, 54, 0.64);
+    --clr-login-overlay-strong: rgba(15, 17, 27, 0.84);
+    --clr-login-overlay-soft: rgba(15, 17, 27, 0.68);
+    --clr-login-glow-strong: rgba(167, 139, 250, 0.18);
+    --clr-login-glow-soft: rgba(39, 40, 72, 0.2);
+    --clr-login-glow-edge: rgba(15, 17, 27, 0.84);
+    --clr-login-control: rgba(15, 17, 27, 0.72);
+    --clr-login-control-hover: rgba(39, 40, 72, 0.72);
+}
+
+.login-wall--light {
     --clr-login-bg: #fcfcfd;
     --clr-login-grid: rgba(15, 23, 42, 0.06);
     --clr-login-spotlight: rgba(255, 255, 255, 0.96);
@@ -34,6 +61,7 @@
     --clr-login-text-muted: #4b5563;
     --clr-login-text-dim: #6b7280;
     --clr-login-accent: #111827;
+    --clr-login-action-text: #ffffff;
     --clr-login-accent-soft: #f3f4f6;
     --clr-login-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
     --clr-login-shadow-press: 0 12px 24px rgba(15, 23, 42, 0.16);
@@ -44,4 +72,6 @@
     --clr-login-glow-strong: rgba(255, 255, 255, 0.96);
     --clr-login-glow-soft: rgba(243, 244, 246, 0.92);
     --clr-login-glow-edge: rgba(229, 231, 235, 0.7);
+    --clr-login-control: rgba(255, 255, 255, 0.72);
+    --clr-login-control-hover: rgba(255, 255, 255, 0.92);
 }
