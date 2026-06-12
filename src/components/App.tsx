@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
-    Bot,
     Check,
     ChevronDown,
     CircleArrowUp,
@@ -16,7 +15,6 @@ import {
     Languages,
     ListTodo,
     Moon,
-    Play,
     Sun,
 } from 'lucide-react';
 
@@ -404,9 +402,9 @@ export function App(): JSX.Element {
                                                             transform={`translate(24 ${48 + index * 64})`}
                                                         >
                                                             <rect
-                                                                height='48'
+                                                                height='56'
                                                                 rx='8'
-                                                                width='116'
+                                                                width='132'
                                                             />
                                                             <GitBranch
                                                                 aria-hidden='true'
@@ -424,14 +422,14 @@ export function App(): JSX.Element {
                                                             <text
                                                                 className='login-wall__mux-repo-name'
                                                                 x='36'
-                                                                y='36'
+                                                                y='38'
                                                             >
                                                                 {name}
                                                             </text>
                                                             <text
                                                                 className='login-wall__mux-repo-branch'
                                                                 x='12'
-                                                                y='68'
+                                                                y='50'
                                                             >
                                                                 {branch}
                                                             </text>
@@ -440,17 +438,17 @@ export function App(): JSX.Element {
                                                 )}
                                                 <g className='login-wall__mux-hub'>
                                                     <rect
-                                                        height='112'
+                                                        height='120'
                                                         rx='20'
-                                                        width='112'
-                                                        x='264'
-                                                        y='124'
+                                                        width='120'
+                                                        x='258'
+                                                        y='120'
                                                     />
                                                     <foreignObject
-                                                        height='64'
-                                                        width='64'
-                                                        x='288'
-                                                        y='148'
+                                                        height='48'
+                                                        width='48'
+                                                        x='294'
+                                                        y='144'
                                                     >
                                                         <BrandLogo
                                                             alt=''
@@ -461,7 +459,7 @@ export function App(): JSX.Element {
                                                         className='login-wall__mux-hub-label'
                                                         textAnchor='middle'
                                                         x='320'
-                                                        y='224'
+                                                        y='216'
                                                     >
                                                         Workspace
                                                     </text>
@@ -759,8 +757,7 @@ export function App(): JSX.Element {
                                     <article className='login-wall__feature login-wall__feature--result'>
                                         <div className='login-wall__feature-copy'>
                                             <h2>
-                                                Come back to a pull request, not
-                                                another loose task.
+                                                Come back to a pull request.
                                             </h2>
                                             <p>
                                                 Codex sends the result back as a
@@ -770,13 +767,6 @@ export function App(): JSX.Element {
                                             </p>
                                         </div>
                                         <div className='login-wall__result-stage'>
-                                            <div className='login-wall__codex-badge'>
-                                                <Bot
-                                                    aria-hidden='true'
-                                                    size={18}
-                                                />
-                                                <span>Sent by Codex</span>
-                                            </div>
                                             <div className='login-wall__pr-card'>
                                                 <div className='login-wall__pr-icon'>
                                                     <GitPullRequestArrow
@@ -803,7 +793,7 @@ export function App(): JSX.Element {
                                                     className='login-wall__pr-button'
                                                     type='button'
                                                 >
-                                                    <Play
+                                                    <ExternalLink
                                                         aria-hidden='true'
                                                         size={14}
                                                     />
