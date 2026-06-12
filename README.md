@@ -49,8 +49,10 @@ Create `.env.local` or `.env` with:
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 VITE_GITHUB_OAUTH_SCOPE=repo
-VITE_GITHUB_OAUTH_REDIRECT_URL=http://localhost:5173/
+VITE_GITHUB_OAUTH_REDIRECT_URL=
 ```
+
+Leave `VITE_GITHUB_OAUTH_REDIRECT_URL` empty unless you need a local-only override while running on `localhost` or `127.0.0.1`. In production, Repomux now uses the current browser URL as the OAuth return target.
 
 Apply the checked-in migration `supabase/migrations/20260612010200_scope_repositories_to_github_users.sql`.
 
