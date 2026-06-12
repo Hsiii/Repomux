@@ -249,26 +249,6 @@ export function App(): JSX.Element {
             value: 'Come back to pull requests, follow up, or send the work around again.',
         },
     ] as const;
-    const loginWallMetrics = [
-        {
-            bars: [38, 48, 56, 64, 76, 88],
-            label: 'Ready work',
-            trend: '+61%',
-            value: '12 queued',
-        },
-        {
-            bars: [86, 78, 68, 56, 44, 32],
-            label: 'Context switches',
-            trend: '-54%',
-            value: '3 open loops',
-        },
-        {
-            bars: [28, 40, 52, 68, 72, 84],
-            label: 'PRs returned',
-            trend: '4 this week',
-            value: 'Reviewable',
-        },
-    ] as const;
     const loginWallPreviewItems = [
         {
             icon: CircleDot,
@@ -293,20 +273,6 @@ export function App(): JSX.Element {
             status: 'Assigned',
             title: 'Ship a focused implementation pass',
             type: 'pr',
-        },
-    ] as const;
-    const loginWallAutomationSteps = [
-        {
-            label: 'Install',
-            value: 'Run setup once from this repo.',
-        },
-        {
-            label: 'Label',
-            value: 'Use codex-ready to pick the next task.',
-        },
-        {
-            label: 'Dispatch',
-            value: 'Queue one focused Codex run at a time.',
         },
     ] as const;
     const loginLanguages = [
@@ -604,59 +570,6 @@ export function App(): JSX.Element {
                                         </div>
                                     </article>
 
-                                    <section
-                                        aria-label='Repomux feature graph'
-                                        className='login-wall__graph-section'
-                                    >
-                                        <div className='login-wall__section-heading'>
-                                            <span className='login-wall__benefit-detail'>
-                                                Feature graph
-                                            </span>
-                                            <h2>
-                                                Turn repo noise into a
-                                                reviewable async pipeline.
-                                            </h2>
-                                        </div>
-                                        <div className='login-wall__metric-grid'>
-                                            {loginWallMetrics.map(
-                                                ({
-                                                    bars,
-                                                    label,
-                                                    trend,
-                                                    value,
-                                                }) => (
-                                                    <article
-                                                        className='login-wall__metric-card'
-                                                        key={label}
-                                                    >
-                                                        <div className='login-wall__metric-header'>
-                                                            <span>{label}</span>
-                                                            <strong>
-                                                                {trend}
-                                                            </strong>
-                                                        </div>
-                                                        <p>{value}</p>
-                                                        <div className='login-wall__metric-bars'>
-                                                            {bars.map(
-                                                                (
-                                                                    height,
-                                                                    index
-                                                                ) => (
-                                                                    <span
-                                                                        key={`${label}-${height}-${index}`}
-                                                                        style={{
-                                                                            height: `${height}%`,
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    </article>
-                                                )
-                                            )}
-                                        </div>
-                                    </section>
-
                                     <div
                                         aria-label='Repomux workflow benefits'
                                         className='login-wall__benefit-stack'
@@ -701,28 +614,49 @@ export function App(): JSX.Element {
                                     <section className='login-wall__automation'>
                                         <div className='login-wall__section-heading'>
                                             <span className='login-wall__benefit-detail'>
-                                                Codex automation setup
+                                                Codex automation
                                             </span>
                                             <h2>
-                                                Go from repo triage to queued
-                                                Codex runs in minutes.
+                                                Prompt work here, then let the
+                                                automation pick it up.
                                             </h2>
+                                            <p>
+                                                Repomux is the workspace where
+                                                maintainers add the intent Codex
+                                                needs. The automation watches
+                                                that prompted queue and starts
+                                                work from the items you prepared
+                                                here.
+                                            </p>
                                         </div>
-                                        <div className='login-wall__automation-grid'>
-                                            {loginWallAutomationSteps.map(
-                                                ({ label, value }, index) => (
-                                                    <article
-                                                        className='login-wall__automation-step'
-                                                        key={label}
-                                                    >
-                                                        <span>
-                                                            0{index + 1}
-                                                        </span>
-                                                        <h3>{label}</h3>
-                                                        <p>{value}</p>
-                                                    </article>
-                                                )
-                                            )}
+                                        <div className='login-wall__automation-flow'>
+                                            <div className='login-wall__automation-copy-card'>
+                                                <span className='login-wall__benefit-detail'>
+                                                    Workspace queue
+                                                </span>
+                                                <p>
+                                                    Issues and PRs become
+                                                    automation candidates only
+                                                    after you add the prompt and
+                                                    context in Repomux.
+                                                </p>
+                                            </div>
+                                            <ArrowRight
+                                                aria-hidden='true'
+                                                className='login-wall__automation-arrow'
+                                                size={20}
+                                            />
+                                            <div className='login-wall__automation-copy-card'>
+                                                <span className='login-wall__benefit-detail'>
+                                                    Codex run
+                                                </span>
+                                                <p>
+                                                    The automation pulls from
+                                                    that prepared work queue and
+                                                    sends Codex the exact intent
+                                                    you captured.
+                                                </p>
+                                            </div>
                                         </div>
                                         <button
                                             className='login-wall__value-button'
@@ -731,7 +665,7 @@ export function App(): JSX.Element {
                                             }}
                                             type='button'
                                         >
-                                            Set up Codex automation
+                                            Connect GitHub and prepare work
                                             <ArrowRight
                                                 aria-hidden='true'
                                                 size={16}

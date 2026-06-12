@@ -228,9 +228,7 @@ input:disabled {
     padding: var(--space-16);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
-    background:
-        linear-gradient(135deg, var(--clr-login-surface-soft), transparent),
-        var(--clr-login-control);
+    background-color: var(--clr-login-control);
     backdrop-filter: blur(var(--space-12));
 }
 
@@ -255,8 +253,7 @@ input:disabled {
 .login-wall__benefit-detail,
 .login-wall__product-kicker,
 .login-wall__product-path,
-.login-wall__metric-header,
-.login-wall__automation-step span {
+.login-wall__automation-copy-card span {
     color: var(--clr-login-text-dim);
     font: var(--font-auth-eyebrow);
     letter-spacing: 0.08em;
@@ -273,18 +270,11 @@ input:disabled {
 }
 
 .login-wall__app-preview,
-.login-wall__graph-section,
 .login-wall__automation {
     overflow: hidden;
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-16);
-    background:
-        radial-gradient(
-            circle at top right,
-            var(--clr-login-spotlight),
-            transparent 36%
-        ),
-        var(--clr-login-card);
+    background-color: var(--clr-login-card);
     box-shadow: var(--clr-login-shadow);
 }
 
@@ -374,69 +364,45 @@ input:disabled {
     letter-spacing: -0.02em;
 }
 
-.login-wall__graph-section,
+.login-wall__section-heading p {
+    color: var(--clr-login-text-muted);
+    font: var(--font-body-lg);
+}
+
 .login-wall__automation {
     display: grid;
     gap: var(--space-20);
     padding: var(--space-24);
 }
 
-.login-wall__metric-grid,
-.login-wall__automation-grid {
+.login-wall__automation-flow {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
     gap: var(--space-16);
 }
 
-.login-wall__metric-card,
-.login-wall__automation-step {
+.login-wall__automation-copy-card {
     display: grid;
-    gap: var(--space-12);
+    gap: var(--space-8);
+    min-height: 136px;
     padding: var(--space-16);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
     background-color: var(--clr-login-surface-soft);
 }
 
-.login-wall__metric-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-12);
-}
-
-.login-wall__metric-header strong {
+.login-wall__automation-copy-card p {
     color: var(--clr-login-text);
+    font: var(--font-body-md);
 }
 
-.login-wall__metric-card p,
-.login-wall__automation-step h3 {
-    color: var(--clr-login-text);
-    font: var(--font-title-sm);
+.login-wall__automation-arrow {
+    color: var(--clr-login-text-dim);
 }
 
-.login-wall__automation-step p {
-    color: var(--clr-login-text-muted);
-    font: var(--font-body-sm);
-}
-
-.login-wall__metric-bars {
-    height: var(--space-80);
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    align-items: end;
-    gap: var(--space-8);
-}
-
-.login-wall__metric-bars span {
-    min-height: var(--space-8);
-    border-radius: var(--radius-pill) var(--radius-pill) var(--radius-4)
-        var(--radius-4);
-    background: linear-gradient(
-        180deg,
-        var(--clr-login-accent),
-        var(--clr-login-border-strong)
-    );
+.login-wall__automation .login-wall__section-heading {
+    max-width: 760px;
 }
 
 .login-wall__button {
@@ -603,13 +569,17 @@ input:disabled {
     }
 
     .login-wall__app-shell-preview,
-    .login-wall__metric-grid,
-    .login-wall__automation-grid {
+    .login-wall__automation-flow {
         grid-template-columns: 1fr;
     }
 
     .login-wall__app-shell-preview {
         height: auto;
+    }
+
+    .login-wall__automation-arrow {
+        transform: rotate(90deg);
+        justify-self: start;
     }
 
     .login-wall__title {
@@ -646,7 +616,6 @@ input:disabled {
 
     .login-wall__repo-panel-preview,
     .login-wall__work-panel-preview,
-    .login-wall__graph-section,
     .login-wall__automation {
         padding: var(--space-16);
     }
