@@ -6,14 +6,13 @@ import {
     Check,
     ChevronDown,
     CircleArrowUp,
+    CircleDot,
     ExternalLink,
     GitBranch,
     GitPullRequestArrow,
     Languages,
-    ListTodo,
     MessageSquareText,
     Moon,
-    Radar,
     Sun,
 } from 'lucide-react';
 
@@ -250,24 +249,64 @@ export function App(): JSX.Element {
             value: 'Come back to pull requests, follow up, or send the work around again.',
         },
     ] as const;
+    const loginWallMetrics = [
+        {
+            bars: [38, 48, 56, 64, 76, 88],
+            label: 'Ready work',
+            trend: '+61%',
+            value: '12 queued',
+        },
+        {
+            bars: [86, 78, 68, 56, 44, 32],
+            label: 'Context switches',
+            trend: '-54%',
+            value: '3 open loops',
+        },
+        {
+            bars: [28, 40, 52, 68, 72, 84],
+            label: 'PRs returned',
+            trend: '4 this week',
+            value: 'Reviewable',
+        },
+    ] as const;
     const loginWallPreviewItems = [
         {
-            icon: ListTodo,
+            icon: CircleDot,
             meta: 'Hsiii/repomux',
+            number: 128,
             status: 'Ready',
             title: 'Queue GitHub issues by maintainer intent',
+            type: 'issue',
         },
         {
             icon: MessageSquareText,
             meta: 'Prompt added',
+            number: 124,
             status: 'Prepared',
             title: 'Explain acceptance criteria before execution',
+            type: 'issue',
         },
         {
-            icon: CircleArrowUp,
+            icon: GitPullRequestArrow,
             meta: 'Codex run',
+            number: 72,
             status: 'Assigned',
             title: 'Ship a focused implementation pass',
+            type: 'pr',
+        },
+    ] as const;
+    const loginWallAutomationSteps = [
+        {
+            label: 'Install',
+            value: 'Run setup once from this repo.',
+        },
+        {
+            label: 'Label',
+            value: 'Use codex-ready to pick the next task.',
+        },
+        {
+            label: 'Dispatch',
+            value: 'Queue one focused Codex run at a time.',
         },
     ] as const;
     const loginLanguages = [
@@ -386,9 +425,9 @@ export function App(): JSX.Element {
                                 )}
 
                                 <div className='login-wall__benefits'>
-                                    <aside
-                                        aria-label='Repomux workspace preview'
-                                        className='login-wall__product-card'
+                                    <article
+                                        aria-label='Repomux app UI preview'
+                                        className='login-wall__app-preview'
                                     >
                                         <div className='login-wall__product-topbar'>
                                             <div className='login-wall__window-controls'>
@@ -397,94 +436,226 @@ export function App(): JSX.Element {
                                                 <span />
                                             </div>
                                             <span className='login-wall__product-path'>
-                                                repositories / work queue
+                                                real app surface / work queue
                                             </span>
                                         </div>
 
-                                        <div className='login-wall__product-grid'>
-                                            <div className='login-wall__product-sidebar'>
-                                                <span className='login-wall__product-kicker'>
-                                                    Active repos
-                                                </span>
-                                                <div className='repo-list login-wall__product-repos'>
-                                                    <button
-                                                        aria-pressed='true'
-                                                        className='repo-row repo-row--selected login-wall__product-repo-row'
-                                                        type='button'
-                                                    >
-                                                        <span className='repo-row__label'>
-                                                            Hsiii/repomux
-                                                        </span>
-                                                    </button>
-                                                    <button
-                                                        aria-pressed='false'
-                                                        className='repo-row login-wall__product-repo-row'
-                                                        type='button'
-                                                    >
-                                                        <span className='repo-row__label'>
-                                                            website
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                            </div>
+                                        <div className='app-shell login-wall__app-shell-preview'>
+                                            <aside className='repo-panel login-wall__repo-panel-preview'>
+                                                <section className='repo-panel__section'>
+                                                    <div className='repo-panel__main'>
+                                                        <div className='repo-panel__header'>
+                                                            <div className='repo-panel__heading'>
+                                                                <h2 className='repo-panel__title'>
+                                                                    Repositories
+                                                                </h2>
+                                                            </div>
+                                                            <div className='modal-input repo-search-input login-wall__search-preview'>
+                                                                Find a
+                                                                repository...
+                                                            </div>
+                                                        </div>
 
-                                            <div className='login-wall__product-main'>
-                                                <div className='login-wall__product-header'>
-                                                    <span>
-                                                        Async execution queue
-                                                    </span>
-                                                    <strong>3 ready</strong>
+                                                        <div className='repo-list repo-list--sidebar'>
+                                                            <div className='repo-row repo-row--selected'>
+                                                                <span className='repo-row__label'>
+                                                                    hsi/Repomux
+                                                                </span>
+                                                            </div>
+                                                            <div className='repo-row'>
+                                                                <span className='repo-row__label'>
+                                                                    hsi/create-hsi-app
+                                                                </span>
+                                                            </div>
+                                                            <div className='repo-row'>
+                                                                <span className='repo-row__label'>
+                                                                    hsi/dotfiles
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className='repo-user-card'>
+                                                        <span className='repo-user-card__mark'>
+                                                            GH
+                                                        </span>
+                                                        <div className='repo-user-card__main'>
+                                                            <span className='repo-user-card__name'>
+                                                                GitHub
+                                                            </span>
+                                                            <span className='repo-user-card__meta'>
+                                                                Connected
+                                                            </span>
+                                                        </div>
+                                                        <span className='repo-user-card__icon-button'>
+                                                            <Check
+                                                                aria-hidden='true'
+                                                                size={16}
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                </section>
+                                            </aside>
+
+                                            <section className='work-panel login-wall__work-panel-preview'>
+                                                <div className='work-panel__header'>
+                                                    <h2 className='work-title'>
+                                                        Work queue
+                                                    </h2>
+                                                    <div className='work-filters'>
+                                                        <span className='work-filter work-filter--check'>
+                                                            Include unassigned
+                                                        </span>
+                                                    </div>
                                                 </div>
 
-                                                <div className='login-wall__preview-list'>
+                                                <div className='queue-list'>
                                                     {loginWallPreviewItems.map(
                                                         ({
                                                             icon: Icon,
                                                             meta,
+                                                            number,
                                                             status,
                                                             title,
+                                                            type,
                                                         }) => (
                                                             <div
-                                                                className='login-wall__preview-row'
+                                                                className='queue-row'
                                                                 key={title}
                                                             >
-                                                                <div className='login-wall__preview-icon'>
+                                                                <span className='queue-row__type'>
                                                                     <Icon
-                                                                        aria-hidden='true'
+                                                                        aria-label={
+                                                                            type ===
+                                                                            'issue'
+                                                                                ? 'Issue'
+                                                                                : 'Pull request'
+                                                                        }
                                                                         size={
-                                                                            14
+                                                                            18
                                                                         }
                                                                     />
-                                                                </div>
-                                                                <div className='login-wall__preview-copy'>
-                                                                    <span>
-                                                                        {meta}
-                                                                    </span>
-                                                                    <strong>
+                                                                </span>
+                                                                <span className='queue-row__content'>
+                                                                    <span className='queue-row__title'>
                                                                         {title}
-                                                                    </strong>
-                                                                </div>
-                                                                <span className='login-wall__preview-status'>
-                                                                    {status}
+                                                                    </span>
+                                                                    <span className='queue-row__meta'>
+                                                                        <span className='queue-row__repo'>
+                                                                            {
+                                                                                meta
+                                                                            }
+                                                                        </span>
+                                                                        <span className='queue-row__number'>
+                                                                            #
+                                                                            {
+                                                                                number
+                                                                            }
+                                                                        </span>
+                                                                    </span>
+                                                                </span>
+                                                                <span className='readiness'>
+                                                                    {status ===
+                                                                    'Ready' ? (
+                                                                        <Check
+                                                                            aria-label='Codex ready'
+                                                                            size={
+                                                                                18
+                                                                            }
+                                                                        />
+                                                                    ) : (
+                                                                        <CircleArrowUp
+                                                                            aria-label={
+                                                                                status
+                                                                            }
+                                                                            size={
+                                                                                18
+                                                                            }
+                                                                        />
+                                                                    )}
                                                                 </span>
                                                             </div>
                                                         )
                                                     )}
                                                 </div>
 
-                                                <div className='login-wall__prompt-card'>
-                                                    <span>Prompt intent</span>
-                                                    <p>
+                                                <div className='login-wall__detail-preview'>
+                                                    <label className='prompt-label'>
+                                                        Prompt / context
+                                                    </label>
+                                                    <div className='prompt-input login-wall__prompt-preview'>
                                                         Preserve the current
                                                         auth flow, add the
                                                         missing review state,
                                                         and include a smoke
                                                         check.
-                                                    </p>
+                                                    </div>
+                                                    <div className='assign-button login-wall__assign-preview'>
+                                                        <span>
+                                                            Assign to Codex
+                                                        </span>
+                                                        <CircleArrowUp
+                                                            aria-hidden='true'
+                                                            size={24}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </section>
                                         </div>
-                                    </aside>
+                                    </article>
+
+                                    <section
+                                        aria-label='Repomux feature graph'
+                                        className='login-wall__graph-section'
+                                    >
+                                        <div className='login-wall__section-heading'>
+                                            <span className='login-wall__benefit-detail'>
+                                                Feature graph
+                                            </span>
+                                            <h2>
+                                                Turn repo noise into a
+                                                reviewable async pipeline.
+                                            </h2>
+                                        </div>
+                                        <div className='login-wall__metric-grid'>
+                                            {loginWallMetrics.map(
+                                                ({
+                                                    bars,
+                                                    label,
+                                                    trend,
+                                                    value,
+                                                }) => (
+                                                    <article
+                                                        className='login-wall__metric-card'
+                                                        key={label}
+                                                    >
+                                                        <div className='login-wall__metric-header'>
+                                                            <span>{label}</span>
+                                                            <strong>
+                                                                {trend}
+                                                            </strong>
+                                                        </div>
+                                                        <p>{value}</p>
+                                                        <div className='login-wall__metric-bars'>
+                                                            {bars.map(
+                                                                (
+                                                                    height,
+                                                                    index
+                                                                ) => (
+                                                                    <span
+                                                                        key={`${label}-${height}-${index}`}
+                                                                        style={{
+                                                                            height: `${height}%`,
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </article>
+                                                )
+                                            )}
+                                        </div>
+                                    </section>
 
                                     <div
                                         aria-label='Repomux workflow benefits'
@@ -527,21 +698,31 @@ export function App(): JSX.Element {
                                         )}
                                     </div>
 
-                                    <div className='login-wall__value-cta'>
-                                        <div className='login-wall__value-orbit'>
-                                            <Radar
-                                                aria-hidden='true'
-                                                size={20}
-                                            />
-                                        </div>
-                                        <div>
+                                    <section className='login-wall__automation'>
+                                        <div className='login-wall__section-heading'>
                                             <span className='login-wall__benefit-detail'>
-                                                Built for async maintainers
+                                                Codex automation setup
                                             </span>
-                                            <p>
-                                                Keep repos moving without
-                                                staying in every Codex loop.
-                                            </p>
+                                            <h2>
+                                                Go from repo triage to queued
+                                                Codex runs in minutes.
+                                            </h2>
+                                        </div>
+                                        <div className='login-wall__automation-grid'>
+                                            {loginWallAutomationSteps.map(
+                                                ({ label, value }, index) => (
+                                                    <article
+                                                        className='login-wall__automation-step'
+                                                        key={label}
+                                                    >
+                                                        <span>
+                                                            0{index + 1}
+                                                        </span>
+                                                        <h3>{label}</h3>
+                                                        <p>{value}</p>
+                                                    </article>
+                                                )
+                                            )}
                                         </div>
                                         <button
                                             className='login-wall__value-button'
@@ -550,13 +731,13 @@ export function App(): JSX.Element {
                                             }}
                                             type='button'
                                         >
-                                            Queue your first task
+                                            Set up Codex automation
                                             <ArrowRight
                                                 aria-hidden='true'
                                                 size={16}
                                             />
                                         </button>
-                                    </div>
+                                    </section>
                                 </div>
                             </div>
                         </section>

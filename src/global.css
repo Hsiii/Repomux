@@ -232,15 +232,6 @@ input:disabled {
         linear-gradient(135deg, var(--clr-login-surface-soft), transparent),
         var(--clr-login-control);
     backdrop-filter: blur(var(--space-12));
-    animation: benefit-rise 640ms ease both;
-}
-
-.login-wall__benefit-card:nth-child(2) {
-    animation-delay: 120ms;
-}
-
-.login-wall__benefit-card:nth-child(3) {
-    animation-delay: 240ms;
 }
 
 .login-wall__benefit-step {
@@ -264,8 +255,8 @@ input:disabled {
 .login-wall__benefit-detail,
 .login-wall__product-kicker,
 .login-wall__product-path,
-.login-wall__prompt-card span,
-.login-wall__preview-copy span {
+.login-wall__metric-header,
+.login-wall__automation-step span {
     color: var(--clr-login-text-dim);
     font: var(--font-auth-eyebrow);
     letter-spacing: 0.08em;
@@ -281,7 +272,9 @@ input:disabled {
     font: var(--font-body-sm);
 }
 
-.login-wall__product-card {
+.login-wall__app-preview,
+.login-wall__graph-section,
+.login-wall__automation {
     overflow: hidden;
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-16);
@@ -293,7 +286,6 @@ input:disabled {
         ),
         var(--clr-login-card);
     box-shadow: var(--clr-login-shadow);
-    animation: product-float 720ms ease 160ms both;
 }
 
 .login-wall__product-topbar {
@@ -319,130 +311,132 @@ input:disabled {
     background-color: var(--clr-login-border-strong);
 }
 
-.login-wall__product-grid {
+.login-wall__app-shell-preview {
+    height: 440px;
     display: grid;
-    grid-template-columns: var(--size-login-preview-sidebar) minmax(0, 1fr);
-    min-height: 320px;
+    grid-template-columns: minmax(240px, var(--size-repo-panel)) minmax(0, 1fr);
+    overflow: hidden;
+    background-color: transparent;
 }
 
-.login-wall__product-sidebar,
-.login-wall__product-main {
-    display: grid;
-    align-content: start;
+.login-wall__repo-panel-preview {
+    min-height: 0;
+    padding: var(--space-24);
+    overflow: hidden;
+    background-color: var(--clr-panel);
 }
 
-.login-wall__product-sidebar {
-    gap: var(--space-12);
-    padding: var(--space-16);
-    border-right: var(--size-border-1) solid var(--clr-login-border);
-    background-color: var(--clr-login-surface-soft);
+.login-wall__work-panel-preview {
+    min-height: 0;
+    padding: var(--space-24);
+    overflow: hidden;
 }
 
-.login-wall__product-repos {
-    gap: var(--space-8);
-}
-
-.login-wall__product-repo-row {
-    border-color: var(--clr-login-border);
-    background-color: var(--clr-login-control);
-}
-
-.login-wall__product-repo-row.repo-row--selected {
-    border-color: var(--clr-login-border-strong);
-    background-color: var(--clr-login-control-hover);
-}
-
-.login-wall__product-repo-row .repo-row__label {
-    color: var(--clr-login-text);
-}
-
-.login-wall__product-main {
-    gap: var(--space-16);
-    padding: var(--space-16);
-}
-
-.login-wall__product-header {
+.login-wall__search-preview {
+    height: var(--size-icon-button);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-16);
-    color: var(--clr-login-text-muted);
+    padding: 0 var(--space-12);
+    color: var(--clr-text-dim);
     font: var(--font-body-sm);
 }
 
-.login-wall__product-header strong {
-    color: var(--clr-login-text);
-    font: var(--font-label);
+.login-wall__detail-preview {
+    margin-top: var(--space-16);
+    display: grid;
+    gap: var(--space-12);
 }
 
-.login-wall__preview-list {
+.login-wall__prompt-preview {
+    min-height: var(--space-64);
+    padding: var(--space-16);
+    font: var(--font-body-sm);
+}
+
+.login-wall__assign-preview {
+    min-height: var(--space-48);
+    width: fit-content;
+    padding: 0 var(--space-16);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-12);
+}
+
+.login-wall__section-heading {
     display: grid;
     gap: var(--space-8);
+    max-width: 640px;
 }
 
-.login-wall__preview-row {
+.login-wall__section-heading h2 {
+    font: var(--font-title-md);
+    letter-spacing: -0.02em;
+}
+
+.login-wall__graph-section,
+.login-wall__automation {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
+    gap: var(--space-20);
+    padding: var(--space-24);
+}
+
+.login-wall__metric-grid,
+.login-wall__automation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-16);
+}
+
+.login-wall__metric-card,
+.login-wall__automation-step {
+    display: grid;
     gap: var(--space-12);
-    min-height: var(--size-row);
-    padding: var(--space-12);
+    padding: var(--space-16);
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
     background-color: var(--clr-login-surface-soft);
-    animation: preview-pulse 4000ms ease-in-out infinite;
 }
 
-.login-wall__preview-row:nth-child(2) {
-    animation-delay: 600ms;
+.login-wall__metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
 }
 
-.login-wall__preview-row:nth-child(3) {
-    animation-delay: 1200ms;
-}
-
-.login-wall__preview-icon {
-    width: var(--space-32);
-    height: var(--space-32);
-    display: inline-grid;
-    place-items: center;
-    border-radius: var(--radius-8);
+.login-wall__metric-header strong {
     color: var(--clr-login-text);
-    background-color: var(--clr-login-accent-soft);
 }
 
-.login-wall__preview-copy {
-    min-width: 0;
-    display: grid;
-    gap: var(--space-4);
-}
-
-.login-wall__preview-copy strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.login-wall__metric-card p,
+.login-wall__automation-step h3 {
     color: var(--clr-login-text);
-    font: var(--font-label);
+    font: var(--font-title-sm);
 }
 
-.login-wall__preview-status {
-    padding: var(--space-4) var(--space-8);
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: var(--radius-pill);
-    color: var(--clr-login-text);
-    font: var(--font-auth-eyebrow);
-    background-color: var(--clr-login-accent-soft);
-}
-
-.login-wall__prompt-card {
-    display: grid;
-    gap: var(--space-8);
-    padding: var(--space-16);
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: var(--radius-12);
+.login-wall__automation-step p {
     color: var(--clr-login-text-muted);
     font: var(--font-body-sm);
-    background-color: var(--clr-login-control-hover);
+}
+
+.login-wall__metric-bars {
+    height: var(--space-80);
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    align-items: end;
+    gap: var(--space-8);
+}
+
+.login-wall__metric-bars span {
+    min-height: var(--space-8);
+    border-radius: var(--radius-pill) var(--radius-pill) var(--radius-4)
+        var(--radius-4);
+    background: linear-gradient(
+        180deg,
+        var(--clr-login-accent),
+        var(--clr-login-border-strong)
+    );
 }
 
 .login-wall__button {
@@ -535,44 +529,9 @@ input:disabled {
     height: var(--space-12);
 }
 
-.login-wall__value-cta {
-    position: relative;
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--space-16);
-    padding: var(--space-16);
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: var(--radius-16);
-    color: var(--clr-login-text);
-    background:
-        radial-gradient(
-            circle at left,
-            var(--clr-login-spotlight),
-            transparent 36%
-        ),
-        var(--clr-login-control);
-    animation: value-cta-glow 5200ms ease-in-out infinite;
-}
-
-.login-wall__value-orbit {
-    width: var(--space-48);
-    height: var(--space-48);
-    display: inline-grid;
-    place-items: center;
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: 50%;
-    background-color: var(--clr-login-accent-soft);
-}
-
-.login-wall__value-cta p {
-    color: var(--clr-login-text-muted);
-    font: var(--font-title-sm);
-}
-
 .login-wall__value-button {
     min-height: var(--space-40);
+    width: fit-content;
     padding: 0 var(--space-16);
     border: var(--size-border-1) solid var(--clr-login-border-strong);
     border-radius: var(--radius-8);
@@ -630,56 +589,6 @@ input:disabled {
     background-color: var(--clr-login-control-hover);
 }
 
-@keyframes benefit-rise {
-    from {
-        opacity: 0;
-        transform: translateY(var(--space-16));
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes product-float {
-    from {
-        opacity: 0;
-        transform: translateY(var(--space-24)) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes preview-pulse {
-    0%,
-    100% {
-        border-color: var(--clr-login-border);
-        transform: translateY(0);
-    }
-
-    50% {
-        border-color: var(--clr-login-border-strong);
-        transform: translateY(calc(var(--space-4) * -1));
-    }
-}
-
-@keyframes value-cta-glow {
-    0%,
-    100% {
-        box-shadow: none;
-        transform: translateY(0);
-    }
-
-    50% {
-        box-shadow: var(--clr-login-shadow);
-        transform: translateY(calc(var(--space-4) * -1));
-    }
-}
-
 @media (max-width: 960px) {
     .login-wall__frame {
         gap: var(--space-20);
@@ -691,6 +600,16 @@ input:disabled {
 
     .login-wall__benefit-stack {
         grid-template-columns: 1fr;
+    }
+
+    .login-wall__app-shell-preview,
+    .login-wall__metric-grid,
+    .login-wall__automation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .login-wall__app-shell-preview {
+        height: auto;
     }
 
     .login-wall__title {
@@ -725,40 +644,11 @@ input:disabled {
         font: var(--font-title-md);
     }
 
-    .login-wall__product-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .login-wall__product-sidebar {
-        border-right: 0;
-        border-bottom: var(--size-border-1) solid var(--clr-login-border);
-    }
-
-    .login-wall__preview-row {
-        grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .login-wall__preview-status {
-        grid-column: 2;
-        justify-self: start;
-    }
-
-    .login-wall__value-cta {
-        grid-template-columns: 1fr;
-    }
-
-    .login-wall__value-orbit {
-        width: var(--space-40);
-        height: var(--space-40);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .login-wall__benefit-card,
-    .login-wall__product-card,
-    .login-wall__preview-row,
-    .login-wall__value-cta {
-        animation: none;
+    .login-wall__repo-panel-preview,
+    .login-wall__work-panel-preview,
+    .login-wall__graph-section,
+    .login-wall__automation {
+        padding: var(--space-16);
     }
 }
 
