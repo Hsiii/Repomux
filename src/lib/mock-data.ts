@@ -20,7 +20,7 @@ export const mockWorkItems: readonly WorkItem[] = [
     },
     {
         assigneeLogins: ['Hsiii'],
-        body: 'Review the Supabase repository editor. Simplify the empty state before merge.',
+        body: 'Review the repository editor. Simplify the empty state before merge.',
         codexReady: false,
         id: 'Hsiii/Repomux#124',
         number: 124,

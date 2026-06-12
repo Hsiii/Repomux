@@ -12,7 +12,7 @@ Assign GitHub work to coding agents without babysitting the queue.
 
 - **One queue, less context switching:** Track repositories, prompts, and assignment state from one workspace instead of bouncing between tabs.
 - **GitHub-native handoff:** Repomux uses your GitHub identity to queue work, post prompt comments, and apply the `codex-ready` label where your agents expect it.
-- **Personal by default:** Repository records are scoped to the signed-in Supabase user with row-level security, so each operator only sees and edits their own queue.
+- **Personal by default:** Repomux uses your signed-in GitHub identity and server-side session cookie so each operator only sees and edits their own queue.
 - **Built for overnight runs:** The login wall, repository list, and work panel are optimized for quick triage when you want to assign work and step away.
 
 ## Install
@@ -117,4 +117,4 @@ Use a GitHub OAuth App for local development.
 2. Fill in `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` in `.env.local`.
 3. Start the app with `bun run dev`.
 
-Repomux no longer depends on Supabase or a local database for authentication or repository storage.
+Repomux does not depend on a separate application database for authentication or repository storage.
