@@ -63,7 +63,8 @@ export function App(): JSX.Element {
     const {
         connectGitHub,
         disconnectGitHub,
-        githubUserQuery,
+        githubSessionQuery,
+        githubUser,
         isGitHubConnected,
     } = useGitHubConnection(setStatusMessage);
 
@@ -113,7 +114,7 @@ export function App(): JSX.Element {
     const workItems = workItemsQuery.data ?? [];
 
     const filteredWorkItems = workItems.filter((item) => {
-        const githubLogin = githubUserQuery.data?.login;
+        const githubLogin = githubUser?.login;
 
         if (githubLogin === undefined) {
             return true;
@@ -268,8 +269,8 @@ export function App(): JSX.Element {
                 <main className={`app-shell app-shell--${loginTheme}`}>
                     <RepositorySidebar
                         filteredRepositories={filteredRepositories}
-                        githubUser={githubUserQuery.data}
-                        hasGitHubError={githubUserQuery.isError}
+                        githubUser={githubUser}
+                        hasGitHubError={githubSessionQuery.isError}
                         isGitHubConnected={isGitHubConnected}
                         isSettingsMenuOpen={isSettingsMenuOpen}
                         language={loginLanguage}

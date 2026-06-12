@@ -5,6 +5,11 @@ interface GitHubSessionResponse {
     user?: GitHubUser;
 }
 
+export interface GitHubSession {
+    authenticated: boolean;
+    user?: GitHubUser;
+}
+
 async function parseError(response: Response): Promise<string> {
     try {
         const payload = (await response.json()) as { error?: string };
@@ -29,16 +34,19 @@ async function fetchJson<T>(input: string, init?: RequestInit): Promise<T> {
     return await (response.json() as Promise<T>);
 }
 
-export async function fetchGitHubSession(): Promise<GitHubUser | undefined> {
+export async function fetchGitHubSession(): Promise<GitHubSession> {
     const session = await fetchJson<GitHubSessionResponse>(
         '/api/github/session'
     );
 
     if (!session.authenticated) {
-        return undefined;
+        return { authenticated: false };
     }
 
-    return session.user;
+    return {
+        authenticated: true,
+        user: session.user,
+    };
 }
 
 export async function fetchAccessibleRepositories(): Promise<

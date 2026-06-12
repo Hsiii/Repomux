@@ -4,12 +4,14 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { fetchGitHubSession } from '../lib/github';
+import type { GitHubSession } from '../lib/github';
 import type { GitHubUser } from '../types/app';
 
 interface UseGitHubConnectionResult {
     connectGitHub: () => void;
     disconnectGitHub: () => void;
-    githubUserQuery: UseQueryResult<GitHubUser | undefined>;
+    githubSessionQuery: UseQueryResult<GitHubSession>;
+    githubUser: GitHubUser | undefined;
     isGitHubConnected: boolean;
 }
 
@@ -39,12 +41,17 @@ export function useGitHubConnection(
     const queryClient = useQueryClient();
     const [hasHandledOAuthError, setHasHandledOAuthError] = useState(false);
 
-    const githubUserQuery = useQuery({
+    const githubSessionQuery = useQuery({
         queryFn: fetchGitHubSession,
         queryKey: ['github-session'],
         retry: false,
         staleTime: 60_000,
     });
+
+    const githubUser =
+        githubSessionQuery.data?.authenticated === true
+            ? githubSessionQuery.data.user
+            : undefined;
 
     useEffect(() => {
         if (hasHandledOAuthError) {
@@ -104,7 +111,8 @@ export function useGitHubConnection(
     return {
         connectGitHub,
         disconnectGitHub,
-        githubUserQuery,
-        isGitHubConnected: githubUserQuery.data !== undefined,
+        githubSessionQuery,
+        githubUser,
+        isGitHubConnected: githubSessionQuery.data?.authenticated === true,
     };
 }
