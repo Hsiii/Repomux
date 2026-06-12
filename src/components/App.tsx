@@ -271,7 +271,7 @@ export function App(): JSX.Element {
             meta: 'Hsiii/repomux',
             number: 124,
             status: 'Prepared',
-            title: 'Confirm acceptance criteria',
+            title: 'Consider supporting Claude',
             type: 'issue',
         },
         {
@@ -279,7 +279,7 @@ export function App(): JSX.Element {
             meta: 'Hsiii/repomux',
             number: 72,
             status: 'Assigned',
-            title: 'Ship the implementation',
+            title: 'Add user menu pop up',
             type: 'pr',
         },
     ] as const;
