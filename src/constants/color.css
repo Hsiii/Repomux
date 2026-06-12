@@ -21,6 +21,10 @@
     --clr-ready: #f5f1fa;
     --clr-success: #a6e3a1;
     --clr-error: #f38ba8;
+    --clr-scrollbar-track: rgba(205, 214, 244, 0.08);
+    --clr-scrollbar-thumb: rgba(166, 173, 200, 0.28);
+    --clr-scrollbar-thumb-hover: rgba(203, 166, 247, 0.46);
+    --clr-scroll-fade: rgba(4, 6, 14, 0.32);
     --shadow-surface: 0 24px 64px rgba(4, 6, 14, 0.28);
 
     --clr-login-bg: var(--clr-bg);
@@ -75,6 +79,10 @@
     --clr-app-light-text-dim: #6b7280;
     --clr-app-light-border: rgba(15, 23, 42, 0.12);
     --clr-app-light-border-strong: rgba(17, 24, 39, 0.24);
+    --clr-app-light-scrollbar-track: rgba(15, 23, 42, 0.06);
+    --clr-app-light-scrollbar-thumb: rgba(75, 85, 99, 0.24);
+    --clr-app-light-scrollbar-thumb-hover: rgba(17, 24, 39, 0.38);
+    --clr-app-light-scroll-fade: rgba(15, 23, 42, 0.12);
     --clr-app-light-shadow-surface: 0 24px 64px rgba(15, 23, 42, 0.08);
 }
 
@@ -105,6 +113,10 @@
     --clr-login-glow-edge: rgba(229, 231, 235, 0.7);
     --clr-login-control: rgba(255, 255, 255, 0.72);
     --clr-login-control-hover: rgba(255, 255, 255, 0.92);
+    --clr-scrollbar-track: var(--clr-app-light-scrollbar-track);
+    --clr-scrollbar-thumb: var(--clr-app-light-scrollbar-thumb);
+    --clr-scrollbar-thumb-hover: var(--clr-app-light-scrollbar-thumb-hover);
+    --clr-scroll-fade: var(--clr-app-light-scroll-fade);
     --clr-login-label-bg: rgba(37, 99, 235, 0.08);
     --clr-login-label-text: #2563eb;
     --clr-login-success-bg: rgba(22, 163, 74, 0.1);

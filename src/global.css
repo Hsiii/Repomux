@@ -71,6 +71,32 @@ input:disabled {
     border: 0;
 }
 
+.custom-scrollbar {
+    scrollbar-color: var(--clr-scrollbar-thumb) var(--clr-scrollbar-track);
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: var(--space-12);
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    border-radius: var(--radius-pill);
+    background-color: var(--clr-scrollbar-track);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    border: var(--space-4) solid transparent;
+    border-radius: var(--radius-pill);
+    background-color: var(--clr-scrollbar-thumb);
+    background-clip: content-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--clr-scrollbar-thumb-hover);
+}
+
 .app-shell {
     height: 100vh;
     display: grid;
@@ -95,6 +121,10 @@ input:disabled {
     --clr-text-dim: var(--clr-app-light-text-dim);
     --clr-border: var(--clr-app-light-border);
     --clr-border-strong: var(--clr-app-light-border-strong);
+    --clr-scrollbar-track: var(--clr-app-light-scrollbar-track);
+    --clr-scrollbar-thumb: var(--clr-app-light-scrollbar-thumb);
+    --clr-scrollbar-thumb-hover: var(--clr-app-light-scrollbar-thumb-hover);
+    --clr-scroll-fade: var(--clr-app-light-scroll-fade);
     --clr-ready: var(--clr-app-light-text);
     --shadow-surface: var(--clr-app-light-shadow-surface);
 }
@@ -1099,31 +1129,50 @@ input:disabled {
 
 .repo-panel {
     min-height: 0;
-    padding: var(--space-40) var(--space-28);
-    overflow: auto;
+    padding: var(--space-40) var(--space-28) var(--space-16);
+    overflow: hidden;
     border-right: var(--size-border-1) solid var(--clr-border);
     background-color: var(--clr-panel);
 }
 
 .repo-panel__section {
+    position: relative;
     height: 100%;
     min-height: 0;
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
-    gap: var(--space-16);
+    gap: 0;
 }
 
 .repo-panel__main {
+    position: relative;
     height: 100%;
     min-height: 0;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
-    gap: var(--space-16);
+    gap: 0;
 }
 
 .repo-panel__header {
+    position: relative;
+    z-index: 1;
     display: grid;
-    gap: var(--space-16);
+    gap: var(--space-24);
+    padding-bottom: var(--space-16);
+    background-color: var(--clr-panel);
+}
+
+.repo-panel__header::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: var(--space-4);
+    pointer-events: none;
+    transform: translateY(100%);
+    box-shadow: 0 var(--space-4) var(--space-8) calc(var(--space-4) * -1)
+        var(--clr-scroll-fade);
 }
 
 .repo-panel__heading {
@@ -1152,23 +1201,34 @@ input:disabled {
     height: var(--size-icon-button);
 }
 
-.repo-list--sidebar {
+.repo-panel__scroll {
     min-height: 0;
     overflow: auto;
-    padding-right: var(--space-4);
+    padding-top: var(--space-16);
+    padding-right: var(--space-8);
+    padding-bottom: var(--space-16);
+}
+
+.repo-list--sidebar {
+    min-height: 0;
 }
 
 .repo-user-card {
     position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: var(--space-12);
+    margin-top: var(--space-8);
     padding: var(--space-12);
     border: var(--size-border-1) solid var(--clr-border);
     border-radius: var(--radius-12);
     background-color: var(--clr-panel-soft);
-    box-shadow: var(--shadow-surface);
+    box-shadow:
+        0 calc(var(--space-4) * -1) var(--space-8) calc(var(--space-4) * -1)
+            var(--clr-scroll-fade),
+        var(--shadow-surface);
 }
 
 .repo-user-card__settings-menu {
@@ -1462,7 +1522,7 @@ input:disabled {
     padding: var(--space-40);
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
-    overflow: auto;
+    overflow: hidden;
 }
 
 .work-panel__header {
@@ -1474,7 +1534,6 @@ input:disabled {
 
 .work-title {
     font: var(--font-title-sm);
-    line-height: 1;
 }
 
 .work-subtitle,
@@ -1490,6 +1549,12 @@ input:disabled {
 .queue-row__repo,
 .status-message {
     font: var(--font-body-sm);
+}
+
+.work-panel__queue-scroll {
+    min-height: 0;
+    overflow: auto;
+    padding-right: var(--space-8);
 }
 
 .queue-list {
@@ -1573,6 +1638,8 @@ input:disabled {
     align-content: start;
     gap: var(--space-28);
     max-width: 980px;
+    overflow: auto;
+    padding-right: var(--space-8);
 }
 
 .back-button {
@@ -1823,6 +1890,18 @@ input:disabled {
 
     .repo-panel__section {
         height: auto;
+    }
+
+    .repo-panel__header::after {
+        display: none;
+    }
+
+    .repo-panel__scroll,
+    .work-panel__queue-scroll,
+    .detail-panel {
+        overflow: visible;
+        padding-right: 0;
+        scrollbar-gutter: auto;
     }
 
     .work-panel {

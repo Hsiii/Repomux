@@ -186,7 +186,9 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                         />
                     </div>
 
-                    {repoContent}
+                    <div className='custom-scrollbar repo-panel__scroll'>
+                        {repoContent}
+                    </div>
                 </div>
 
                 <div className='repo-user-card'>

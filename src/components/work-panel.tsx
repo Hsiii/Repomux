@@ -75,24 +75,26 @@ function WorkQueue(props: {
                 <h2 className='work-title'>Work queue</h2>
             </div>
 
-            <div
-                className={
-                    filteredWorkItems.length === 0
-                        ? 'queue-list queue-list--empty'
-                        : 'queue-list'
-                }
-            >
-                {filteredWorkItems.length === 0 ? (
-                    <p className='empty-state'>No open work found.</p>
-                ) : (
-                    filteredWorkItems.map((item) => (
-                        <WorkQueueRow
-                            item={item}
-                            key={item.id}
-                            onSelectItem={onSelectItem}
-                        />
-                    ))
-                )}
+            <div className='custom-scrollbar work-panel__queue-scroll'>
+                <div
+                    className={
+                        filteredWorkItems.length === 0
+                            ? 'queue-list queue-list--empty'
+                            : 'queue-list'
+                    }
+                >
+                    {filteredWorkItems.length === 0 ? (
+                        <p className='empty-state'>No open work found.</p>
+                    ) : (
+                        filteredWorkItems.map((item) => (
+                            <WorkQueueRow
+                                item={item}
+                                key={item.id}
+                                onSelectItem={onSelectItem}
+                            />
+                        ))
+                    )}
+                </div>
             </div>
         </>
     );
@@ -118,7 +120,7 @@ function WorkDetail(props: {
     } = props;
 
     return (
-        <article className='detail-panel'>
+        <article className='custom-scrollbar detail-panel'>
             <button className='back-button' onClick={onBack} type='button'>
                 <ArrowLeft aria-hidden='true' size={22} />
                 Back
