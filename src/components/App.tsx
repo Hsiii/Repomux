@@ -757,8 +757,7 @@ export function App(): JSX.Element {
                                             </h2>
                                             <p>
                                                 See issues and PRs from active
-                                                repos in one queue before you
-                                                dive into the detail pane.
+                                                repos in one queue.
                                             </p>
                                         </div>
                                         <article
@@ -841,12 +840,10 @@ export function App(): JSX.Element {
 
                                     <article className='login-wall__feature login-wall__feature--prompt'>
                                         <div className='login-wall__feature-copy'>
-                                            <h2>Add the prompt.</h2>
+                                            <h2>Add your prompt.</h2>
                                             <p>
                                                 Write the handoff the same way
-                                                you would in Codex: what to
-                                                change, what to keep, and what a
-                                                good result looks like.
+                                                you would in Codex.
                                             </p>
                                         </div>
 
