@@ -193,15 +193,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(320px, 0.84fr);
     align-items: stretch;
-    background:
-        linear-gradient(
-            90deg,
-            transparent calc(50% - var(--size-border-1)),
-            var(--clr-login-grid) calc(50% - var(--size-border-1)),
-            var(--clr-login-grid) 50%,
-            transparent 50%
-        ),
-        var(--clr-login-card);
+    background: var(--clr-login-card);
 }
 
 .login-wall__feature--queue {
