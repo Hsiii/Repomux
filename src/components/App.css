@@ -207,6 +207,7 @@
 
 .login-wall__feature--mux {
     min-height: var(--size-login-feature-mux);
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 }
 
 .login-wall__feature--prompt,
