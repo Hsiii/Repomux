@@ -476,6 +476,7 @@
 
 .login-wall__work-panel-preview .queue-list {
     overflow: visible;
+    background-color: var(--clr-login-card-solid);
 }
 
 .login-wall__work-panel-preview .work-panel__queue-scroll {
@@ -775,13 +776,14 @@
 .login-wall__result-list {
     width: min(100%, var(--size-login-pr-card));
     justify-self: center;
+    background-color: var(--clr-login-card-solid);
 }
 
 .login-wall__bento-cell--result .login-wall__result-list {
     width: 100%;
 }
 
-.login-wall__pr-card {
+.queue-row.login-wall__pr-card {
     position: relative;
     z-index: 2;
     border-bottom: 0;
