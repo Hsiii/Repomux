@@ -215,6 +215,38 @@
     grid-template-columns: minmax(288px, 0.8fr) minmax(0, 1.2fr);
 }
 
+.login-wall__feature--prompt {
+    grid-template-columns: minmax(288px, 0.72fr) minmax(0, 1.28fr);
+    grid-template-areas:
+        'copy prompt'
+        'automation result';
+}
+
+.login-wall__feature--prompt > .login-wall__feature-copy {
+    grid-area: copy;
+}
+
+.login-wall__prompt-stage {
+    grid-area: prompt;
+}
+
+.login-wall__bento-cell {
+    min-width: 0;
+    border-top: var(--size-border-1) solid var(--clr-login-border);
+    display: grid;
+    align-items: center;
+}
+
+.login-wall__bento-cell--automation {
+    grid-area: automation;
+}
+
+.login-wall__bento-cell--result {
+    grid-area: result;
+    grid-template-columns: minmax(176px, 0.72fr) minmax(0, 1fr);
+    border-left: var(--size-border-1) solid var(--clr-login-border);
+}
+
 .login-wall__feature-copy,
 .login-wall__feature-visual,
 .login-wall__prompt-stage,
@@ -436,9 +468,7 @@
     width: 0;
     max-width: 100%;
     overflow: hidden;
-    color: var(--clr-login-text-muted);
     white-space: nowrap;
-    opacity: 0.2;
 }
 
 .login-wall__typing-line--1 {
@@ -658,6 +688,10 @@
     width: min(100%, var(--size-login-pr-card));
 }
 
+.login-wall__bento-cell--result .login-wall__result-list {
+    width: 100%;
+}
+
 .login-wall__pr-card {
     border-bottom: 0;
 }
@@ -802,13 +836,11 @@
     0%,
     8% {
         width: 0;
-        opacity: 0.28;
     }
 
     26%,
     100% {
         width: min(100%, var(--login-wall-line-width));
-        opacity: 1;
     }
 }
 
@@ -816,13 +848,11 @@
     0%,
     28% {
         width: 0;
-        opacity: 0.24;
     }
 
     54%,
     100% {
         width: min(100%, var(--login-wall-line-width));
-        opacity: 0.92;
     }
 }
 
@@ -830,13 +860,11 @@
     0%,
     56% {
         width: 0;
-        opacity: 0.2;
     }
 
     82%,
     100% {
         width: min(100%, var(--login-wall-line-width));
-        opacity: 0.88;
     }
 }
 
@@ -908,6 +936,19 @@
         max-width: 18ch;
     }
 
+    .login-wall__feature--prompt {
+        grid-template-areas:
+            'copy'
+            'prompt'
+            'automation'
+            'result';
+    }
+
+    .login-wall__bento-cell--result {
+        grid-template-columns: 1fr;
+        border-left: 0;
+    }
+
     .login-wall__title {
         max-width: none;
         margin-top: 0;
@@ -953,6 +994,7 @@
 
     .login-wall__feature-copy,
     .login-wall__feature-visual,
+    .login-wall__bento-cell .login-wall__feature-copy,
     .login-wall__prompt-stage,
     .login-wall__result-stage,
     .login-wall__work-panel-preview {

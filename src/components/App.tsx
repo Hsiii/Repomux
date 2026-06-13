@@ -309,6 +309,7 @@ export function App(): JSX.Element {
         codexY: 222,
         hubX: 300,
         hubY: 206,
+        hubLineStartX: 376,
         lineEndX: 322,
         lineEndY: 254,
         lineStartX: 212,
@@ -668,7 +669,7 @@ export function App(): JSX.Element {
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--pink'
-                                                    d={`M396 254 C432 254 448 254 ${loginWallMuxLayout.codexX} 254`}
+                                                    d={`M${loginWallMuxLayout.hubLineStartX} 254 C424 254 448 254 ${loginWallMuxLayout.codexX} 254`}
                                                 />
                                                 {loginWallRepositoryNodes.map(
                                                     (
@@ -892,76 +893,78 @@ export function App(): JSX.Element {
                                                 </div>
                                             </div>
                                         </div>
-                                    </article>
-
-                                    <article className='login-wall__feature login-wall__feature--automation'>
-                                        <div className='login-wall__feature-copy'>
-                                            <h2>Let Codex pick up the work.</h2>
-                                            <p>
-                                                When an item is codex-ready,{' '}
-                                                <button
-                                                    className='login-wall__automation-inline-cta'
-                                                    onClick={() => {
-                                                        setIsAutomationDialogOpen(
-                                                            true
-                                                        );
-                                                    }}
-                                                    type='button'
-                                                >
-                                                    <Clock3
-                                                        aria-hidden='true'
-                                                        size={14}
-                                                    />
-                                                    <span>automation</span>
-                                                </button>{' '}
-                                                picks up the prompt and starts
-                                                the pass.
-                                            </p>
-                                        </div>
-                                    </article>
-
-                                    <article className='login-wall__feature login-wall__feature--result'>
-                                        <div className='login-wall__feature-copy'>
-                                            <h2>
-                                                Come back to a pull request.
-                                            </h2>
-                                            <p>
-                                                Simply review, add follow-up
-                                                direction, or merge the PR
-                                                submitted by Codex.
-                                            </p>
-                                        </div>
-                                        <div className='login-wall__result-stage'>
-                                            <div className='queue-list login-wall__result-list'>
-                                                <div className='queue-row login-wall__pr-card'>
-                                                    <span className='queue-row__type'>
-                                                        <GitPullRequestArrow
-                                                            aria-label='Pull request'
-                                                            size={18}
+                                        <section className='login-wall__bento-cell login-wall__bento-cell--automation'>
+                                            <div className='login-wall__feature-copy'>
+                                                <h2>
+                                                    Let Codex pick up the work.
+                                                </h2>
+                                                <p>
+                                                    When an item is codex-ready,{' '}
+                                                    <button
+                                                        className='login-wall__automation-inline-cta'
+                                                        onClick={() => {
+                                                            setIsAutomationDialogOpen(
+                                                                true
+                                                            );
+                                                        }}
+                                                        type='button'
+                                                    >
+                                                        <Clock3
+                                                            aria-hidden='true'
+                                                            size={14}
                                                         />
-                                                    </span>
-                                                    <span className='queue-row__content'>
-                                                        <span className='queue-row__title'>
-                                                            Add user menu pop up
+                                                        <span>automation</span>
+                                                    </button>{' '}
+                                                    picks up the prompt and
+                                                    starts the pass.
+                                                </p>
+                                            </div>
+                                        </section>
+
+                                        <section className='login-wall__bento-cell login-wall__bento-cell--result'>
+                                            <div className='login-wall__feature-copy'>
+                                                <h2>
+                                                    Come back to a pull request.
+                                                </h2>
+                                                <p>
+                                                    Simply review, add follow-up
+                                                    direction, or merge the PR
+                                                    submitted by Codex.
+                                                </p>
+                                            </div>
+                                            <div className='login-wall__result-stage'>
+                                                <div className='queue-list login-wall__result-list'>
+                                                    <div className='queue-row login-wall__pr-card'>
+                                                        <span className='queue-row__type'>
+                                                            <GitPullRequestArrow
+                                                                aria-label='Pull request'
+                                                                size={18}
+                                                            />
                                                         </span>
-                                                        <span className='queue-row__meta'>
-                                                            <span className='queue-row__repo'>
-                                                                Hsiii/create-hsi-app
+                                                        <span className='queue-row__content'>
+                                                            <span className='queue-row__title'>
+                                                                Add user menu
+                                                                pop up
                                                             </span>
-                                                            <span className='queue-row__number'>
-                                                                #72
+                                                            <span className='queue-row__meta'>
+                                                                <span className='queue-row__repo'>
+                                                                    Hsiii/create-hsi-app
+                                                                </span>
+                                                                <span className='queue-row__number'>
+                                                                    #72
+                                                                </span>
                                                             </span>
                                                         </span>
-                                                    </span>
-                                                    <span className='readiness'>
-                                                        <Check
-                                                            aria-label='Codex ready'
-                                                            size={18}
-                                                        />
-                                                    </span>
+                                                        <span className='readiness'>
+                                                            <Check
+                                                                aria-label='Codex ready'
+                                                                size={18}
+                                                            />
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </section>
                                     </article>
                                 </div>
                             </div>
