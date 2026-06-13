@@ -922,9 +922,9 @@ export function App(): JSX.Element {
                                             <div className='login-wall__feature-copy'>
                                                 <h2>Come back to PRs.</h2>
                                                 <p>
-                                                    Simply review, add follow-up
-                                                    direction, or merge the PR
-                                                    submitted by Codex.
+                                                    Simply review the PRs
+                                                    submitted by Codex, no need
+                                                    to leave the dashboard.
                                                 </p>
                                             </div>
                                             <div className='login-wall__result-stage'>
