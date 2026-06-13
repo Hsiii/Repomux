@@ -173,12 +173,15 @@
 .login-wall__benefits {
     width: 100%;
     max-width: var(--size-login-preview);
+    position: relative;
     display: grid;
-    gap: var(--space-24);
+    gap: var(--space-128);
+    padding-bottom: var(--space-96);
+    view-timeline-name: --login-wall-flow;
+    view-timeline-axis: block;
 }
 
 .login-wall__app-preview,
-.login-wall__feature,
 .login-wall__github-card,
 .login-wall__prompt-card {
     overflow: hidden;
@@ -190,24 +193,23 @@
 
 .login-wall__feature {
     min-height: var(--size-login-feature-min);
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(320px, 0.84fr);
     align-items: stretch;
-    background: var(--clr-login-card);
 }
 
 .login-wall__feature--queue {
     min-height: auto;
-    margin: var(--space-128) 0;
-    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+    grid-template-columns: minmax(288px, 0.56fr) minmax(0, 1fr);
+    align-items: center;
     justify-items: center;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
 }
 
 .login-wall__feature--mux {
-    min-height: var(--size-login-feature-mux);
+    min-height: calc(var(--size-login-feature-min) + var(--space-80));
     grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 }
 
@@ -218,10 +220,16 @@
 }
 
 .login-wall__feature--prompt {
-    grid-template-columns: minmax(288px, 0.72fr) minmax(0, 1.28fr);
+    min-height: calc(var(--size-login-preview-height) + var(--space-128));
+    grid-template-columns: minmax(288px, 0.72fr) minmax(0, 1.28fr) var(
+            --size-login-flow-node
+        );
     grid-template-areas:
-        'copy prompt'
-        'automation result';
+        'copy prompt codex'
+        'automation prompt codex'
+        'result result result';
+    row-gap: var(--space-48);
+    align-items: center;
 }
 
 .login-wall__feature--prompt > .login-wall__feature-copy {
@@ -234,7 +242,6 @@
 
 .login-wall__bento-cell {
     min-width: 0;
-    border-top: var(--size-border-1) solid var(--clr-login-border);
     display: grid;
     align-items: center;
 }
@@ -246,7 +253,7 @@
 .login-wall__bento-cell--result {
     grid-area: result;
     grid-template-columns: minmax(176px, 0.72fr) minmax(0, 1fr);
-    border-left: var(--size-border-1) solid var(--clr-login-border);
+    align-items: center;
 }
 
 .login-wall__feature-copy,
@@ -264,8 +271,8 @@
 }
 
 .login-wall__feature--queue .login-wall__feature-copy {
-    justify-items: center;
-    text-align: center;
+    justify-items: start;
+    text-align: left;
 }
 
 .login-wall__feature-copy h2 {
@@ -285,91 +292,143 @@
     align-items: center;
 }
 
-.login-wall__mux-diagram {
+.login-wall__flow-lines {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
     width: 100%;
-    height: auto;
-    display: block;
+    height: 100%;
     overflow: visible;
+    pointer-events: none;
 }
 
-.login-wall__mux-line {
+.login-wall__flow-line {
     fill: none;
     stroke-linecap: round;
-    stroke-width: 4;
-    stroke-dasharray: 280;
-    stroke-dashoffset: 280;
-    animation: login-wall-draw-left 6.8s ease-in-out infinite;
+    stroke-linejoin: round;
+    stroke-width: 6;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0.88;
+    filter: drop-shadow(0 0 var(--space-12) currentcolor);
+    animation: login-wall-flow-draw linear both;
+    animation-timeline: --login-wall-flow;
+    animation-range: entry 4% cover 78%;
 }
 
-.login-wall__mux-line--blue {
+@supports not (animation-timeline: view()) {
+    .login-wall__flow-line {
+        stroke-dashoffset: 0;
+        animation: none;
+    }
+}
+
+.login-wall__flow-line--blue {
     stroke: var(--clr-login-flow-blue);
+    color: var(--clr-login-flow-blue);
 }
 
-.login-wall__mux-line--red {
-    stroke: var(--clr-login-flow-red);
-    animation-delay: 160ms;
+.login-wall__flow-line--pink {
+    stroke: var(--clr-login-flow-pink);
+    color: var(--clr-login-flow-pink);
 }
 
-.login-wall__mux-line--yellow {
+.login-wall__flow-line--violet {
     stroke: var(--clr-login-flow-yellow);
-    animation-delay: 320ms;
+    color: var(--clr-login-flow-yellow);
 }
 
-.login-wall__mux-line--green {
-    stroke: var(--clr-login-flow-green);
-    animation-delay: 480ms;
-}
-
-.login-wall__mux-line--cyan {
+.login-wall__flow-line--cyan {
     stroke: var(--clr-login-flow-cyan);
-    animation-delay: 480ms;
+    color: var(--clr-login-flow-cyan);
 }
 
-.login-wall__mux-line--pink {
+.login-wall__flow-line--purple {
     stroke: var(--clr-accent);
-    animation-name: login-wall-draw-codex;
-    animation-delay: 0ms;
+    color: var(--clr-accent);
 }
 
-.login-wall__mux-repo rect,
-.login-wall__mux-output rect {
-    fill: var(--clr-login-card-strong);
-    stroke: var(--clr-login-border);
-    stroke-width: var(--size-border-1);
+.login-wall__repo-flow {
+    min-height: 360px;
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-96);
 }
 
-.login-wall__mux-repo svg,
-.login-wall__mux-output svg {
+.login-wall__repo-row {
+    display: grid;
+    grid-template-columns: repeat(
+        3,
+        minmax(calc(var(--space-128) + var(--space-16)), 1fr)
+    );
+    gap: var(--space-16);
+}
+
+.login-wall__mux-repo {
+    min-width: 0;
+    min-height: var(--space-80);
+    padding: var(--space-16);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-8);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-content: center;
+    gap: var(--space-4) var(--space-12);
     color: var(--clr-login-text-muted);
+    background-color: var(--clr-login-card-strong);
 }
 
-.login-wall__mux-repo-owner {
-    fill: var(--clr-login-text-dim);
+.login-wall__mux-repo svg {
+    grid-row: span 2;
+    align-self: center;
+}
+
+.login-wall__mux-repo span {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--clr-login-text-dim);
+    font: var(--font-label);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.login-wall__mux-repo strong {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--clr-login-text);
     font: var(--font-body-lg);
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.login-wall__mux-repo-name,
-.login-wall__mux-output text {
-    fill: var(--clr-login-text);
-    font: var(--font-body-lg);
-}
-
-.login-wall__mux-logo {
-    width: calc(var(--space-80) + var(--space-16));
-    height: calc(var(--space-80) + var(--space-16));
+.login-wall__flow-mux-logo {
+    width: calc(var(--space-128) + var(--space-32));
+    height: calc(var(--space-128) + var(--space-32));
+    margin-left: var(--space-40);
     display: block;
     filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
         hue-rotate(204deg) brightness(104%) contrast(97%);
 }
 
 .login-wall__mux-codex {
-    width: var(--space-64);
-    height: var(--space-64);
+    width: var(--size-login-flow-node);
+    height: var(--size-login-flow-node);
     display: block;
     color: var(--clr-login-text);
 }
 
-.login-wall--light .login-wall__mux-logo {
+.login-wall__codex-node {
+    grid-area: codex;
+    justify-self: end;
+    align-self: center;
+    width: var(--size-login-flow-node);
+    height: var(--size-login-flow-node);
+    display: grid;
+    place-items: center;
+}
+
+.login-wall--light .login-wall__flow-mux-logo {
     filter: brightness(0);
 }
 
@@ -738,7 +797,7 @@
 }
 
 .login-wall__feature--queue .login-wall__feature-copy {
-    width: min(100%, var(--size-login-preview-wide));
+    width: 100%;
     margin-top: 0;
     padding: 0;
     gap: var(--space-24);
@@ -802,35 +861,9 @@
     background-color: var(--clr-login-control-hover);
 }
 
-@keyframes login-wall-draw-left {
-    0%,
-    8% {
-        stroke-dashoffset: 280;
-    }
-
-    32%,
-    82% {
+@keyframes login-wall-flow-draw {
+    to {
         stroke-dashoffset: 0;
-    }
-
-    100% {
-        stroke-dashoffset: -280;
-    }
-}
-
-@keyframes login-wall-draw-codex {
-    0%,
-    42% {
-        stroke-dashoffset: 280;
-    }
-
-    56%,
-    82% {
-        stroke-dashoffset: 0;
-    }
-
-    100% {
-        stroke-dashoffset: -280;
     }
 }
 
@@ -930,8 +963,12 @@
         grid-template-columns: 1fr;
     }
 
-    .login-wall__feature {
-        background: var(--clr-login-card);
+    .login-wall__benefits {
+        gap: var(--space-80);
+    }
+
+    .login-wall__flow-lines {
+        display: none;
     }
 
     .login-wall__feature-copy h2 {
@@ -943,12 +980,30 @@
             'copy'
             'prompt'
             'automation'
+            'codex'
             'result';
+    }
+
+    .login-wall__repo-row {
+        grid-template-columns: 1fr;
+    }
+
+    .login-wall__repo-flow {
+        min-height: auto;
+        gap: var(--space-48);
+    }
+
+    .login-wall__flow-mux-logo,
+    .login-wall__codex-node {
+        margin: 0 auto;
+    }
+
+    .login-wall__codex-node {
+        justify-self: center;
     }
 
     .login-wall__bento-cell--result {
         grid-template-columns: 1fr;
-        border-left: 0;
     }
 
     .login-wall__title {
@@ -1020,13 +1075,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .login-wall__mux-line,
+    .login-wall__flow-line,
     .login-wall__typing-line,
     .login-wall__automation-cta {
         animation: none;
     }
 
-    .login-wall__mux-line {
+    .login-wall__flow-line {
         stroke-dashoffset: 0;
     }
 

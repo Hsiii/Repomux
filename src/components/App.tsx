@@ -302,24 +302,7 @@ export function App(): JSX.Element {
         { name: 'repomux', owner: 'Hsiii' },
         { name: 'create-hsi-app', owner: 'Hsiii' },
         { name: 'comux', owner: 'Hsiii' },
-        { name: 'fish-git-alias', owner: 'Hsiii' },
     ] as const;
-    const loginWallMuxLayout = {
-        codexX: 484,
-        codexY: 222,
-        hubX: 300,
-        hubY: 206,
-        hubLineStartX: 376,
-        lineEndX: 322,
-        lineEndY: 254,
-        lineStartX: 212,
-        repoHeight: 84,
-        repoWidth: 196,
-        repoX: 16,
-        repoYGap: 112,
-        repoYStart: 44,
-        viewBoxHeight: 504,
-    } as const;
     const loginLanguages = [
         { label: 'English', shortLabel: 'EN', value: 'en' },
         { label: 'Chinese', shortLabel: 'ZH', value: 'zh' },
@@ -627,6 +610,43 @@ export function App(): JSX.Element {
                                 </button>
 
                                 <div className='login-wall__benefits'>
+                                    <svg
+                                        aria-hidden='true'
+                                        className='login-wall__flow-lines'
+                                        preserveAspectRatio='none'
+                                        viewBox='0 0 1088 1720'
+                                    >
+                                        <path
+                                            className='login-wall__flow-line login-wall__flow-line--blue'
+                                            d='M560 120 C512 160 488 244 424 308'
+                                            pathLength='1'
+                                        />
+                                        <path
+                                            className='login-wall__flow-line login-wall__flow-line--pink'
+                                            d='M744 120 C632 148 560 244 424 308'
+                                            pathLength='1'
+                                        />
+                                        <path
+                                            className='login-wall__flow-line login-wall__flow-line--violet'
+                                            d='M928 120 C736 136 584 232 424 308'
+                                            pathLength='1'
+                                        />
+                                        <path
+                                            className='login-wall__flow-line login-wall__flow-line--cyan'
+                                            d='M424 308 C540 388 632 436 704 488'
+                                            pathLength='1'
+                                        />
+                                        <path
+                                            className='login-wall__flow-line login-wall__flow-line--purple'
+                                            d='M424 308 C380 560 572 740 736 860 C888 972 932 1080 900 1192'
+                                            pathLength='1'
+                                        />
+                                        <path
+                                            className='login-wall__flow-line login-wall__flow-line--purple login-wall__flow-line--return'
+                                            d='M900 1192 C844 1332 724 1436 548 1512'
+                                            pathLength='1'
+                                        />
+                                    </svg>
                                     <article className='login-wall__feature login-wall__feature--mux'>
                                         <div className='login-wall__feature-copy'>
                                             <h2>
@@ -640,113 +660,36 @@ export function App(): JSX.Element {
                                             </p>
                                         </div>
                                         <div className='login-wall__feature-visual'>
-                                            <svg
-                                                aria-labelledby='mux-diagram-title'
-                                                className='login-wall__mux-diagram'
-                                                role='img'
-                                                viewBox={`0 0 620 ${loginWallMuxLayout.viewBoxHeight}`}
+                                            <div
+                                                aria-label='Three repositories flowing into Repomux'
+                                                className='login-wall__repo-flow'
                                             >
-                                                <title id='mux-diagram-title'>
-                                                    Multiple repositories
-                                                    multiplexed into one Repomux
-                                                    workspace
-                                                </title>
-                                                <path
-                                                    className='login-wall__mux-line login-wall__mux-line--blue'
-                                                    d={`M${loginWallMuxLayout.lineStartX} 86 C248 86 270 194 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
-                                                />
-                                                <path
-                                                    className='login-wall__mux-line login-wall__mux-line--red'
-                                                    d={`M${loginWallMuxLayout.lineStartX} 198 C256 198 278 222 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
-                                                />
-                                                <path
-                                                    className='login-wall__mux-line login-wall__mux-line--yellow'
-                                                    d={`M${loginWallMuxLayout.lineStartX} 310 C256 310 278 286 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
-                                                />
-                                                <path
-                                                    className='login-wall__mux-line login-wall__mux-line--green'
-                                                    d={`M${loginWallMuxLayout.lineStartX} 422 C248 422 270 314 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
-                                                />
-                                                <path
-                                                    className='login-wall__mux-line login-wall__mux-line--pink'
-                                                    d={`M${loginWallMuxLayout.hubLineStartX} 254 C424 254 448 254 ${loginWallMuxLayout.codexX} 254`}
-                                                />
-                                                {loginWallRepositoryNodes.map(
-                                                    (
-                                                        { name, owner },
-                                                        index
-                                                    ) => (
-                                                        <g
-                                                            className='login-wall__mux-repo'
-                                                            key={name}
-                                                            transform={`translate(${loginWallMuxLayout.repoX} ${loginWallMuxLayout.repoYStart + index * loginWallMuxLayout.repoYGap})`}
-                                                        >
-                                                            <rect
-                                                                height={
-                                                                    loginWallMuxLayout.repoHeight
-                                                                }
-                                                                rx='12'
-                                                                width={
-                                                                    loginWallMuxLayout.repoWidth
-                                                                }
-                                                            />
-                                                            <BookMarked
-                                                                aria-hidden='true'
-                                                                size={22}
-                                                                x={18}
-                                                                y={30}
-                                                            />
-                                                            <text
-                                                                className='login-wall__mux-repo-owner'
-                                                                x='52'
-                                                                y='33'
+                                                <div className='login-wall__repo-row'>
+                                                    {loginWallRepositoryNodes.map(
+                                                        ({ name, owner }) => (
+                                                            <div
+                                                                className='login-wall__mux-repo'
+                                                                key={name}
                                                             >
-                                                                {owner}
-                                                            </text>
-                                                            <text
-                                                                className='login-wall__mux-repo-name'
-                                                                x='52'
-                                                                y='58'
-                                                            >
-                                                                {name}
-                                                            </text>
-                                                        </g>
-                                                    )
-                                                )}
-                                                <g className='login-wall__mux-hub'>
-                                                    <foreignObject
-                                                        height='96'
-                                                        width='96'
-                                                        x={
-                                                            loginWallMuxLayout.hubX
-                                                        }
-                                                        y={
-                                                            loginWallMuxLayout.hubY
-                                                        }
-                                                    >
-                                                        <BrandLogo
-                                                            alt=''
-                                                            className='login-wall__mux-logo'
-                                                        />
-                                                    </foreignObject>
-                                                </g>
-                                                <g
-                                                    className='login-wall__mux-output'
-                                                    transform={`translate(${loginWallMuxLayout.codexX} ${loginWallMuxLayout.codexY})`}
-                                                >
-                                                    <foreignObject
-                                                        height='64'
-                                                        width='64'
-                                                        x='0'
-                                                        y='0'
-                                                    >
-                                                        <CodexMark
-                                                            className='login-wall__mux-codex'
-                                                            theme={loginTheme}
-                                                        />
-                                                    </foreignObject>
-                                                </g>
-                                            </svg>
+                                                                <BookMarked
+                                                                    aria-hidden='true'
+                                                                    size={18}
+                                                                />
+                                                                <span>
+                                                                    {owner}
+                                                                </span>
+                                                                <strong>
+                                                                    {name}
+                                                                </strong>
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </div>
+                                                <BrandLogo
+                                                    alt='Repomux'
+                                                    className='login-wall__flow-mux-logo'
+                                                />
+                                            </div>
                                         </div>
                                     </article>
 
@@ -917,6 +860,16 @@ export function App(): JSX.Element {
                                                 </p>
                                             </div>
                                         </section>
+
+                                        <div
+                                            aria-hidden='true'
+                                            className='login-wall__codex-node'
+                                        >
+                                            <CodexMark
+                                                className='login-wall__mux-codex'
+                                                theme={loginTheme}
+                                            />
+                                        </div>
 
                                         <section className='login-wall__bento-cell login-wall__bento-cell--result'>
                                             <div className='login-wall__feature-copy'>
