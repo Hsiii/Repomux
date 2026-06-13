@@ -220,14 +220,13 @@
 }
 
 .login-wall__feature--prompt {
-    min-height: var(--size-login-flow-section);
-    height: var(--size-login-flow-section);
+    min-height: calc(var(--size-login-flow-section) + var(--space-96));
     grid-template-columns: minmax(288px, 0.72fr) minmax(0, 1.28fr);
     grid-template-areas:
         'copy prompt'
-        'automation codex';
-    grid-template-rows: minmax(0, 1fr) auto;
-    row-gap: var(--space-16);
+        'codex automation';
+    grid-template-rows: auto auto;
+    row-gap: var(--space-96);
     align-items: start;
 }
 
@@ -254,6 +253,7 @@
 
 .login-wall__bento-cell--automation {
     grid-area: automation;
+    align-self: center;
 }
 
 .login-wall__bento-cell--result {
@@ -437,11 +437,11 @@
 
 .login-wall__codex-node {
     grid-area: codex;
-    justify-self: start;
+    justify-self: end;
     align-self: center;
     width: var(--size-login-flow-node);
     height: var(--size-login-flow-node);
-    margin: 0 0 0 var(--space-40);
+    margin: 0 var(--space-40) 0 0;
     display: grid;
     place-items: center;
 }
@@ -846,6 +846,8 @@
 .login-wall__feature--automation .login-wall__feature-copy {
     max-width: 40rem;
     padding: 0;
+    justify-items: start;
+    text-align: left;
 }
 
 .login-wall__feature--automation .login-wall__feature-copy p {
