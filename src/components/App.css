@@ -175,7 +175,7 @@
     max-width: var(--size-login-preview);
     position: relative;
     display: grid;
-    gap: var(--space-96);
+    gap: var(--space-64);
     padding-bottom: var(--space-164);
 }
 
@@ -195,7 +195,7 @@
     z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(320px, 0.84fr);
-    align-items: stretch;
+    align-items: start;
 }
 
 .login-wall__feature--queue {
@@ -207,9 +207,8 @@
 }
 
 .login-wall__feature--mux {
-    min-height: calc(var(--size-login-feature-min) + var(--space-80));
+    min-height: calc(var(--size-login-feature-min) + var(--space-128));
     grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    align-items: center;
 }
 
 .login-wall__feature--prompt,
@@ -220,15 +219,14 @@
 
 .login-wall__feature--prompt {
     min-height: calc(var(--size-login-preview-height) + var(--space-232));
-    grid-template-columns: minmax(288px, 0.72fr) minmax(0, 1.28fr) var(
-            --size-login-flow-node
-        );
+    grid-template-columns: minmax(288px, 0.72fr) minmax(0, 1.28fr);
     grid-template-areas:
-        'copy prompt codex'
-        'automation prompt codex'
-        'result result result';
+        'copy prompt'
+        'automation prompt'
+        'codex codex'
+        'result result';
     row-gap: var(--space-96);
-    align-items: center;
+    align-items: start;
 }
 
 .login-wall__feature--prompt > .login-wall__feature-copy {
@@ -266,7 +264,7 @@
 
 .login-wall__feature-copy {
     display: grid;
-    align-content: center;
+    align-content: start;
     gap: var(--space-16);
 }
 
@@ -355,11 +353,10 @@
 }
 
 .login-wall__repo-flow {
-    min-height: 360px;
+    min-height: calc(var(--size-login-feature-min) + var(--space-128));
     position: relative;
     display: grid;
     align-content: start;
-    gap: var(--space-72);
 }
 
 .login-wall__repo-row {
@@ -408,10 +405,18 @@
     white-space: nowrap;
 }
 
+.login-wall__flow-mux-node {
+    min-height: var(--space-164);
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    margin: calc(0px - var(--space-96)) 0 calc(0px - var(--space-64));
+}
+
 .login-wall__flow-mux-logo {
     width: calc(var(--space-128) + var(--space-32));
     height: calc(var(--space-128) + var(--space-32));
-    margin-left: var(--space-24);
     display: block;
     filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
         hue-rotate(204deg) brightness(104%) contrast(97%);
@@ -426,10 +431,11 @@
 
 .login-wall__codex-node {
     grid-area: codex;
-    justify-self: end;
-    align-self: center;
+    justify-self: center;
+    align-self: start;
     width: var(--size-login-flow-node);
     height: var(--size-login-flow-node);
+    margin: calc(0px - var(--space-48)) 0 0;
     display: grid;
     place-items: center;
 }
@@ -489,6 +495,10 @@
 
 .login-wall__prompt-stage {
     display: block;
+}
+
+.login-wall__feature--prompt .login-wall__prompt-stage {
+    padding-top: 0;
 }
 
 .login-wall__prompt-card {

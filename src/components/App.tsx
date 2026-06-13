@@ -618,27 +618,27 @@ export function App(): JSX.Element {
                                     >
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--blue'
-                                            d='M572 120 C520 160 552 236 624 300'
+                                            d='M572 120 C540 192 584 252 544 352'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--pink'
-                                            d='M764 120 C636 148 652 244 624 300'
+                                            d='M764 120 C696 192 628 260 544 352'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--violet'
-                                            d='M956 120 C780 140 716 236 624 300'
+                                            d='M956 120 C796 176 704 284 544 352'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--purple'
-                                            d='M624 300 C548 352 720 420 632 488 C548 552 416 492 340 612 C300 684 400 760 520 728 C650 690 734 744 690 836 C640 940 860 950 1032 1051'
+                                            d='M544 352 C408 420 420 568 560 568 C724 568 732 380 592 392 C424 408 364 632 536 704 C708 776 624 924 456 848 C312 784 364 1032 600 984 C844 936 872 1116 544 1188'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--purple login-wall__flow-line--return'
-                                            d='M1032 1051 C956 1168 820 1136 760 1264 C716 1356 820 1416 772 1496'
+                                            d='M544 1188 C432 1272 468 1404 616 1400 C752 1396 820 1444 772 1496'
                                             pathLength='1'
                                         />
                                     </svg>
@@ -680,13 +680,16 @@ export function App(): JSX.Element {
                                                         )
                                                     )}
                                                 </div>
-                                                <BrandLogo
-                                                    alt='Repomux'
-                                                    className='login-wall__flow-mux-logo'
-                                                />
                                             </div>
                                         </div>
                                     </article>
+
+                                    <div className='login-wall__flow-mux-node'>
+                                        <BrandLogo
+                                            alt='Repomux'
+                                            className='login-wall__flow-mux-logo'
+                                        />
+                                    </div>
 
                                     <article className='login-wall__feature login-wall__feature--queue'>
                                         <article
