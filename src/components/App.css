@@ -203,6 +203,7 @@
     height: var(--size-login-flow-section);
     margin: 0;
     grid-template-columns: minmax(0, 1fr) minmax(288px, 0.56fr);
+    column-gap: var(--space-64);
     align-items: center;
     justify-items: center;
 }
@@ -239,6 +240,7 @@
 
 .login-wall__feature--prompt > .login-wall__feature-copy {
     grid-area: copy;
+    align-self: center;
 }
 
 .login-wall__prompt-stage {
@@ -336,13 +338,21 @@
     animation-range: 0% 18%;
 }
 
-.login-wall__flow-line--pink {
+.login-wall__flow-line--repo-1 {
+    stroke: var(--clr-login-flow-blue);
+    color: var(--clr-login-flow-blue);
+    animation-range: 0% 18%;
+}
+
+.login-wall__flow-line--pink,
+.login-wall__flow-line--repo-2 {
     stroke: var(--clr-login-flow-pink);
     color: var(--clr-login-flow-pink);
     animation-range: 0% 20%;
 }
 
-.login-wall__flow-line--violet {
+.login-wall__flow-line--violet,
+.login-wall__flow-line--repo-3 {
     stroke: var(--clr-login-flow-yellow);
     color: var(--clr-login-flow-yellow);
     animation-range: 0% 22%;
@@ -352,6 +362,12 @@
     stroke: var(--clr-accent);
     color: var(--clr-accent);
     animation-range: 28% 100%;
+}
+
+.login-wall__flow-dot {
+    fill: var(--clr-login-accent);
+    stroke: var(--clr-login-card-solid);
+    stroke-width: 2;
 }
 
 .login-wall__repo-flow {
@@ -420,9 +436,24 @@
     padding-top: var(--space-24);
 }
 
+.login-wall__flow-mux-node::before {
+    content: '';
+    width: calc(var(--space-128) + var(--space-40));
+    height: calc(var(--space-128) + var(--space-40));
+    position: absolute;
+    top: var(--space-20);
+    left: 50%;
+    z-index: 1;
+    border-radius: var(--radius-pill);
+    background-color: var(--clr-login-bg);
+    transform: translateX(-50%);
+}
+
 .login-wall__flow-mux-logo {
     width: calc(var(--space-128) + var(--space-32));
     height: calc(var(--space-128) + var(--space-32));
+    position: relative;
+    z-index: 2;
     display: block;
     filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
         hue-rotate(204deg) brightness(104%) contrast(97%);
@@ -451,10 +482,10 @@
 }
 
 .login-wall__work-panel-preview {
-    min-height: var(--size-login-preview-compact);
+    min-height: auto;
     position: relative;
     z-index: 2;
-    padding: var(--space-24);
+    padding: 0;
     margin-bottom: 0;
     overflow: hidden;
     background-color: var(--clr-login-card-solid);
@@ -469,6 +500,7 @@
 
 .work-panel.login-wall__work-panel-preview {
     width: min(100%, var(--size-login-preview-wide));
+    padding: 0;
     grid-template-rows: auto auto;
     align-content: start;
     overflow: hidden;
@@ -506,6 +538,7 @@
 
 .login-wall__feature--prompt .login-wall__prompt-stage {
     padding-top: 0;
+    padding-bottom: 0;
 }
 
 .login-wall__prompt-card {

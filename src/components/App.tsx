@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties, JSX } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
@@ -46,6 +46,133 @@ const automationSetupPrompt = [
     'If auth, prompt text, local paths, or repo state are missing or conflicting, stop and report the blocker instead of guessing.',
 ].join('\n');
 
+interface FlowPoint {
+    x: number;
+    y: number;
+}
+
+interface LoginWallFlowGeometry {
+    height: number;
+    purplePath: string;
+    repoDots: readonly FlowPoint[];
+    repoPaths: readonly string[];
+    width: number;
+}
+
+function getRelativeAnchor(
+    rootRect: Readonly<DOMRect>,
+    element: Readonly<Element>,
+    xRatio: number,
+    yRatio: number
+): FlowPoint {
+    const rect = element.getBoundingClientRect();
+
+    return {
+        x: Math.round(rect.left - rootRect.left + rect.width * xRatio),
+        y: Math.round(rect.top - rootRect.top + rect.height * yRatio),
+    };
+}
+
+function createRepoFlowPath(
+    start: Readonly<FlowPoint>,
+    end: Readonly<FlowPoint>
+) {
+    const bend = Math.max(96, Math.round((end.y - start.y) * 0.36));
+    const horizontalDrift = Math.round((end.x - start.x) * 0.24);
+
+    return [
+        `M ${start.x} ${start.y}`,
+        `C ${start.x} ${start.y + bend}`,
+        `${end.x - horizontalDrift} ${end.y - bend}`,
+        `${end.x} ${end.y}`,
+    ].join(' ');
+}
+
+function createPurpleFlowPath(
+    muxCenter: Readonly<FlowPoint>,
+    queueTopCenter: Readonly<FlowPoint>,
+    queueBottomCenter: Readonly<FlowPoint>,
+    promptTopCenter: Readonly<FlowPoint>,
+    codexCenter: Readonly<FlowPoint>,
+    resultBottomCenter: Readonly<FlowPoint>,
+    width: number
+) {
+    const offscreenRight = width + 160;
+
+    return [
+        `M ${muxCenter.x} ${muxCenter.y}`,
+        `C ${muxCenter.x - 64} ${muxCenter.y + 168}`,
+        `${queueTopCenter.x - 220} ${queueTopCenter.y - 152}`,
+        `${queueTopCenter.x} ${queueTopCenter.y}`,
+        `C ${queueTopCenter.x + 24} ${queueTopCenter.y + 176}`,
+        `${queueBottomCenter.x + 188} ${queueBottomCenter.y - 120}`,
+        `${queueBottomCenter.x} ${queueBottomCenter.y}`,
+        `C ${queueBottomCenter.x + 172} ${queueBottomCenter.y + 120}`,
+        `${promptTopCenter.x - 160} ${promptTopCenter.y - 108}`,
+        `${promptTopCenter.x} ${promptTopCenter.y}`,
+        `C ${promptTopCenter.x + 96} ${promptTopCenter.y + 152}`,
+        `${codexCenter.x + 192} ${codexCenter.y - 136}`,
+        `${codexCenter.x} ${codexCenter.y}`,
+        `C ${codexCenter.x + 340} ${codexCenter.y + 64}`,
+        `${offscreenRight} ${codexCenter.y + 240}`,
+        `${offscreenRight} ${resultBottomCenter.y - 168}`,
+        `C ${offscreenRight} ${resultBottomCenter.y + 104}`,
+        `${resultBottomCenter.x + 120} ${resultBottomCenter.y + 128}`,
+        `${resultBottomCenter.x} ${resultBottomCenter.y}`,
+    ].join(' ');
+}
+
+const loginWallQueueItems = [
+    {
+        icon: CircleDot,
+        meta: 'Hsiii/repomux',
+        number: 128,
+        status: 'Ready',
+        title: 'Polish landing page',
+        type: 'issue',
+    },
+    {
+        icon: CircleDot,
+        meta: 'Hsiii/comux',
+        number: 41,
+        status: 'Prepared',
+        title: 'Consider supporting Claude',
+        type: 'issue',
+    },
+    {
+        icon: GitPullRequestArrow,
+        meta: 'Hsiii/create-hsi-app',
+        number: 72,
+        status: 'Assigned',
+        title: 'Add user menu pop up',
+        type: 'pr',
+    },
+] as const;
+
+const loginWallPromptLines = [
+    {
+        steps: 55,
+        text: 'Redesign the benefit section to show repo multiplexing.',
+        width: '55ch',
+    },
+    {
+        steps: 66,
+        text: 'Keep the queue, prompt handoff, and automation states easy to scan.',
+        width: '66ch',
+    },
+    {
+        steps: 62,
+        text: 'Remove decorative clutter and keep the review path obvious.',
+        width: '62ch',
+    },
+] as const;
+
+const loginWallRepositoryNodes = [
+    { name: 'repomux', owner: 'Hsiii' },
+    { name: 'create-hsi-app', owner: 'Hsiii' },
+    { name: 'comux', owner: 'Hsiii' },
+] as const;
+
 export function App(): JSX.Element {
     const [repositorySearchQuery, setRepositorySearchQuery] = useState('');
     const [activeRepositoryNames, setActiveRepositoryNames] = useState<
@@ -67,6 +194,16 @@ export function App(): JSX.Element {
     const [isAutomationPromptCopied, setIsAutomationPromptCopied] =
         useState(false);
     const [isAutomationDialogOpen, setIsAutomationDialogOpen] = useState(false);
+    const [loginFlowGeometry, setLoginFlowGeometry] = useState<
+        LoginWallFlowGeometry | undefined
+    >();
+    const loginBenefitsRef = useRef<HTMLDivElement>(null);
+    const loginRepoRefs = useRef<Array<HTMLDivElement | undefined>>([]);
+    const loginMuxNodeRef = useRef<HTMLDivElement>(null);
+    const loginQueuePreviewRef = useRef<HTMLElement>(null);
+    const loginPromptCardRef = useRef<HTMLDivElement>(null);
+    const loginCodexNodeRef = useRef<HTMLDivElement>(null);
+    const loginResultCardRef = useRef<HTMLDivElement>(null);
     const loginTopbarControlsRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -219,6 +356,118 @@ export function App(): JSX.Element {
         };
     }, [isLanguageMenuOpen, isThemeMenuOpen]);
 
+    useLayoutEffect(() => {
+        const root = loginBenefitsRef.current;
+
+        if (!root) {
+            return undefined;
+        }
+
+        let frame = 0;
+
+        function updateLoginFlowGeometry() {
+            globalThis.cancelAnimationFrame(frame);
+
+            frame = globalThis.requestAnimationFrame(() => {
+                const rootElement = loginBenefitsRef.current;
+                const muxLogo = loginMuxNodeRef.current?.querySelector('img');
+                const queuePreview = loginQueuePreviewRef.current;
+                const promptCard = loginPromptCardRef.current;
+                const codexNode = loginCodexNodeRef.current;
+                const resultCard = loginResultCardRef.current;
+                const repoCards = loginRepoRefs.current.filter(
+                    (card): card is HTMLDivElement => card !== undefined
+                );
+
+                if (
+                    !rootElement ||
+                    !muxLogo ||
+                    !queuePreview ||
+                    !promptCard ||
+                    !codexNode ||
+                    !resultCard ||
+                    repoCards.length !== loginWallRepositoryNodes.length
+                ) {
+                    setLoginFlowGeometry(undefined);
+                    return;
+                }
+
+                const rootRect = rootElement.getBoundingClientRect();
+                const width = Math.round(rootRect.width);
+                const height = Math.round(rootElement.scrollHeight);
+                const muxCenter = getRelativeAnchor(
+                    rootRect,
+                    muxLogo,
+                    0.5,
+                    0.5
+                );
+                const queueTopCenter = getRelativeAnchor(
+                    rootRect,
+                    queuePreview,
+                    0.5,
+                    0
+                );
+                const queueBottomCenter = getRelativeAnchor(
+                    rootRect,
+                    queuePreview,
+                    0.5,
+                    1
+                );
+                const promptTopCenter = getRelativeAnchor(
+                    rootRect,
+                    promptCard,
+                    0.5,
+                    0
+                );
+                const codexCenter = getRelativeAnchor(
+                    rootRect,
+                    codexNode,
+                    0.5,
+                    0.5
+                );
+                const resultBottomCenter = getRelativeAnchor(
+                    rootRect,
+                    resultCard,
+                    0.5,
+                    1
+                );
+                const repoDots = repoCards.map((card) =>
+                    getRelativeAnchor(rootRect, card, 0.5, 1)
+                );
+
+                setLoginFlowGeometry({
+                    height,
+                    purplePath: createPurpleFlowPath(
+                        muxCenter,
+                        queueTopCenter,
+                        queueBottomCenter,
+                        promptTopCenter,
+                        codexCenter,
+                        resultBottomCenter,
+                        width
+                    ),
+                    repoDots,
+                    repoPaths: repoDots.map((dot) =>
+                        createRepoFlowPath(dot, muxCenter)
+                    ),
+                    width,
+                });
+            });
+        }
+
+        updateLoginFlowGeometry();
+        globalThis.addEventListener('resize', updateLoginFlowGeometry);
+
+        const resizeObserver = new ResizeObserver(updateLoginFlowGeometry);
+        resizeObserver.observe(root);
+
+        return () => {
+            globalThis.cancelAnimationFrame(frame);
+            globalThis.removeEventListener('resize', updateLoginFlowGeometry);
+            resizeObserver.disconnect();
+        };
+    }, []);
+
     function updateActiveRepositories(nextRepositoryNames: readonly string[]) {
         setStoredActiveRepositories(nextRepositoryNames);
         setActiveRepositoryNames(nextRepositoryNames);
@@ -255,54 +504,6 @@ export function App(): JSX.Element {
     } else if (workItemsQuery.error instanceof Error) {
         statusText = workItemsQuery.error.message;
     }
-    const loginWallQueueItems = [
-        {
-            icon: CircleDot,
-            meta: 'Hsiii/repomux',
-            number: 128,
-            status: 'Ready',
-            title: 'Polish landing page',
-            type: 'issue',
-        },
-        {
-            icon: CircleDot,
-            meta: 'Hsiii/comux',
-            number: 41,
-            status: 'Prepared',
-            title: 'Consider supporting Claude',
-            type: 'issue',
-        },
-        {
-            icon: GitPullRequestArrow,
-            meta: 'Hsiii/create-hsi-app',
-            number: 72,
-            status: 'Assigned',
-            title: 'Add user menu pop up',
-            type: 'pr',
-        },
-    ] as const;
-    const loginWallPromptLines = [
-        {
-            steps: 55,
-            text: 'Redesign the benefit section to show repo multiplexing.',
-            width: '55ch',
-        },
-        {
-            steps: 66,
-            text: 'Keep the queue, prompt handoff, and automation states easy to scan.',
-            width: '66ch',
-        },
-        {
-            steps: 62,
-            text: 'Remove decorative clutter and keep the review path obvious.',
-            width: '62ch',
-        },
-    ] as const;
-    const loginWallRepositoryNodes = [
-        { name: 'repomux', owner: 'Hsiii' },
-        { name: 'create-hsi-app', owner: 'Hsiii' },
-        { name: 'comux', owner: 'Hsiii' },
-    ] as const;
     const loginLanguages = [
         { label: 'English', shortLabel: 'EN', value: 'en' },
         { label: 'Chinese', shortLabel: 'ZH', value: 'zh' },
@@ -609,34 +810,48 @@ export function App(): JSX.Element {
                                     <ArrowRight aria-hidden='true' size={16} />
                                 </button>
 
-                                <div className='login-wall__benefits'>
-                                    <svg
-                                        aria-hidden='true'
-                                        className='login-wall__flow-lines'
-                                        preserveAspectRatio='none'
-                                        viewBox='0 0 1088 2864'
-                                    >
-                                        <path
-                                            className='login-wall__flow-line login-wall__flow-line--blue'
-                                            d='M564 120 C532 244 512 496 544 664'
-                                            pathLength='1'
-                                        />
-                                        <path
-                                            className='login-wall__flow-line login-wall__flow-line--pink'
-                                            d='M756 120 C680 260 632 512 544 664'
-                                            pathLength='1'
-                                        />
-                                        <path
-                                            className='login-wall__flow-line login-wall__flow-line--violet'
-                                            d='M948 120 C820 256 704 504 544 664'
-                                            pathLength='1'
-                                        />
-                                        <path
-                                            className='login-wall__flow-line login-wall__flow-line--purple'
-                                            d='M544 664 C540 808 496 1012 416 1152 C308 1340 396 1544 720 1568 C928 1584 1000 1728 864 1852 C712 1992 536 1932 536 2084 C536 2236 748 2248 824 2360 C900 2472 760 2604 560 2576'
-                                            pathLength='1'
-                                        />
-                                    </svg>
+                                <div
+                                    className='login-wall__benefits'
+                                    ref={loginBenefitsRef}
+                                >
+                                    {loginFlowGeometry ===
+                                    undefined ? undefined : (
+                                        <svg
+                                            aria-hidden='true'
+                                            className='login-wall__flow-lines'
+                                            height={loginFlowGeometry.height}
+                                            preserveAspectRatio='none'
+                                            viewBox={`0 0 ${loginFlowGeometry.width} ${loginFlowGeometry.height}`}
+                                            width={loginFlowGeometry.width}
+                                        >
+                                            {loginFlowGeometry.repoPaths.map(
+                                                (path, index) => (
+                                                    <path
+                                                        className={`login-wall__flow-line login-wall__flow-line--repo login-wall__flow-line--repo-${index + 1}`}
+                                                        d={path}
+                                                        key={path}
+                                                        pathLength='1'
+                                                    />
+                                                )
+                                            )}
+                                            <path
+                                                className='login-wall__flow-line login-wall__flow-line--purple'
+                                                d={loginFlowGeometry.purplePath}
+                                                pathLength='1'
+                                            />
+                                            {loginFlowGeometry.repoDots.map(
+                                                ({ x, y }, index) => (
+                                                    <circle
+                                                        className='login-wall__flow-dot'
+                                                        cx={x}
+                                                        cy={y}
+                                                        key={`${x}-${y}-${index}`}
+                                                        r='5'
+                                                    />
+                                                )
+                                            )}
+                                        </svg>
+                                    )}
                                     <article className='login-wall__feature login-wall__feature--mux'>
                                         <div className='login-wall__feature-copy'>
                                             <h2>
@@ -656,10 +871,22 @@ export function App(): JSX.Element {
                                             >
                                                 <div className='login-wall__repo-row'>
                                                     {loginWallRepositoryNodes.map(
-                                                        ({ name, owner }) => (
+                                                        (
+                                                            { name, owner },
+                                                            index
+                                                        ) => (
                                                             <div
                                                                 className='login-wall__mux-repo'
                                                                 key={name}
+                                                                ref={(
+                                                                    element
+                                                                ) => {
+                                                                    loginRepoRefs.current[
+                                                                        index
+                                                                    ] =
+                                                                        element ??
+                                                                        undefined;
+                                                                }}
                                                             >
                                                                 <BookMarked
                                                                     aria-hidden='true'
@@ -679,7 +906,10 @@ export function App(): JSX.Element {
                                         </div>
                                     </article>
 
-                                    <div className='login-wall__flow-mux-node'>
+                                    <div
+                                        className='login-wall__flow-mux-node'
+                                        ref={loginMuxNodeRef}
+                                    >
                                         <BrandLogo
                                             alt='Repomux'
                                             className='login-wall__flow-mux-logo'
@@ -691,7 +921,10 @@ export function App(): JSX.Element {
                                             aria-label='Repomux work queue UI'
                                             className='login-wall__app-preview'
                                         >
-                                            <section className='work-panel login-wall__work-panel-preview'>
+                                            <section
+                                                className='work-panel login-wall__work-panel-preview'
+                                                ref={loginQueuePreviewRef}
+                                            >
                                                 <div className='custom-scrollbar work-panel__queue-scroll'>
                                                     <div className='queue-list'>
                                                         {loginWallQueueItems.map(
@@ -782,7 +1015,10 @@ export function App(): JSX.Element {
                                         </div>
 
                                         <div className='login-wall__prompt-stage'>
-                                            <div className='login-wall__prompt-card'>
+                                            <div
+                                                className='login-wall__prompt-card'
+                                                ref={loginPromptCardRef}
+                                            >
                                                 <div className='login-wall__prompt-issue'>
                                                     <span className='login-wall__prompt-issue-label'>
                                                         GitHub issue #128
@@ -857,6 +1093,7 @@ export function App(): JSX.Element {
                                         <div
                                             aria-hidden='true'
                                             className='login-wall__codex-node'
+                                            ref={loginCodexNodeRef}
                                         >
                                             <CodexMark
                                                 className='login-wall__mux-codex'
@@ -876,7 +1113,10 @@ export function App(): JSX.Element {
                                         </div>
                                         <div className='login-wall__result-stage'>
                                             <div className='queue-list login-wall__result-list'>
-                                                <div className='queue-row login-wall__pr-card'>
+                                                <div
+                                                    className='queue-row login-wall__pr-card'
+                                                    ref={loginResultCardRef}
+                                                >
                                                     <span className='queue-row__type'>
                                                         <GitPullRequestArrow
                                                             aria-label='Pull request'
