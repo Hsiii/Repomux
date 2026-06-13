@@ -39,18 +39,9 @@ import { WorkPanel } from './WorkPanel';
 const automationSetupPrompt = [
     'Help me set up a local Codex automation for GitHub `codex-ready` work.',
     '',
-    'Before saving anything, ask me for:',
-    '- GitHub search scope',
-    '- local automation workspace root',
-    '- local repository root',
-    '- schedule and name',
+    'Before saving anything, ask me for the GitHub scope, local automation workspace root, local repository root, schedule, and name.',
     '',
-    'Then configure it to:',
-    '1. Process one open `codex-ready` issue or pull request per run.',
-    '2. Require Codex GitHub access and local git or `gh` auth.',
-    '3. Read the latest comment headed `## Codex prompt`.',
-    '4. Sync the local repo, create `codex/<item-number>-<slug>`, complete the work, respect `AGENTS.md`, and run focused validation.',
-    '5. Commit with a conventional commit, push, open or update a PR when needed, and post a short GitHub update.',
+    'Then process one open `codex-ready` issue or pull request per run: require Codex GitHub access and local git or `gh` auth, read the latest `## Codex prompt` comment, sync the repo, create `codex/<item-number>-<slug>`, complete the work, respect `AGENTS.md`, run focused validation, commit with a conventional commit, push, open or update a PR when needed, and post a short GitHub update.',
     '',
     'If auth, prompt text, local paths, or repo state are missing or conflicting, stop and report the blocker instead of guessing.',
 ].join('\n');
@@ -982,10 +973,9 @@ export function App(): JSX.Element {
                                             Automation setup
                                         </h2>
                                         <p className='login-wall__automation-dialog-description'>
-                                            One prompt, one-time setup. It asks
-                                            Codex to collect your scope, local
-                                            paths, and schedule before saving
-                                            the automation.
+                                            Copy this once to let Codex set up
+                                            the automation with your scope,
+                                            paths, and schedule.
                                         </p>
                                     </div>
                                     <button
@@ -1001,15 +991,10 @@ export function App(): JSX.Element {
                                 </div>
 
                                 <div className='login-wall__automation-dialog-body'>
-                                    <p className='login-wall__automation-dialog-note'>
-                                        After setup, automation can pick up one
-                                        `codex-ready` item at a time.
-                                    </p>
-
                                     <div className='login-wall__automation-prompt-card'>
                                         <div className='login-wall__automation-prompt-header'>
                                             <p className='login-wall__automation-prompt-title'>
-                                                Suggested setup prompt
+                                                Copy into Codex
                                             </p>
                                             <button
                                                 className='login-wall__automation-copy'
