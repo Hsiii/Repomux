@@ -198,6 +198,7 @@
 
 .login-wall__feature--queue {
     min-height: auto;
+    margin: var(--space-128) 0;
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
     border: 0;
@@ -375,7 +376,7 @@
 .login-wall__work-panel-preview {
     min-height: var(--size-login-preview-compact);
     padding: var(--space-24);
-    margin-bottom: var(--space-96);
+    margin-bottom: 0;
     overflow: hidden;
 }
 
@@ -738,7 +739,7 @@
 
 .login-wall__feature--queue .login-wall__feature-copy {
     width: min(100%, var(--size-login-preview-wide));
-    margin-top: var(--space-96);
+    margin-top: 0;
     padding: 0;
     gap: var(--space-24);
 }
