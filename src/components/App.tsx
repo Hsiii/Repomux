@@ -305,19 +305,19 @@ export function App(): JSX.Element {
         { name: 'fish-git-alias', owner: 'Hsiii' },
     ] as const;
     const loginWallMuxLayout = {
-        codexX: 512,
-        codexY: 188,
-        hubX: 286,
-        hubY: 172,
-        lineEndX: 308,
-        lineEndY: 220,
+        codexX: 484,
+        codexY: 222,
+        hubX: 300,
+        hubY: 206,
+        lineEndX: 322,
+        lineEndY: 254,
         lineStartX: 212,
         repoHeight: 84,
         repoWidth: 196,
         repoX: 16,
-        repoYGap: 92,
-        repoYStart: 40,
-        viewBoxHeight: 432,
+        repoYGap: 112,
+        repoYStart: 44,
+        viewBoxHeight: 504,
     } as const;
     const loginLanguages = [
         { label: 'English', shortLabel: 'EN', value: 'en' },
@@ -652,23 +652,23 @@ export function App(): JSX.Element {
                                                 </title>
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--blue'
-                                                    d={`M${loginWallMuxLayout.lineStartX} 82 C248 82 264 172 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
+                                                    d={`M${loginWallMuxLayout.lineStartX} 86 C248 86 270 194 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--red'
-                                                    d={`M${loginWallMuxLayout.lineStartX} 174 C252 174 270 196 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
+                                                    d={`M${loginWallMuxLayout.lineStartX} 198 C256 198 278 222 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--yellow'
-                                                    d={`M${loginWallMuxLayout.lineStartX} 266 C252 266 270 244 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
+                                                    d={`M${loginWallMuxLayout.lineStartX} 310 C256 310 278 286 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--green'
-                                                    d={`M${loginWallMuxLayout.lineStartX} 358 C248 358 264 268 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
+                                                    d={`M${loginWallMuxLayout.lineStartX} 422 C248 422 270 314 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--pink'
-                                                    d={`M364 220 C424 220 454 220 ${loginWallMuxLayout.codexX} 220`}
+                                                    d={`M396 254 C432 254 448 254 ${loginWallMuxLayout.codexX} 254`}
                                                 />
                                                 {loginWallRepositoryNodes.map(
                                                     (
@@ -692,19 +692,19 @@ export function App(): JSX.Element {
                                                             <BookMarked
                                                                 aria-hidden='true'
                                                                 size={22}
-                                                                x={16}
+                                                                x={18}
                                                                 y={30}
                                                             />
                                                             <text
                                                                 className='login-wall__mux-repo-owner'
-                                                                x='44'
+                                                                x='52'
                                                                 y='33'
                                                             >
                                                                 {owner}
                                                             </text>
                                                             <text
                                                                 className='login-wall__mux-repo-name'
-                                                                x='44'
+                                                                x='52'
                                                                 y='58'
                                                             >
                                                                 {name}
