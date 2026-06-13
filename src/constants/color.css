@@ -53,10 +53,10 @@
     --clr-login-glow-edge: rgba(15, 17, 27, 0.84);
     --clr-login-control: rgba(15, 17, 27, 0.72);
     --clr-login-control-hover: rgba(39, 40, 72, 0.72);
-    --clr-login-flow-blue: #2997ff;
-    --clr-login-flow-red: #ff5f57;
-    --clr-login-flow-yellow: #ffbd2e;
-    --clr-login-flow-green: #28c840;
+    --clr-login-flow-blue: #04a5e5;
+    --clr-login-flow-red: #ea76cb;
+    --clr-login-flow-yellow: #8839ef;
+    --clr-login-flow-green: #209fb5;
     --clr-login-flow-cyan: #2dd4bf;
     --clr-login-flow-pink: #ff7ab6;
     --clr-login-label-bg: rgba(45, 212, 191, 0.12);

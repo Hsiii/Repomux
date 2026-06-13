@@ -588,6 +588,17 @@ export function App(): JSX.Element {
 
                                 <div className='login-wall__benefits'>
                                     <article className='login-wall__feature login-wall__feature--mux'>
+                                        <div className='login-wall__feature-copy'>
+                                            <h2>
+                                                One workspace for every repo.
+                                            </h2>
+                                            <p>
+                                                Repomux connects your GitHub
+                                                repositories and surfaces the
+                                                scattered issues and PRs you
+                                                need to work through.
+                                            </p>
+                                        </div>
                                         <div className='login-wall__feature-visual'>
                                             <svg
                                                 aria-labelledby='mux-diagram-title'
@@ -688,17 +699,6 @@ export function App(): JSX.Element {
                                                     </foreignObject>
                                                 </g>
                                             </svg>
-                                        </div>
-                                        <div className='login-wall__feature-copy'>
-                                            <h2>
-                                                One workspace for every repo.
-                                            </h2>
-                                            <p>
-                                                Repomux connects your GitHub
-                                                repositories and surfaces the
-                                                scattered issues and PRs you
-                                                need to work through.
-                                            </p>
                                         </div>
                                     </article>
 
