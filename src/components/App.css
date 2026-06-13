@@ -205,7 +205,12 @@
 }
 
 .login-wall__feature--queue {
-    grid-template-columns: minmax(288px, 0.64fr) minmax(0, 1.36fr);
+    min-height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .login-wall__feature--prompt,
@@ -227,6 +232,11 @@
     display: grid;
     align-content: center;
     gap: var(--space-16);
+}
+
+.login-wall__feature--queue .login-wall__feature-copy {
+    justify-items: center;
+    text-align: center;
 }
 
 .login-wall__feature-copy h2 {
@@ -347,6 +357,7 @@
 }
 
 .work-panel.login-wall__work-panel-preview {
+    width: min(100%, 680px);
     grid-template-rows: auto auto;
     align-content: start;
     overflow: hidden;
