@@ -868,49 +868,48 @@ export function App(): JSX.Element {
                                                 theme={loginTheme}
                                             />
                                         </div>
+                                    </article>
 
-                                        <section className='login-wall__bento-cell login-wall__bento-cell--result'>
-                                            <div className='login-wall__feature-copy'>
-                                                <h2>Come back to PRs.</h2>
-                                                <p>
-                                                    Simply review the PRs
-                                                    submitted by Codex, no need
-                                                    to leave the dashboard.
-                                                </p>
-                                            </div>
-                                            <div className='login-wall__result-stage'>
-                                                <div className='queue-list login-wall__result-list'>
-                                                    <div className='queue-row login-wall__pr-card'>
-                                                        <span className='queue-row__type'>
-                                                            <GitPullRequestArrow
-                                                                aria-label='Pull request'
-                                                                size={18}
-                                                            />
+                                    <article className='login-wall__feature login-wall__feature--result'>
+                                        <div className='login-wall__feature-copy'>
+                                            <h2>Come back to PRs.</h2>
+                                            <p>
+                                                Simply review the PRs submitted
+                                                by Codex, no need to leave the
+                                                dashboard.
+                                            </p>
+                                        </div>
+                                        <div className='login-wall__result-stage'>
+                                            <div className='queue-list login-wall__result-list'>
+                                                <div className='queue-row login-wall__pr-card'>
+                                                    <span className='queue-row__type'>
+                                                        <GitPullRequestArrow
+                                                            aria-label='Pull request'
+                                                            size={18}
+                                                        />
+                                                    </span>
+                                                    <span className='queue-row__content'>
+                                                        <span className='queue-row__title'>
+                                                            Add user menu pop up
                                                         </span>
-                                                        <span className='queue-row__content'>
-                                                            <span className='queue-row__title'>
-                                                                Add user menu
-                                                                pop up
+                                                        <span className='queue-row__meta'>
+                                                            <span className='queue-row__repo'>
+                                                                Hsiii/create-hsi-app
                                                             </span>
-                                                            <span className='queue-row__meta'>
-                                                                <span className='queue-row__repo'>
-                                                                    Hsiii/create-hsi-app
-                                                                </span>
-                                                                <span className='queue-row__number'>
-                                                                    #72
-                                                                </span>
+                                                            <span className='queue-row__number'>
+                                                                #72
                                                             </span>
                                                         </span>
-                                                        <span className='readiness'>
-                                                            <Check
-                                                                aria-label='Codex ready'
-                                                                size={18}
-                                                            />
-                                                        </span>
-                                                    </div>
+                                                    </span>
+                                                    <span className='readiness'>
+                                                        <Check
+                                                            aria-label='Codex ready'
+                                                            size={18}
+                                                        />
+                                                    </span>
                                                 </div>
                                             </div>
-                                        </section>
+                                        </div>
                                     </article>
                                 </div>
                             </div>

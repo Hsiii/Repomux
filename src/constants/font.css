@@ -66,6 +66,7 @@
     --size-login-preview-wide: 800px;
     --size-login-topbar: 1080px;
     --size-login-preview-height: 560px;
+    --size-login-flow-section: var(--size-login-preview-height);
     --size-login-preview-compact: 420px;
     --size-login-feature-min: 360px;
     --size-login-feature-mux: 504px;
