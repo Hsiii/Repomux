@@ -333,31 +333,31 @@
 .login-wall__flow-line--blue {
     stroke: var(--clr-login-flow-blue);
     color: var(--clr-login-flow-blue);
-    animation-range: 0% 12%;
+    animation-range: 0% 18%;
 }
 
 .login-wall__flow-line--pink {
     stroke: var(--clr-login-flow-pink);
     color: var(--clr-login-flow-pink);
-    animation-range: 0% 13%;
+    animation-range: 0% 20%;
 }
 
 .login-wall__flow-line--violet {
     stroke: var(--clr-login-flow-yellow);
     color: var(--clr-login-flow-yellow);
-    animation-range: 0% 14%;
+    animation-range: 0% 22%;
 }
 
 .login-wall__flow-line--purple {
     stroke: var(--clr-accent);
     color: var(--clr-accent);
-    animation-range: 12% 56%;
+    animation-range: 18% 68%;
 }
 
 .login-wall__flow-line--return {
     stroke: var(--clr-login-flow-cyan);
     color: var(--clr-login-flow-cyan);
-    animation-range: 54% 74%;
+    animation-range: 66% 84%;
 }
 
 .login-wall__repo-flow {
