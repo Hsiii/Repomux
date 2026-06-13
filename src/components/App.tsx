@@ -304,6 +304,21 @@ export function App(): JSX.Element {
         { name: 'comux', owner: 'Hsiii' },
         { name: 'fish-git-alias', owner: 'Hsiii' },
     ] as const;
+    const loginWallMuxLayout = {
+        codexX: 512,
+        codexY: 188,
+        hubX: 286,
+        hubY: 172,
+        lineEndX: 308,
+        lineEndY: 220,
+        lineStartX: 212,
+        repoHeight: 84,
+        repoWidth: 196,
+        repoX: 16,
+        repoYGap: 92,
+        repoYStart: 40,
+        viewBoxHeight: 432,
+    } as const;
     const loginLanguages = [
         { label: 'English', shortLabel: 'EN', value: 'en' },
         { label: 'Chinese', shortLabel: 'ZH', value: 'zh' },
@@ -628,7 +643,7 @@ export function App(): JSX.Element {
                                                 aria-labelledby='mux-diagram-title'
                                                 className='login-wall__mux-diagram'
                                                 role='img'
-                                                viewBox='0 0 620 400'
+                                                viewBox={`0 0 620 ${loginWallMuxLayout.viewBoxHeight}`}
                                             >
                                                 <title id='mux-diagram-title'>
                                                     Multiple repositories
@@ -637,23 +652,23 @@ export function App(): JSX.Element {
                                                 </title>
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--blue'
-                                                    d='M192 86 C240 86 254 164 300 206'
+                                                    d={`M${loginWallMuxLayout.lineStartX} 82 C248 82 264 172 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--red'
-                                                    d='M192 162 C246 162 260 186 300 206'
+                                                    d={`M${loginWallMuxLayout.lineStartX} 174 C252 174 270 196 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--yellow'
-                                                    d='M192 238 C246 238 260 226 300 206'
+                                                    d={`M${loginWallMuxLayout.lineStartX} 266 C252 266 270 244 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--green'
-                                                    d='M192 314 C240 314 254 248 300 206'
+                                                    d={`M${loginWallMuxLayout.lineStartX} 358 C248 358 264 268 ${loginWallMuxLayout.lineEndX} ${loginWallMuxLayout.lineEndY}`}
                                                 />
                                                 <path
                                                     className='login-wall__mux-line login-wall__mux-line--pink'
-                                                    d='M354 206 C414 206 438 206 492 206'
+                                                    d={`M364 220 C424 220 454 220 ${loginWallMuxLayout.codexX} 220`}
                                                 />
                                                 {loginWallRepositoryNodes.map(
                                                     (
@@ -663,30 +678,34 @@ export function App(): JSX.Element {
                                                         <g
                                                             className='login-wall__mux-repo'
                                                             key={name}
-                                                            transform={`translate(20 ${52 + index * 76})`}
+                                                            transform={`translate(${loginWallMuxLayout.repoX} ${loginWallMuxLayout.repoYStart + index * loginWallMuxLayout.repoYGap})`}
                                                         >
                                                             <rect
-                                                                height='76'
+                                                                height={
+                                                                    loginWallMuxLayout.repoHeight
+                                                                }
                                                                 rx='12'
-                                                                width='172'
+                                                                width={
+                                                                    loginWallMuxLayout.repoWidth
+                                                                }
                                                             />
                                                             <BookMarked
                                                                 aria-hidden='true'
-                                                                size={18}
+                                                                size={22}
                                                                 x={16}
-                                                                y={25}
+                                                                y={30}
                                                             />
                                                             <text
                                                                 className='login-wall__mux-repo-owner'
                                                                 x='44'
-                                                                y='31'
+                                                                y='33'
                                                             >
                                                                 {owner}
                                                             </text>
                                                             <text
                                                                 className='login-wall__mux-repo-name'
                                                                 x='44'
-                                                                y='54'
+                                                                y='58'
                                                             >
                                                                 {name}
                                                             </text>
@@ -697,8 +716,12 @@ export function App(): JSX.Element {
                                                     <foreignObject
                                                         height='96'
                                                         width='96'
-                                                        x='278'
-                                                        y='158'
+                                                        x={
+                                                            loginWallMuxLayout.hubX
+                                                        }
+                                                        y={
+                                                            loginWallMuxLayout.hubY
+                                                        }
                                                     >
                                                         <BrandLogo
                                                             alt=''
@@ -708,7 +731,7 @@ export function App(): JSX.Element {
                                                 </g>
                                                 <g
                                                     className='login-wall__mux-output'
-                                                    transform='translate(492 174)'
+                                                    transform={`translate(${loginWallMuxLayout.codexX} ${loginWallMuxLayout.codexY})`}
                                                 >
                                                     <foreignObject
                                                         height='64'

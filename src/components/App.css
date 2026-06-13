@@ -205,6 +205,10 @@
     box-shadow: none;
 }
 
+.login-wall__feature--mux {
+    min-height: var(--size-login-feature-mux);
+}
+
 .login-wall__feature--prompt,
 .login-wall__feature--automation,
 .login-wall__feature--result {
