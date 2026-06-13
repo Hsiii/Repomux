@@ -6,6 +6,7 @@ description: Use when a user wants Codex to create, update, or inspect a GitHub-
 # Codex-ready GitHub automation
 
 Use this skill when the user wants a Codex automation whose source of truth is GitHub, with Repomux treated only as optional operator UI.
+This skill is checkout-local convenience, not a requirement for the automation to exist.
 
 ## Default approach
 

@@ -71,11 +71,13 @@ The automation itself is GitHub-driven: it looks for open issues or pull request
 
 Preferred setup:
 
-1. Open this Repomux checkout in Codex.
-2. Ask Codex to set up the Repomux automation for you.
+1. Open Codex from anywhere. A local Repomux checkout is not required.
+2. Ask Codex to set up the Repomux `codex-ready` automation for you.
 3. Codex should create a suggested in-app automation for review instead of asking you to copy a prompt by hand.
+4. Confirm the GitHub scope and the local repository root before saving.
 
 The repo-local skill at [.agents/skills/codex-ready-github-automation/SKILL.md](/Users/hsi/Projects/Current/Repomux/.agents/skills/codex-ready-github-automation/SKILL.md) tells Codex to use the native automation flow and prefill the current checkout path, local repository root, and GitHub scope hint.
+If you do have this repo open in Codex, that skill makes the setup faster, but it is optional.
 
 Manual fallback:
 
@@ -106,7 +108,7 @@ Important caveats for shared users:
     - The local machine may also need working git credentials and `gh auth login` for clone, push, pull request, and comment flows.
 - The automation also needs an explicit GitHub search scope such as `repo:owner/name`, `org:my-org`, or `user:my-user`.
 - Do not assume another user's repository root matches your machine. Confirm it before creating or saving an automation.
-- The repo-local skill only helps when Codex is opened on a Repomux checkout. Users who only know the hosted site and do not have this repo locally will need Codex to create the automation from explicit instructions instead of relying on the repo skill.
+- The repo-local skill only helps when Codex is opened on a Repomux checkout. Without a local checkout, ask Codex directly for the same GitHub-driven automation and confirm the scope plus local repository root during setup.
 - If GitHub is missing or blocked, the automation should stop with either `GitHub connector setup required` or `local GitHub auth required` instead of continuing.
 
 ## Local OAuth

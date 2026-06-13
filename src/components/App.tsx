@@ -326,7 +326,7 @@ export function App(): JSX.Element {
         }
 
         setStatusMessage(
-            'Automation setup starts from the Codex-ready GitHub automation prompt.'
+            'No Repomux checkout is required. In Codex, ask for a suggested Codex Ready Queue automation, then confirm the GitHub scope and local repository root before saving.'
         );
         setIsSettingsMenuOpen(false);
         setHasAutomationReminder(false);
@@ -986,10 +986,35 @@ export function App(): JSX.Element {
                                     className='modal-description'
                                     id='automation-dialog-description'
                                 >
-                                    Connect GitHub, then open Settings to finish
-                                    the Codex-ready automation handoff.
+                                    Create the Codex-ready automation directly
+                                    in Codex. Repomux is optional for setup.
                                 </p>
                             </div>
+                        </div>
+                        <div className='login-wall__automation-dialog-body'>
+                            <p className='login-wall__automation-dialog-note'>
+                                No Repomux clone required. Codex only needs a
+                                local repository root for the repos it will
+                                edit.
+                            </p>
+                            <ol className='login-wall__automation-steps'>
+                                <li className='login-wall__automation-step'>
+                                    Connect GitHub and make sure Codex has
+                                    access to the repositories you want it to
+                                    process.
+                                </li>
+                                <li className='login-wall__automation-step'>
+                                    Ask Codex to create a suggested{' '}
+                                    <strong>Codex Ready Queue</strong>{' '}
+                                    automation that searches GitHub for open
+                                    items labeled <code>codex-ready</code>.
+                                </li>
+                                <li className='login-wall__automation-step'>
+                                    Confirm the GitHub scope and the local
+                                    repository root before saving the
+                                    automation.
+                                </li>
+                            </ol>
                         </div>
                         <div className='login-wall__automation-dialog-actions'>
                             <button
@@ -1005,7 +1030,7 @@ export function App(): JSX.Element {
                                 type='button'
                             >
                                 {isGitHubConnected
-                                    ? 'Open automation setup'
+                                    ? 'Continue in Codex'
                                     : 'Connect GitHub'}
                             </button>
                         </div>

@@ -541,6 +541,34 @@
     width: min(100%, 520px);
 }
 
+.login-wall__automation-dialog-body {
+    display: grid;
+    gap: var(--space-16);
+}
+
+.login-wall__automation-dialog-note {
+    padding: var(--space-12);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-12);
+    color: var(--clr-login-text);
+    font: var(--font-body-sm);
+    background-color: var(--clr-login-card-strong);
+}
+
+.login-wall__automation-steps {
+    margin: 0;
+    padding-left: var(--space-20);
+    display: grid;
+    gap: var(--space-12);
+    color: var(--clr-login-text-muted);
+    font: var(--font-body-sm);
+}
+
+.login-wall__automation-step strong,
+.login-wall__automation-step code {
+    color: var(--clr-login-text);
+}
+
 .login-wall__automation-dialog-actions {
     display: flex;
     align-items: center;

@@ -24,7 +24,7 @@ Workflow
     - GitHub URL
     - the most recent comment whose heading is `## Codex prompt`
 6. If the item is missing the `codex-ready` label or the latest `## Codex prompt` comment, stop and report the reason instead of guessing intent.
-7. In the local repository root, clone the target repository if it is missing. If it already exists, fetch the latest remote state before editing.
+7. In the configured local repository root, clone the target repository if it is missing. If it already exists, fetch the latest remote state before editing.
 8. Create a fresh branch named `codex/<item-number>-<short-slug>`.
 9. Complete the requested work. Respect repository-local `AGENTS.md` instructions before making changes.
 10. Run the narrowest useful validation first, then broader checks when they are cheap enough to justify. Do not claim success without stating what ran.
@@ -44,5 +44,5 @@ Safety
 - Never invent missing auth, prompt text, or repository state.
 - If GitHub access in Codex is not configured, stop and report `GitHub connector setup required`.
 - If local git or GitHub CLI authentication is not configured for the required repository operations, stop and report `local GitHub auth required`.
-- If the automation workspace root or local repository root is unknown, stop and report the missing local setup instead of guessing a path.
+- If the local repository root is unknown, stop and report the missing local setup instead of guessing a path.
 - If the target repository is already dirty in a conflicting way, stop and report the conflict.
