@@ -11,6 +11,7 @@
     --fs-wordmark: 1.5rem;
     --fs-lg: 1.75rem;
     --fs-display: 2.5rem;
+    --fs-login-display: 4rem;
 
     --fw-medium: 500;
     --fw-semibold: 600;
@@ -26,6 +27,8 @@
     --font-wordmark: var(--fw-semibold) var(--fs-wordmark) / 1 var(--ff-body);
     --font-title-md: var(--fw-bold) var(--fs-lg) / 1.1 var(--ff-body);
     --font-display: var(--fw-bold) var(--fs-display) / 1.04 var(--ff-body);
+    --font-login-display: var(--fw-bold) var(--fs-login-display) / 1
+        var(--ff-body);
 
     --space-4: 4px;
     --space-8: 8px;
