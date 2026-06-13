@@ -457,7 +457,7 @@
     padding: var(--space-24);
     margin-bottom: 0;
     overflow: hidden;
-    background-color: var(--clr-login-card);
+    background-color: var(--clr-login-card-solid);
 }
 
 .login-wall__feature--queue .login-wall__app-preview {
@@ -548,7 +548,7 @@
 }
 
 .login-wall__prompt-card {
-    background-color: var(--clr-login-card-strong);
+    background-color: var(--clr-login-card-solid);
 }
 
 .login-wall__typing-line {
@@ -785,7 +785,7 @@
     position: relative;
     z-index: 2;
     border-bottom: 0;
-    background-color: var(--clr-login-card);
+    background-color: var(--clr-login-card-solid);
 }
 
 .login-wall__button {
