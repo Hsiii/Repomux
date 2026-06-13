@@ -618,32 +618,27 @@ export function App(): JSX.Element {
                                     >
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--blue'
-                                            d='M560 120 C512 160 488 244 424 308'
+                                            d='M572 120 C520 160 552 236 624 300'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--pink'
-                                            d='M744 120 C632 148 560 244 424 308'
+                                            d='M764 120 C636 148 652 244 624 300'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--violet'
-                                            d='M928 120 C736 136 584 232 424 308'
-                                            pathLength='1'
-                                        />
-                                        <path
-                                            className='login-wall__flow-line login-wall__flow-line--cyan'
-                                            d='M424 308 C540 388 632 436 704 488'
+                                            d='M956 120 C780 140 716 236 624 300'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--purple'
-                                            d='M424 308 C380 560 572 740 736 860 C888 972 932 1080 900 1192'
+                                            d='M624 300 C548 352 720 420 632 488 C548 552 416 492 340 612 C300 684 400 760 520 728 C650 690 734 744 690 836 C640 940 860 950 1032 1051'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--purple login-wall__flow-line--return'
-                                            d='M900 1192 C844 1332 724 1436 548 1512'
+                                            d='M1032 1051 C956 1168 820 1136 760 1264 C716 1356 820 1416 772 1496'
                                             pathLength='1'
                                         />
                                     </svg>
@@ -694,13 +689,6 @@ export function App(): JSX.Element {
                                     </article>
 
                                     <article className='login-wall__feature login-wall__feature--queue'>
-                                        <div className='login-wall__feature-copy'>
-                                            <h2>One queue for active work.</h2>
-                                            <p>
-                                                See issues and PRs from active
-                                                repos in one queue.
-                                            </p>
-                                        </div>
                                         <article
                                             aria-label='Repomux work queue UI'
                                             className='login-wall__app-preview'
@@ -777,6 +765,13 @@ export function App(): JSX.Element {
                                                 </div>
                                             </section>
                                         </article>
+                                        <div className='login-wall__feature-copy'>
+                                            <h2>One queue for active work.</h2>
+                                            <p>
+                                                See issues and PRs from active
+                                                repos in one queue.
+                                            </p>
+                                        </div>
                                     </article>
 
                                     <article className='login-wall__feature login-wall__feature--prompt'>
