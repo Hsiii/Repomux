@@ -4,12 +4,10 @@ import type { CSSProperties, JSX } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
-    ArrowDown,
     ArrowRight,
     BookMarked,
     Check,
     ChevronDown,
-    CircleArrowUp,
     CircleDot,
     GitPullRequestArrow,
     Languages,
@@ -35,6 +33,52 @@ import { RepositorySidebar } from './RepositorySidebar';
 import type { WorkFilter } from './RepositorySidebar';
 import { WorkPanel } from './WorkPanel';
 
+const automationSetupPrompt = [
+    'Create a suggested local automation for a GitHub `codex-ready` queue.',
+    '',
+    'Before saving it, let me customize:',
+    '- GitHub search scope hint',
+    '- local automation workspace root',
+    '- local repository root',
+    '- schedule, name, and any optional settings',
+    '',
+    'Do not choose reasoning effort for me. Keep Repomux optional.',
+    '',
+    'Use this automation prompt:',
+    '',
+    'You process one GitHub `codex-ready` issue or pull request per run.',
+    '',
+    'Context',
+    '',
+    '- Automation workspace root: __SET_THIS_TO_YOUR_LOCAL_AUTOMATION_FOLDER__',
+    '- Local repository root: __SET_THIS_TO_YOUR_LOCAL_REPOSITORY_ROOT__',
+    '- GitHub search scope hint: __SET_THIS_TO_YOUR_GITHUB_SCOPE__',
+    '',
+    'Workflow',
+    '',
+    "1. Confirm that Codex has GitHub access for the user's repositories. If GitHub is not connected in Codex, repository access is missing, or organization approval is still pending, stop and report `GitHub connector setup required`.",
+    '2. Confirm local git or `gh` auth only when required. If it is missing, stop and report `local GitHub auth required`.',
+    '3. Search GitHub for open issues or pull requests labeled `codex-ready`, using the scope hint when it is provided. Prefer items assigned to the signed-in user.',
+    '4. Pick one actionable item and read the latest comment whose heading is `## Codex prompt`.',
+    '5. If the item is missing the label or prompt comment, stop and report the reason.',
+    '6. In the configured local repository root, clone the target repository if it is missing. If it already exists, fetch the latest remote state before editing.',
+    '7. Create a branch named `codex/<item-number>-<short-slug>`.',
+    '8. Complete the requested work, respect repository-local `AGENTS.md`, and run the narrowest useful validation first. State what ran.',
+    '9. Commit only your changes with a conventional commit message. Push the branch and open or update a pull request when the repository workflow expects one.',
+    '10. Post a concise GitHub comment with what changed, what validation ran, and the branch name or PR link.',
+    '11. Return a final summary with the repository, work item, branch, validation, and blockers.',
+    '',
+    'Safety',
+    '',
+    '- Never process more than one work item in a single run.',
+    '- Never take work that GitHub has not marked `codex-ready`.',
+    '- Never invent missing auth, prompt text, or repository state.',
+    '- If GitHub access in Codex is not configured, stop and report `GitHub connector setup required`.',
+    '- If local git or GitHub CLI authentication is not configured for the required repository operations, stop and report `local GitHub auth required`.',
+    '- If the local repository root is unknown, stop and report the missing local setup instead of guessing a path.',
+    '- If the target repository is already dirty in a conflicting way, stop and report the conflict.',
+].join('\n');
+
 export function App(): JSX.Element {
     const [repositorySearchQuery, setRepositorySearchQuery] = useState('');
     const [activeRepositoryNames, setActiveRepositoryNames] = useState<
@@ -53,8 +97,8 @@ export function App(): JSX.Element {
     const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
     const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
     const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
-    const [isAutomationDialogOpen, setIsAutomationDialogOpen] = useState(false);
-    const [hasAutomationReminder, setHasAutomationReminder] = useState(false);
+    const [isAutomationPromptCopied, setIsAutomationPromptCopied] =
+        useState(false);
     const loginTopbarControlsRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -307,30 +351,21 @@ export function App(): JSX.Element {
         loginThemes.find((theme) => theme.value === loginTheme) ??
         loginThemes[0];
     const SelectedLoginThemeIcon = selectedLoginTheme.icon;
-    function openAutomationDialog() {
+    function copyAutomationSetupPrompt() {
         setIsSettingsMenuOpen(false);
-        setIsAutomationDialogOpen(true);
-    }
-
-    function dismissAutomationDialog() {
-        setHasAutomationReminder(true);
-        setIsAutomationDialogOpen(false);
-    }
-
-    function setupAutomation() {
-        if (!isGitHubConnected) {
-            setHasAutomationReminder(true);
-            setIsAutomationDialogOpen(false);
-            connectGitHub();
-            return;
-        }
-
-        setStatusMessage(
-            'No Repomux checkout is required. In Codex, ask for a suggested Codex Ready Queue automation, then confirm the GitHub scope and local repository root before saving.'
-        );
-        setIsSettingsMenuOpen(false);
-        setHasAutomationReminder(false);
-        setIsAutomationDialogOpen(false);
+        navigator.clipboard
+            .writeText(automationSetupPrompt)
+            .then(() => {
+                setIsAutomationPromptCopied(true);
+                setStatusMessage(
+                    'Automation setup prompt copied. Paste it into Codex to create the suggested automation.'
+                );
+            })
+            .catch(() => {
+                setStatusMessage(
+                    'Clipboard access failed. Copy the setup prompt manually from the page or README.'
+                );
+            });
     }
 
     return (
@@ -340,8 +375,8 @@ export function App(): JSX.Element {
                     <RepositorySidebar
                         filteredRepositories={filteredRepositories}
                         githubUser={githubUser}
-                        hasAutomationReminder={hasAutomationReminder}
                         hasGitHubError={githubSessionQuery.isError}
+                        isAutomationPromptCopied={isAutomationPromptCopied}
                         isGitHubConnected={isGitHubConnected}
                         isSettingsMenuOpen={isSettingsMenuOpen}
                         language={loginLanguage}
@@ -349,7 +384,7 @@ export function App(): JSX.Element {
                         onDisconnectGitHub={disconnectGitHub}
                         onSelectRepository={selectRepository}
                         onSetLanguage={setLoginLanguage}
-                        onSetupAutomation={openAutomationDialog}
+                        onSetupAutomation={copyAutomationSetupPrompt}
                         onToggleSettingsMenu={() => {
                             setIsSettingsMenuOpen((current) => !current);
                         }}
@@ -845,15 +880,6 @@ export function App(): JSX.Element {
                                                             )
                                                         )}
                                                     </div>
-                                                    <div className='assign-button login-wall__assign-preview'>
-                                                        <span>
-                                                            Assign to Codex
-                                                        </span>
-                                                        <CircleArrowUp
-                                                            aria-hidden='true'
-                                                            size={24}
-                                                        />
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -868,48 +894,18 @@ export function App(): JSX.Element {
                                                 and starts the pass.
                                             </p>
                                             <button
-                                                className='login-wall__value-button'
-                                                onClick={openAutomationDialog}
+                                                className='login-wall__automation-cta'
+                                                onClick={
+                                                    copyAutomationSetupPrompt
+                                                }
                                                 type='button'
                                             >
-                                                <span>Set up automation</span>
-                                                <ArrowRight
-                                                    aria-hidden='true'
-                                                    size={16}
-                                                />
+                                                <span>
+                                                    {isAutomationPromptCopied
+                                                        ? 'Copied'
+                                                        : 'Copy prompt'}
+                                                </span>
                                             </button>
-                                        </div>
-
-                                        <div className='login-wall__automation-stage'>
-                                            <div className='login-wall__automation-graphic'>
-                                                <div className='login-wall__automation-flow'>
-                                                    <span className='login-wall__automation-badge'>
-                                                        codex-ready
-                                                    </span>
-                                                    <ArrowDown
-                                                        aria-hidden='true'
-                                                        className='login-wall__automation-arrow'
-                                                        size={24}
-                                                    />
-                                                    <div className='login-wall__automation-codex'>
-                                                        <CodexMark
-                                                            className='login-wall__automation-codex-mark'
-                                                            theme={loginTheme}
-                                                        />
-                                                    </div>
-                                                    <ArrowDown
-                                                        aria-hidden='true'
-                                                        className='login-wall__automation-arrow'
-                                                        size={24}
-                                                    />
-                                                    <div className='login-wall__automation-outcome'>
-                                                        <GitPullRequestArrow
-                                                            aria-label='Pull request'
-                                                            size={28}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </article>
 
@@ -962,81 +958,6 @@ export function App(): JSX.Element {
                     </div>
                 </main>
             )}
-            {isAutomationDialogOpen ? (
-                <div
-                    aria-labelledby='automation-dialog-title'
-                    className='modal-backdrop'
-                    role='presentation'
-                >
-                    <div
-                        aria-describedby='automation-dialog-description'
-                        aria-modal='true'
-                        className='modal-card login-wall__automation-dialog'
-                        role='dialog'
-                    >
-                        <div className='modal-header'>
-                            <div>
-                                <h2
-                                    className='modal-title'
-                                    id='automation-dialog-title'
-                                >
-                                    Set up automation after login
-                                </h2>
-                                <p
-                                    className='modal-description'
-                                    id='automation-dialog-description'
-                                >
-                                    Create the Codex-ready automation directly
-                                    in Codex. Repomux is optional for setup.
-                                </p>
-                            </div>
-                        </div>
-                        <div className='login-wall__automation-dialog-body'>
-                            <p className='login-wall__automation-dialog-note'>
-                                No Repomux clone required. Codex only needs a
-                                local repository root for the repos it will
-                                edit.
-                            </p>
-                            <ol className='login-wall__automation-steps'>
-                                <li className='login-wall__automation-step'>
-                                    Connect GitHub and make sure Codex has
-                                    access to the repositories you want it to
-                                    process.
-                                </li>
-                                <li className='login-wall__automation-step'>
-                                    Ask Codex to create a suggested{' '}
-                                    <strong>Codex Ready Queue</strong>{' '}
-                                    automation that searches GitHub for open
-                                    items labeled <code>codex-ready</code>.
-                                </li>
-                                <li className='login-wall__automation-step'>
-                                    Confirm the GitHub scope and the local
-                                    repository root before saving the
-                                    automation.
-                                </li>
-                            </ol>
-                        </div>
-                        <div className='login-wall__automation-dialog-actions'>
-                            <button
-                                className='repo-user-card__button login-wall__automation-dialog-dismiss'
-                                onClick={dismissAutomationDialog}
-                                type='button'
-                            >
-                                Remind me later
-                            </button>
-                            <button
-                                className='modal-primary-button'
-                                onClick={setupAutomation}
-                                type='button'
-                            >
-                                {isGitHubConnected
-                                    ? 'Continue in Codex'
-                                    : 'Connect GitHub'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            ) : undefined}
         </>
     );
 }

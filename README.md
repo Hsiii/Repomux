@@ -71,18 +71,24 @@ The automation itself is GitHub-driven: it looks for open issues or pull request
 
 Preferred setup:
 
-1. Open Codex from anywhere. A local Repomux checkout is not required.
-2. Ask Codex to set up the Repomux `codex-ready` automation for you.
-3. Codex should create a suggested in-app automation for review instead of asking you to copy a prompt by hand.
-4. Confirm the GitHub scope and the local repository root before saving.
+1. Open Repomux and click `Copy prompt`.
+2. Copy the setup prompt shown there.
+3. Paste that prompt into Codex from anywhere. A local Repomux checkout is not required.
+4. Review the suggested automation draft and confirm:
+    - the GitHub search scope
+    - the local automation workspace root
+    - the local repository root
+    - the schedule and any optional settings you want to keep control over
+
+Any local project folder can be used as the automation workspace root. The local repository root can be the same folder or a different one, as long as Codex can clone and reuse the target repositories there.
 
 The repo-local skill at [.agents/skills/codex-ready-github-automation/SKILL.md](/Users/hsi/Projects/Current/Repomux/.agents/skills/codex-ready-github-automation/SKILL.md) tells Codex to use the native automation flow and prefill the current checkout path, local repository root, and GitHub scope hint.
 If you do have this repo open in Codex, that skill makes the setup faster, but it is optional.
 
-Manual fallback:
+Repo-local fallback:
 
 - Run `bun run setup:codex` to render a prompt file at `.codex/repomux-automation.prompt.md` inside the checkout.
-- Paste that rendered prompt into a Codex automation only if you do not want Codex to create the automation directly.
+- Paste that rendered prompt into a Codex automation only if you want the repo-local renderer to prefill values for this checkout.
 
 By default the generated prompt assumes:
 
@@ -103,6 +109,7 @@ Important caveats for shared users:
 - The automation does not need Repomux. GitHub label search is the queue source of truth.
 - Repomux is optional. Use it when you want queue triage UI or a convenient way to add the `## Codex prompt` comment.
 - A Codex automation still runs on the user's local machine. It needs a real local directory where target repositories can be cloned or reused.
+- The automation workspace root can be any local project folder. It does not need to be a Repomux checkout.
 - This workflow also depends on GitHub being set up in two places:
     - Codex/ChatGPT must have GitHub connected and approved for the required repositories.
     - The local machine may also need working git credentials and `gh auth login` for clone, push, pull request, and comment flows.

@@ -17,8 +17,8 @@ export type WorkFilter = 'assigned' | 'assigned-or-unassigned' | 'all';
 interface RepositorySidebarProps {
     filteredRepositories: readonly Repository[];
     githubUser: GitHubUser | undefined;
-    hasAutomationReminder: boolean;
     hasGitHubError: boolean;
+    isAutomationPromptCopied: boolean;
     isGitHubConnected: boolean;
     isSettingsMenuOpen: boolean;
     language: string;
@@ -52,8 +52,8 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
     const {
         filteredRepositories,
         githubUser,
-        hasAutomationReminder,
         hasGitHubError,
+        isAutomationPromptCopied,
         isGitHubConnected,
         isSettingsMenuOpen,
         language,
@@ -226,12 +226,6 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                                 onClick={onToggleSettingsMenu}
                                 type='button'
                             >
-                                {hasAutomationReminder ? (
-                                    <span
-                                        aria-hidden='true'
-                                        className='repo-user-card__settings-dot'
-                                    />
-                                ) : undefined}
                                 <Settings aria-hidden='true' size={18} />
                             </button>
                             {isSettingsMenuOpen ? (
@@ -246,7 +240,11 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                                         type='button'
                                     >
                                         <Bot aria-hidden='true' size={16} />
-                                        <span>Set up automation</span>
+                                        <span>
+                                            {isAutomationPromptCopied
+                                                ? 'Prompt copied'
+                                                : 'Copy setup prompt'}
+                                        </span>
                                     </button>
 
                                     <div className='repo-user-card__settings-group'>

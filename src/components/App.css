@@ -179,8 +179,7 @@
 .login-wall__app-preview,
 .login-wall__feature,
 .login-wall__github-card,
-.login-wall__prompt-card,
-.login-wall__pr-card {
+.login-wall__prompt-card {
     overflow: hidden;
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-12);
@@ -222,7 +221,6 @@
 .login-wall__feature-copy,
 .login-wall__feature-visual,
 .login-wall__prompt-stage,
-.login-wall__automation-flow,
 .login-wall__result-stage {
     min-width: 0;
     padding: var(--space-40);
@@ -388,28 +386,6 @@
     background-color: var(--clr-login-control);
 }
 
-.login-wall__assign-preview {
-    position: relative;
-    min-height: var(--space-40);
-    width: fit-content;
-    padding: 0 var(--space-16);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-12);
-    animation: login-wall-click 3.8s ease-in-out infinite;
-}
-
-.login-wall__assign-preview::after {
-    content: '';
-    position: absolute;
-    inset: calc(var(--space-8) * -1);
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: var(--radius-12);
-    opacity: 0;
-    animation: login-wall-click-ring 3.8s ease-in-out infinite;
-}
-
 .login-wall__prompt-stage {
     display: block;
 }
@@ -443,8 +419,7 @@
 
 .login-wall__prompt-editor {
     display: grid;
-    align-content: space-between;
-    gap: var(--space-20);
+    align-content: start;
     min-height: 224px;
 }
 
@@ -462,90 +437,55 @@
     width: 0;
     max-width: 100%;
     overflow: hidden;
-    border-right: var(--size-border-1) solid transparent;
     color: var(--clr-login-text-muted);
     white-space: nowrap;
     opacity: 0.2;
 }
 
 .login-wall__typing-line--1 {
-    animation:
-        login-wall-type-line-1 8.8s steps(var(--login-wall-step-count)) infinite,
-        login-wall-caret-line-1 8.8s steps(1, end) infinite;
+    animation: login-wall-type-line-1 8.8s steps(var(--login-wall-step-count))
+        infinite;
 }
 
 .login-wall__typing-line--2 {
-    animation:
-        login-wall-type-line-2 8.8s steps(var(--login-wall-step-count)) infinite,
-        login-wall-caret-line-2 8.8s steps(1, end) infinite;
+    animation: login-wall-type-line-2 8.8s steps(var(--login-wall-step-count))
+        infinite;
 }
 
 .login-wall__typing-line--3 {
-    animation:
-        login-wall-type-line-3 8.8s steps(var(--login-wall-step-count)) infinite,
-        login-wall-caret-line-3 8.8s steps(1, end) infinite;
+    animation: login-wall-type-line-3 8.8s steps(var(--login-wall-step-count))
+        infinite;
 }
 
-.login-wall__automation-stage,
 .login-wall__result-stage {
     display: grid;
     place-items: center;
 }
 
-.login-wall__automation-stage {
-    align-content: center;
-    gap: var(--space-24);
-    background: transparent;
-}
-
-.login-wall__automation-graphic {
-    width: min(100%, 520px);
-    display: grid;
-    place-items: center;
-}
-
-.login-wall__automation-flow {
-    display: grid;
+.login-wall__feature--automation {
+    min-height: auto;
+    grid-template-columns: minmax(0, 1fr);
     justify-items: center;
-    gap: var(--space-12);
 }
 
-.login-wall__automation-badge {
+.login-wall__feature--automation .login-wall__feature-copy {
+    justify-items: center;
+    text-align: center;
+}
+
+.login-wall__automation-cta {
+    min-height: var(--space-40);
     width: fit-content;
-    padding: 0 var(--space-12);
+    padding: 0 var(--space-16);
     border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-pill);
-    color: var(--clr-login-text);
+    border-radius: var(--radius-8);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    color: var(--clr-login-text-muted);
     font: var(--font-label);
-    line-height: var(--space-32);
     background-color: transparent;
-}
-
-.login-wall__automation-codex {
-    width: var(--space-64);
-    height: var(--space-64);
-    padding: 0;
-    display: grid;
-    place-items: center;
-}
-
-.login-wall__automation-codex-mark {
-    width: var(--space-40);
-    height: var(--space-40);
-    color: var(--clr-login-text);
-}
-
-.login-wall__automation-outcome {
-    width: var(--space-64);
-    height: var(--space-64);
-    padding: 0;
-    display: grid;
-    place-items: center;
-    color: var(--clr-login-success-text);
-}
-
-.login-wall__automation-arrow {
-    color: var(--clr-accent);
 }
 
 .login-wall__automation-dialog {
@@ -578,6 +518,54 @@
 .login-wall__automation-step strong,
 .login-wall__automation-step code {
     color: var(--clr-login-text);
+}
+
+.login-wall__automation-prompt-card {
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-12);
+    display: grid;
+    overflow: hidden;
+    background-color: var(--clr-login-card-strong);
+}
+
+.login-wall__automation-prompt-header {
+    padding: var(--space-12);
+    border-bottom: var(--size-border-1) solid var(--clr-login-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+    background-color: var(--clr-login-surface-soft);
+}
+
+.login-wall__automation-prompt-title {
+    margin: 0;
+    color: var(--clr-login-text);
+    font: var(--font-label);
+}
+
+.login-wall__automation-copy {
+    min-height: var(--size-login-button);
+    padding: 0 var(--space-12);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-8);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--clr-login-text);
+    font: var(--font-label);
+    background-color: var(--clr-login-card);
+}
+
+.login-wall__automation-prompt {
+    margin: 0;
+    padding: var(--space-16);
+    max-height: 320px;
+    overflow: auto;
+    color: var(--clr-login-text);
+    font: var(--font-body-sm);
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .login-wall__automation-dialog-actions {
@@ -682,71 +670,6 @@
     background-color: var(--clr-login-control-hover);
 }
 
-.login-wall__value-button {
-    position: relative;
-    isolation: isolate;
-    min-height: var(--size-login-hero-button);
-    width: fit-content;
-    overflow: hidden;
-    padding: 0 var(--space-24);
-    border: var(--size-border-1) solid transparent;
-    border-radius: var(--radius-8);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-12);
-    color: var(--clr-login-action-text);
-    font: var(--font-label);
-    background-color: transparent;
-    box-shadow: var(--clr-login-shadow);
-    transition:
-        box-shadow 160ms ease,
-        transform 160ms ease;
-}
-
-.login-wall__value-button::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        var(--clr-login-action-ring-soft) 48deg,
-        var(--clr-login-action-ring) 92deg,
-        var(--clr-login-action-ring-soft) 136deg,
-        transparent 160deg,
-        transparent 360deg
-    );
-    animation: login-wall-spin 2.4s linear infinite;
-}
-
-.login-wall__value-button::after {
-    content: '';
-    position: absolute;
-    inset: var(--size-border-1);
-    border-radius: calc(var(--radius-8) - var(--size-border-1));
-    background-color: var(--clr-login-accent);
-    z-index: 0;
-}
-
-.login-wall__value-button > * {
-    position: relative;
-    z-index: 1;
-}
-
-.login-wall__value-button:hover,
-.login-wall__value-button:focus-visible {
-    transform: translateY(calc(var(--space-4) * -1));
-    box-shadow: var(--clr-login-shadow-press);
-}
-
-@keyframes login-wall-spin {
-    to {
-        transform: rotate(1turn);
-    }
-}
-
 @keyframes login-wall-draw-left {
     0%,
     8% {
@@ -818,74 +741,6 @@
     100% {
         width: min(100%, var(--login-wall-line-width));
         opacity: 0.88;
-    }
-}
-
-@keyframes login-wall-caret-line-1 {
-    0%,
-    8%,
-    28%,
-    100% {
-        border-color: transparent;
-    }
-
-    10%,
-    26% {
-        border-color: var(--clr-login-text);
-    }
-}
-
-@keyframes login-wall-caret-line-2 {
-    0%,
-    30%,
-    56%,
-    100% {
-        border-color: transparent;
-    }
-
-    32%,
-    54% {
-        border-color: var(--clr-login-text);
-    }
-}
-
-@keyframes login-wall-caret-line-3 {
-    0%,
-    58%,
-    84%,
-    100% {
-        border-color: transparent;
-    }
-
-    60%,
-    82% {
-        border-color: var(--clr-login-text);
-    }
-}
-
-@keyframes login-wall-click {
-    0%,
-    64%,
-    100% {
-        transform: translateY(0) scale(1);
-    }
-
-    72% {
-        transform: translateY(var(--size-border-1)) scale(0.98);
-    }
-}
-
-@keyframes login-wall-click-ring {
-    0%,
-    64%,
-    100% {
-        opacity: 0;
-        transform: scale(0.92);
-    }
-
-    76% {
-        opacity: 1;
-        transform: scale(1);
     }
 }
 
@@ -998,7 +853,6 @@
     .login-wall__feature-copy,
     .login-wall__feature-visual,
     .login-wall__prompt-stage,
-    .login-wall__automation-stage,
     .login-wall__result-stage,
     .login-wall__work-panel-preview {
         padding: var(--space-16);
@@ -1013,9 +867,7 @@
 @media (prefers-reduced-motion: reduce) {
     .login-wall__mux-line,
     .login-wall__typing-line,
-    .login-wall__assign-preview,
-    .login-wall__assign-preview::after,
-    .login-wall__value-button::before {
+    .login-wall__automation-cta {
         animation: none;
     }
 
