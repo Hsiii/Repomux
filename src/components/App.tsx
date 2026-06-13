@@ -840,8 +840,8 @@ export function App(): JSX.Element {
                                         <div className='login-wall__feature-copy'>
                                             <h2>Add your prompt.</h2>
                                             <p>
-                                                Write the handoff the same way
-                                                you would in Codex.
+                                                Write the handoff, send it to
+                                                Codex, then step away.
                                             </p>
                                         </div>
 
