@@ -920,9 +920,7 @@ export function App(): JSX.Element {
 
                                         <section className='login-wall__bento-cell login-wall__bento-cell--result'>
                                             <div className='login-wall__feature-copy'>
-                                                <h2>
-                                                    Come back to a pull request.
-                                                </h2>
+                                                <h2>Come back to PRs.</h2>
                                                 <p>
                                                     Simply review, add follow-up
                                                     direction, or merge the PR
