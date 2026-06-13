@@ -1,6 +1,7 @@
 @import './constants/color.css';
 @import './constants/font.css';
 @import './components/App.css';
+@import './components/LandingLineTool.css';
 @import './components/BrandLogo.css';
 @import './components/RepositorySidebar.css';
 @import './components/WorkPanel.css';
