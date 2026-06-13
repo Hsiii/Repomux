@@ -752,10 +752,7 @@ export function App(): JSX.Element {
 
                                     <article className='login-wall__feature login-wall__feature--queue'>
                                         <div className='login-wall__feature-copy'>
-                                            <h2>
-                                                Stop context-switching across
-                                                repository tabs.
-                                            </h2>
+                                            <h2>One queue for active work.</h2>
                                             <p>
                                                 See issues and PRs from active
                                                 repos in one queue.
