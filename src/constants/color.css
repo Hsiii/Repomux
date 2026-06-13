@@ -32,6 +32,7 @@
     --clr-login-spotlight: rgba(245, 241, 250, 0.08);
     --clr-login-card: rgba(20, 23, 37, 0.88);
     --clr-login-card-strong: rgba(31, 35, 54, 0.92);
+    --clr-login-card-solid: #1f2336;
     --clr-login-border: var(--clr-border);
     --clr-login-border-strong: var(--clr-border-strong);
     --clr-login-text: var(--clr-text);
@@ -92,6 +93,7 @@
     --clr-login-spotlight: rgba(255, 255, 255, 0.96);
     --clr-login-card: rgba(255, 255, 255, 0.92);
     --clr-login-card-strong: #ffffff;
+    --clr-login-card-solid: #ffffff;
     --clr-login-border: rgba(15, 23, 42, 0.1);
     --clr-login-border-strong: rgba(15, 23, 42, 0.16);
     --clr-login-text: #111827;

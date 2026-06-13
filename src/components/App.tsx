@@ -614,31 +614,26 @@ export function App(): JSX.Element {
                                         aria-hidden='true'
                                         className='login-wall__flow-lines'
                                         preserveAspectRatio='none'
-                                        viewBox='0 0 1088 2964'
+                                        viewBox='0 0 1088 2864'
                                     >
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--blue'
-                                            d='M540 80 C500 220 512 640 544 840'
+                                            d='M540 80 C512 208 512 500 544 664'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--pink'
-                                            d='M732 80 C664 260 628 640 544 840'
+                                            d='M732 80 C672 224 632 500 544 664'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--violet'
-                                            d='M924 80 C820 252 712 620 544 840'
+                                            d='M924 80 C816 220 704 492 544 664'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--purple'
-                                            d='M544 840 C408 908 428 1064 568 1064 C732 1064 748 896 604 912 C424 932 360 1232 584 1348 C780 1452 696 1644 484 1572 C304 1512 348 1832 632 1772 C904 1712 956 2076 740 2203'
-                                            pathLength='1'
-                                        />
-                                        <path
-                                            className='login-wall__flow-line login-wall__flow-line--purple login-wall__flow-line--return'
-                                            d='M740 2203 C980 2280 960 2452 740 2520'
+                                            d='M544 664 C544 792 548 948 624 1024 C740 1140 744 1260 584 1332 C412 1408 388 1592 584 1656 C780 1720 720 1856 536 1812 C356 1768 348 2048 636 1992 C808 1956 748 2120 488 2184 C348 2220 560 2440 740 2520'
                                             pathLength='1'
                                         />
                                     </svg>
