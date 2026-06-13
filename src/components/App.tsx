@@ -896,7 +896,7 @@ export function App(): JSX.Element {
                                                     Let Codex pick up the work.
                                                 </h2>
                                                 <p>
-                                                    When an item is codex-ready,{' '}
+                                                    Set up{' '}
                                                     <button
                                                         className='login-wall__automation-inline-cta'
                                                         onClick={() => {
@@ -912,8 +912,8 @@ export function App(): JSX.Element {
                                                         />
                                                         <span>automation</span>
                                                     </button>{' '}
-                                                    picks up the prompt and
-                                                    starts the pass.
+                                                    with a single prompt in
+                                                    seconds.
                                                 </p>
                                             </div>
                                         </section>
