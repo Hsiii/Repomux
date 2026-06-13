@@ -9,10 +9,13 @@ import {
     Check,
     ChevronDown,
     CircleDot,
+    Clock3,
+    Copy,
     GitPullRequestArrow,
     Languages,
     Moon,
     Sun,
+    X,
 } from 'lucide-react';
 
 import { useGitHubConnection } from '../hooks/use-github-connection';
@@ -34,49 +37,22 @@ import type { WorkFilter } from './RepositorySidebar';
 import { WorkPanel } from './WorkPanel';
 
 const automationSetupPrompt = [
-    'Create a suggested local automation for a GitHub `codex-ready` queue.',
+    'Help me set up a local Codex automation for GitHub `codex-ready` work.',
     '',
-    'Before saving it, let me customize:',
-    '- GitHub search scope hint',
+    'Before saving anything, ask me for:',
+    '- GitHub search scope',
     '- local automation workspace root',
     '- local repository root',
-    '- schedule, name, and any optional settings',
+    '- schedule and name',
     '',
-    'Do not choose reasoning effort for me. Keep Repomux optional.',
+    'Then configure it to:',
+    '1. Process one open `codex-ready` issue or pull request per run.',
+    '2. Require Codex GitHub access and local git or `gh` auth.',
+    '3. Read the latest comment headed `## Codex prompt`.',
+    '4. Sync the local repo, create `codex/<item-number>-<slug>`, complete the work, respect `AGENTS.md`, and run focused validation.',
+    '5. Commit with a conventional commit, push, open or update a PR when needed, and post a short GitHub update.',
     '',
-    'Use this automation prompt:',
-    '',
-    'You process one GitHub `codex-ready` issue or pull request per run.',
-    '',
-    'Context',
-    '',
-    '- Automation workspace root: __SET_THIS_TO_YOUR_LOCAL_AUTOMATION_FOLDER__',
-    '- Local repository root: __SET_THIS_TO_YOUR_LOCAL_REPOSITORY_ROOT__',
-    '- GitHub search scope hint: __SET_THIS_TO_YOUR_GITHUB_SCOPE__',
-    '',
-    'Workflow',
-    '',
-    "1. Confirm that Codex has GitHub access for the user's repositories. If GitHub is not connected in Codex, repository access is missing, or organization approval is still pending, stop and report `GitHub connector setup required`.",
-    '2. Confirm local git or `gh` auth only when required. If it is missing, stop and report `local GitHub auth required`.',
-    '3. Search GitHub for open issues or pull requests labeled `codex-ready`, using the scope hint when it is provided. Prefer items assigned to the signed-in user.',
-    '4. Pick one actionable item and read the latest comment whose heading is `## Codex prompt`.',
-    '5. If the item is missing the label or prompt comment, stop and report the reason.',
-    '6. In the configured local repository root, clone the target repository if it is missing. If it already exists, fetch the latest remote state before editing.',
-    '7. Create a branch named `codex/<item-number>-<short-slug>`.',
-    '8. Complete the requested work, respect repository-local `AGENTS.md`, and run the narrowest useful validation first. State what ran.',
-    '9. Commit only your changes with a conventional commit message. Push the branch and open or update a pull request when the repository workflow expects one.',
-    '10. Post a concise GitHub comment with what changed, what validation ran, and the branch name or PR link.',
-    '11. Return a final summary with the repository, work item, branch, validation, and blockers.',
-    '',
-    'Safety',
-    '',
-    '- Never process more than one work item in a single run.',
-    '- Never take work that GitHub has not marked `codex-ready`.',
-    '- Never invent missing auth, prompt text, or repository state.',
-    '- If GitHub access in Codex is not configured, stop and report `GitHub connector setup required`.',
-    '- If local git or GitHub CLI authentication is not configured for the required repository operations, stop and report `local GitHub auth required`.',
-    '- If the local repository root is unknown, stop and report the missing local setup instead of guessing a path.',
-    '- If the target repository is already dirty in a conflicting way, stop and report the conflict.',
+    'If auth, prompt text, local paths, or repo state are missing or conflicting, stop and report the blocker instead of guessing.',
 ].join('\n');
 
 export function App(): JSX.Element {
@@ -99,6 +75,7 @@ export function App(): JSX.Element {
     const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
     const [isAutomationPromptCopied, setIsAutomationPromptCopied] =
         useState(false);
+    const [isAutomationDialogOpen, setIsAutomationDialogOpen] = useState(false);
     const loginTopbarControlsRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -367,6 +344,27 @@ export function App(): JSX.Element {
                 );
             });
     }
+
+    useEffect(() => {
+        if (!isAutomationDialogOpen) {
+            return undefined;
+        }
+
+        function closeAutomationDialogOnEscape(event: KeyboardEvent) {
+            if (event.key === 'Escape') {
+                setIsAutomationDialogOpen(false);
+            }
+        }
+
+        document.addEventListener('keydown', closeAutomationDialogOnEscape);
+
+        return () => {
+            document.removeEventListener(
+                'keydown',
+                closeAutomationDialogOnEscape
+            );
+        };
+    }, [isAutomationDialogOpen]);
 
     return (
         <>
@@ -677,7 +675,7 @@ export function App(): JSX.Element {
                                                             transform={`translate(20 ${52 + index * 76})`}
                                                         >
                                                             <rect
-                                                                height='68'
+                                                                height='76'
                                                                 rx='12'
                                                                 width='172'
                                                             />
@@ -690,14 +688,14 @@ export function App(): JSX.Element {
                                                             <text
                                                                 className='login-wall__mux-repo-owner'
                                                                 x='44'
-                                                                y='29'
+                                                                y='31'
                                                             >
                                                                 {owner}
                                                             </text>
                                                             <text
                                                                 className='login-wall__mux-repo-name'
                                                                 x='44'
-                                                                y='48'
+                                                                y='54'
                                                             >
                                                                 {name}
                                                             </text>
@@ -889,23 +887,25 @@ export function App(): JSX.Element {
                                         <div className='login-wall__feature-copy'>
                                             <h2>Let Codex pick up the work.</h2>
                                             <p>
-                                                When an item is codex-ready,
-                                                automation picks up the prompt
-                                                and starts the pass.
+                                                When an item is codex-ready,{' '}
+                                                <button
+                                                    className='login-wall__automation-inline-cta'
+                                                    onClick={() => {
+                                                        setIsAutomationDialogOpen(
+                                                            true
+                                                        );
+                                                    }}
+                                                    type='button'
+                                                >
+                                                    <Clock3
+                                                        aria-hidden='true'
+                                                        size={14}
+                                                    />
+                                                    <span>automation</span>
+                                                </button>{' '}
+                                                picks up the prompt and starts
+                                                the pass.
                                             </p>
-                                            <button
-                                                className='login-wall__automation-cta'
-                                                onClick={
-                                                    copyAutomationSetupPrompt
-                                                }
-                                                type='button'
-                                            >
-                                                <span>
-                                                    {isAutomationPromptCopied
-                                                        ? 'Copied'
-                                                        : 'Copy prompt'}
-                                                </span>
-                                            </button>
                                         </div>
                                     </article>
 
@@ -956,6 +956,87 @@ export function App(): JSX.Element {
                             </div>
                         </section>
                     </div>
+
+                    {isAutomationDialogOpen ? (
+                        <div
+                            className='login-wall__automation-dialog-backdrop'
+                            onClick={() => {
+                                setIsAutomationDialogOpen(false);
+                            }}
+                        >
+                            <section
+                                aria-labelledby='login-wall-automation-title'
+                                aria-modal='true'
+                                className='login-wall__automation-dialog'
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                }}
+                                role='dialog'
+                            >
+                                <div className='login-wall__automation-dialog-header'>
+                                    <div className='login-wall__automation-dialog-copy'>
+                                        <h2
+                                            className='login-wall__automation-dialog-title'
+                                            id='login-wall-automation-title'
+                                        >
+                                            Automation setup
+                                        </h2>
+                                        <p className='login-wall__automation-dialog-description'>
+                                            One prompt, one-time setup. It asks
+                                            Codex to collect your scope, local
+                                            paths, and schedule before saving
+                                            the automation.
+                                        </p>
+                                    </div>
+                                    <button
+                                        aria-label='Close automation setup dialog'
+                                        className='login-wall__automation-dialog-close'
+                                        onClick={() => {
+                                            setIsAutomationDialogOpen(false);
+                                        }}
+                                        type='button'
+                                    >
+                                        <X aria-hidden='true' size={18} />
+                                    </button>
+                                </div>
+
+                                <div className='login-wall__automation-dialog-body'>
+                                    <p className='login-wall__automation-dialog-note'>
+                                        After setup, automation can pick up one
+                                        `codex-ready` item at a time.
+                                    </p>
+
+                                    <div className='login-wall__automation-prompt-card'>
+                                        <div className='login-wall__automation-prompt-header'>
+                                            <p className='login-wall__automation-prompt-title'>
+                                                Suggested setup prompt
+                                            </p>
+                                            <button
+                                                className='login-wall__automation-copy'
+                                                onClick={
+                                                    copyAutomationSetupPrompt
+                                                }
+                                                type='button'
+                                            >
+                                                <Copy
+                                                    aria-hidden='true'
+                                                    size={14}
+                                                />
+                                                <span>
+                                                    {isAutomationPromptCopied
+                                                        ? 'Copied'
+                                                        : 'Copy prompt'}
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <pre className='login-wall__automation-prompt'>
+                                            {automationSetupPrompt}
+                                        </pre>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    ) : undefined}
                 </main>
             )}
         </>

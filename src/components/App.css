@@ -155,13 +155,14 @@
 
 .login-wall__title {
     max-width: 12ch;
+    margin-top: var(--space-48);
     font: var(--font-login-display);
     letter-spacing: 0;
 }
 
 .login-wall__lede {
     color: var(--clr-login-text-muted);
-    font: var(--font-body-lg);
+    font: var(--font-body-xl);
     margin-top: var(--space-16);
 }
 
@@ -314,13 +315,13 @@
 
 .login-wall__mux-repo-owner {
     fill: var(--clr-login-text-dim);
-    font: var(--font-label);
+    font: var(--font-body-lg);
 }
 
 .login-wall__mux-repo-name,
 .login-wall__mux-output text {
     fill: var(--clr-login-text);
-    font: var(--font-label);
+    font: var(--font-body-lg);
 }
 
 .login-wall__mux-logo {
@@ -345,17 +346,19 @@
 .login-wall__work-panel-preview {
     min-height: var(--size-login-preview-compact);
     padding: var(--space-24);
+    margin-bottom: var(--space-96);
     overflow: hidden;
 }
 
 .login-wall__feature--queue .login-wall__app-preview {
+    width: min(100%, var(--size-login-preview-wide));
     border: 0;
     background-color: transparent;
     box-shadow: none;
 }
 
 .work-panel.login-wall__work-panel-preview {
-    width: min(100%, 680px);
+    width: min(100%, var(--size-login-preview-wide));
     grid-template-rows: auto auto;
     align-content: start;
     overflow: hidden;
@@ -466,6 +469,9 @@
     min-height: auto;
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .login-wall__feature--automation .login-wall__feature-copy {
@@ -473,23 +479,84 @@
     text-align: center;
 }
 
-.login-wall__automation-cta {
-    min-height: var(--space-40);
-    width: fit-content;
-    padding: 0 var(--space-16);
+.login-wall__automation-inline-cta {
+    min-height: var(--space-32);
+    padding: 0 var(--space-12);
     border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-8);
+    border-radius: var(--radius-pill);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-8);
-    color: var(--clr-login-text-muted);
+    color: var(--clr-login-text);
     font: var(--font-label);
+    vertical-align: baseline;
     background-color: transparent;
 }
 
+.login-wall__automation-inline-cta:hover,
+.login-wall__automation-inline-cta:focus-visible,
+.login-wall__automation-copy:hover,
+.login-wall__automation-copy:focus-visible,
+.login-wall__automation-dialog-dismiss:hover,
+.login-wall__automation-dialog-dismiss:focus-visible,
+.login-wall__automation-dialog-close:hover,
+.login-wall__automation-dialog-close:focus-visible {
+    background-color: var(--clr-login-control-hover);
+}
+
+.login-wall__automation-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: var(--space-24);
+    background-color: var(--clr-login-overlay-strong);
+}
+
 .login-wall__automation-dialog {
-    width: min(100%, 520px);
+    width: min(100%, 640px);
+    display: grid;
+    gap: var(--space-20);
+    padding: var(--space-24);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-12);
+    background-color: var(--clr-login-card);
+    box-shadow: var(--clr-login-shadow);
+}
+
+.login-wall__automation-dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-16);
+}
+
+.login-wall__automation-dialog-copy {
+    display: grid;
+    gap: var(--space-8);
+}
+
+.login-wall__automation-dialog-title {
+    margin: 0;
+    font: var(--font-title-md);
+}
+
+.login-wall__automation-dialog-description {
+    color: var(--clr-login-text-muted);
+    font: var(--font-body-sm);
+}
+
+.login-wall__automation-dialog-close {
+    width: var(--space-32);
+    height: var(--space-32);
+    border: 0;
+    border-radius: var(--radius-8);
+    display: inline-grid;
+    place-items: center;
+    color: var(--clr-login-text-muted);
+    background-color: transparent;
 }
 
 .login-wall__automation-dialog-body {
@@ -552,9 +619,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: var(--space-8);
     color: var(--clr-login-text);
     font: var(--font-label);
-    background-color: var(--clr-login-card);
+    background-color: transparent;
 }
 
 .login-wall__automation-prompt {
@@ -576,7 +644,13 @@
 }
 
 .login-wall__automation-dialog-dismiss {
-    background-color: var(--clr-surface-muted);
+    min-height: var(--space-40);
+    padding: 0 var(--space-16);
+    border: var(--size-border-1) solid var(--clr-login-border);
+    border-radius: var(--radius-8);
+    color: var(--clr-login-text);
+    font: var(--font-label);
+    background-color: transparent;
 }
 
 .login-wall__result-stage {
@@ -626,9 +700,35 @@
 .login-wall__hero-button {
     min-width: var(--size-login-hero-width);
     min-height: var(--size-login-hero-button);
-    margin: var(--space-20) 0 var(--space-56);
+    margin: var(--space-20) 0 var(--space-164);
     padding: 0;
     font: var(--font-label);
+}
+
+.login-wall__feature--queue .login-wall__feature-copy {
+    width: min(100%, var(--size-login-preview-wide));
+    margin-top: var(--space-96);
+    padding: 0;
+    gap: var(--space-24);
+}
+
+.login-wall__feature--queue .login-wall__feature-copy h2,
+.login-wall__feature--automation .login-wall__feature-copy h2 {
+    max-width: none;
+}
+
+.login-wall__feature--queue .login-wall__feature-copy p {
+    max-width: none;
+}
+
+.login-wall__feature--automation .login-wall__feature-copy {
+    max-width: 40rem;
+    padding: 0;
+}
+
+.login-wall__feature--automation .login-wall__feature-copy p {
+    max-width: 38ch;
+    text-wrap: balance;
 }
 
 .login-wall__button.login-wall__topbar-login {
@@ -814,6 +914,7 @@
 
     .login-wall__title {
         max-width: none;
+        margin-top: 0;
     }
 
     .login-wall__topbar {
@@ -850,12 +951,26 @@
         font: var(--font-title-md);
     }
 
+    .login-wall__hero-button {
+        margin-bottom: var(--space-96);
+    }
+
     .login-wall__feature-copy,
     .login-wall__feature-visual,
     .login-wall__prompt-stage,
     .login-wall__result-stage,
     .login-wall__work-panel-preview {
         padding: var(--space-16);
+    }
+
+    .login-wall__feature--queue .login-wall__feature-copy,
+    .login-wall__feature--automation .login-wall__feature-copy {
+        margin-top: 0;
+        padding: 0 var(--space-16);
+    }
+
+    .login-wall__work-panel-preview {
+        margin-bottom: var(--space-48);
     }
 
     .login-wall__automation-dialog-actions {

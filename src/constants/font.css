@@ -8,6 +8,7 @@
     --fs-auth-sm: 0.875rem;
     --fs-md: 1rem;
     --fs-auth-lg: 1.125rem;
+    --fs-auth-xl: 1.25rem;
     --fs-wordmark: 1.5rem;
     --fs-lg: 1.75rem;
     --fs-display: 2.5rem;
@@ -23,6 +24,7 @@
     --font-body-sm: var(--fw-medium) var(--fs-sm) / 1.45 var(--ff-body);
     --font-body-md: var(--fw-medium) var(--fs-md) / 1.6 var(--ff-body);
     --font-body-lg: var(--fw-medium) var(--fs-auth-lg) / 1.6 var(--ff-body);
+    --font-body-xl: var(--fw-medium) var(--fs-auth-xl) / 1.6 var(--ff-body);
     --font-title-sm: var(--fw-semibold) var(--fs-md) / 1.2 var(--ff-body);
     --font-wordmark: var(--fw-semibold) var(--fs-wordmark) / 1 var(--ff-body);
     --font-title-md: var(--fw-bold) var(--fs-lg) / 1.1 var(--ff-body);
@@ -40,11 +42,13 @@
     --space-32: 32px;
     --space-36: 36px;
     --space-40: 40px;
+    --space-48: 48px;
     --space-56: 56px;
     --space-64: 64px;
     --space-72: 72px;
-    --space-48: 48px;
     --space-80: 80px;
+    --space-96: 96px;
+    --space-164: 164px;
 
     --size-border-1: 1px;
     --size-outline: 2px;
@@ -57,6 +61,7 @@
     --size-login-mark: 36px;
     --size-login-preview-sidebar: 168px;
     --size-login-preview: 1088px;
+    --size-login-preview-wide: 800px;
     --size-login-topbar: 1080px;
     --size-login-preview-height: 560px;
     --size-login-preview-compact: 420px;
