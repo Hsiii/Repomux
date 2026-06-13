@@ -351,12 +351,12 @@
 .login-wall__flow-line--purple {
     stroke: var(--clr-accent);
     color: var(--clr-accent);
-    animation-range: 18% 84%;
+    animation-range: 28% 100%;
 }
 
 .login-wall__repo-flow {
-    min-height: var(--size-login-flow-section);
-    height: var(--size-login-flow-section);
+    min-height: var(--size-login-repo-flow);
+    height: var(--size-login-repo-flow);
     position: relative;
     display: grid;
     align-content: start;

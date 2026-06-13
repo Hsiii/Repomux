@@ -618,22 +618,22 @@ export function App(): JSX.Element {
                                     >
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--blue'
-                                            d='M540 80 C512 208 512 500 544 664'
+                                            d='M564 120 C532 244 512 496 544 664'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--pink'
-                                            d='M732 80 C672 224 632 500 544 664'
+                                            d='M756 120 C680 260 632 512 544 664'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--violet'
-                                            d='M924 80 C816 220 704 492 544 664'
+                                            d='M948 120 C820 256 704 504 544 664'
                                             pathLength='1'
                                         />
                                         <path
                                             className='login-wall__flow-line login-wall__flow-line--purple'
-                                            d='M544 664 C544 792 548 948 624 1024 C740 1140 744 1260 584 1332 C412 1408 388 1592 584 1656 C780 1720 720 1856 536 1812 C356 1768 348 2048 636 1992 C808 1956 748 2120 488 2184 C348 2220 560 2440 740 2520'
+                                            d='M544 664 C540 808 496 1012 416 1152 C308 1340 396 1544 720 1568 C928 1584 1000 1728 864 1852 C712 1992 536 1932 536 2084 C536 2236 748 2248 824 2360 C900 2472 760 2604 560 2576'
                                             pathLength='1'
                                         />
                                     </svg>
