@@ -366,7 +366,6 @@
 }
 
 .login-wall__prompt-preview {
-    position: relative;
     min-height: calc(var(--size-login-prompt-compact) + var(--space-24));
     padding: var(--space-16);
     display: grid;
@@ -376,18 +375,6 @@
     line-height: 1.45;
     overflow: hidden;
     background-color: var(--clr-login-control);
-}
-
-.login-wall__prompt-preview::after {
-    content: '';
-    position: absolute;
-    top: var(--space-16);
-    left: var(--space-16);
-    width: var(--size-border-1);
-    height: var(--space-20);
-    background-color: var(--clr-login-text);
-    opacity: 0;
-    animation: login-wall-single-caret 8.8s steps(1, end) infinite;
 }
 
 .login-wall__assign-preview {
@@ -450,16 +437,9 @@
     min-height: 224px;
 }
 
-.login-wall__pr-card p,
-.login-wall__pr-card span,
 .login-wall__automation-step p {
     color: var(--clr-login-text-muted);
     font: var(--font-body-sm);
-}
-
-.login-wall__pr-button {
-    display: inline-flex;
-    align-items: center;
 }
 
 .login-wall__prompt-card {
@@ -471,24 +451,28 @@
     width: 0;
     max-width: 100%;
     overflow: hidden;
+    border-right: var(--size-border-1) solid transparent;
     color: var(--clr-login-text-muted);
     white-space: nowrap;
     opacity: 0.2;
 }
 
 .login-wall__typing-line--1 {
-    animation: login-wall-type-line-1 8.8s steps(var(--login-wall-step-count))
-        infinite;
+    animation:
+        login-wall-type-line-1 8.8s steps(var(--login-wall-step-count)) infinite,
+        login-wall-caret-line-1 8.8s steps(1, end) infinite;
 }
 
 .login-wall__typing-line--2 {
-    animation: login-wall-type-line-2 8.8s steps(var(--login-wall-step-count))
-        infinite;
+    animation:
+        login-wall-type-line-2 8.8s steps(var(--login-wall-step-count)) infinite,
+        login-wall-caret-line-2 8.8s steps(1, end) infinite;
 }
 
 .login-wall__typing-line--3 {
-    animation: login-wall-type-line-3 8.8s steps(var(--login-wall-step-count))
-        infinite;
+    animation:
+        login-wall-type-line-3 8.8s steps(var(--login-wall-step-count)) infinite,
+        login-wall-caret-line-3 8.8s steps(1, end) infinite;
 }
 
 .login-wall__automation-stage,
@@ -500,47 +484,13 @@
 .login-wall__automation-stage {
     align-content: center;
     gap: var(--space-24);
-    background:
-        radial-gradient(
-            circle at top left,
-            var(--clr-login-control-hover),
-            transparent 52%
-        ),
-        linear-gradient(
-            180deg,
-            var(--clr-login-card-strong),
-            var(--clr-login-card)
-        );
+    background: transparent;
 }
 
 .login-wall__automation-graphic {
     width: min(100%, 520px);
     display: grid;
-    gap: var(--space-24);
-}
-
-.login-wall__automation-stage-head {
-    padding: 0;
-    border: 0;
-    display: grid;
-    gap: var(--space-8);
-    background-color: transparent;
-}
-
-.login-wall__automation-stage-label {
-    color: var(--clr-login-text-dim);
-    font: var(--font-label);
-}
-
-.login-wall__automation-stage-value {
-    color: var(--clr-login-text);
-    font: var(--font-body-lg);
-    font-weight: var(--fw-semibold);
-}
-
-.login-wall__automation-stage-copy {
-    color: var(--clr-login-text-muted);
-    font: var(--font-body-sm);
+    place-items: center;
 }
 
 .login-wall__automation-flow {
@@ -549,64 +499,23 @@
     gap: var(--space-12);
 }
 
-.login-wall__automation-issue,
-.login-wall__automation-codex,
-.login-wall__automation-outcome {
-    border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-12);
-    background-color: color-mix(
-        in srgb,
-        var(--clr-login-card) 76%,
-        transparent
-    );
-}
-
-.login-wall__automation-issue.queue-row {
-    width: min(100%, 440px);
-    border-bottom: var(--size-border-1) solid var(--clr-login-border);
-    background-color: var(--clr-login-card);
-}
-
-.login-wall__automation-kicker,
-.login-wall__automation-outcome-label {
-    color: var(--clr-login-text-dim);
-    font: var(--font-label);
-}
-
-.login-wall__automation-chip {
+.login-wall__automation-badge {
     width: fit-content;
     padding: 0 var(--space-12);
+    border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-pill);
     color: var(--clr-login-text);
     font: var(--font-label);
     line-height: var(--space-32);
-    background-color: color-mix(
-        in srgb,
-        var(--clr-accent) 20%,
-        var(--clr-login-card)
-    );
-}
-
-.login-wall__automation-rail {
-    width: var(--space-4);
-    height: var(--space-24);
-    margin-left: var(--space-24);
-    border-radius: var(--radius-pill);
-    background-color: var(--clr-accent);
-}
-
-.login-wall__automation-rail--result {
-    background-color: var(--clr-login-border-strong);
+    background-color: transparent;
 }
 
 .login-wall__automation-codex {
-    width: var(--space-72);
-    height: var(--space-72);
+    width: var(--space-64);
+    height: var(--space-64);
     padding: 0;
     display: grid;
     place-items: center;
-    border-color: var(--clr-login-border-strong);
-    box-shadow: var(--clr-login-shadow);
 }
 
 .login-wall__automation-codex-mark {
@@ -616,28 +525,16 @@
 }
 
 .login-wall__automation-outcome {
-    width: var(--space-72);
-    height: var(--space-72);
+    width: var(--space-64);
+    height: var(--space-64);
     padding: 0;
     display: grid;
     place-items: center;
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: var(--radius-pill);
     color: var(--clr-login-success-text);
-    background-color: color-mix(
-        in srgb,
-        var(--clr-login-accent) 12%,
-        var(--clr-login-card)
-    );
 }
 
 .login-wall__automation-arrow {
     color: var(--clr-accent);
-}
-
-.login-wall__automation-outcome-value {
-    color: var(--clr-login-text);
-    font: var(--font-body-lg);
 }
 
 .login-wall__automation-dialog {
@@ -660,64 +557,12 @@
     gap: var(--space-24);
 }
 
-.login-wall__pr-card.queue-row {
-    position: relative;
-    isolation: isolate;
+.login-wall__result-list {
     width: min(100%, var(--size-login-pr-card));
-    min-height: var(--size-row);
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    opacity: 0;
-    background-color: var(--clr-login-card);
-    animation: login-wall-pr-enter 920ms cubic-bezier(0.18, 0.84, 0.32, 1) 1
-        forwards;
 }
 
-.login-wall__pr-card.queue-row::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        112deg,
-        transparent 24%,
-        color-mix(in srgb, var(--clr-login-accent) 20%, transparent) 50%,
-        transparent 76%
-    );
-    opacity: 0;
-    pointer-events: none;
-    animation: login-wall-pr-sheen 1100ms ease-out 280ms 1 forwards;
-}
-
-.login-wall__pr-icon {
-    width: var(--space-48);
-    height: var(--space-48);
-    border-radius: var(--radius-pill);
-    display: grid;
-    place-items: center;
-    color: var(--clr-login-success-text);
-    background-color: var(--clr-login-success-bg);
-}
-
-.login-wall__pr-copy {
-    min-width: 0;
-    display: grid;
-    gap: var(--space-4);
-}
-
-.login-wall__pr-copy span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.login-wall__pr-button {
-    min-height: var(--space-40);
-    gap: var(--space-8);
-    padding: 0 var(--space-16);
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: var(--radius-8);
-    color: var(--clr-login-text);
-    font: var(--font-label);
-    background-color: var(--clr-login-control-hover);
+.login-wall__pr-card {
+    border-bottom: 0;
 }
 
 .login-wall__button {
@@ -937,61 +782,45 @@
     }
 }
 
-@keyframes login-wall-single-caret {
+@keyframes login-wall-caret-line-1 {
     0%,
     8%,
     28%,
-    30%,
-    56%,
-    58%,
-    84%,
     100% {
-        opacity: 0;
+        border-color: transparent;
     }
 
     10%,
-    16% {
-        opacity: 1;
-        transform: translate(calc(var(--space-64) * 2), 0);
-    }
-
-    18%,
     26% {
-        opacity: 1;
-        transform: translate(calc(var(--space-80) * 5 + var(--space-32)), 0);
+        border-color: var(--clr-login-text);
+    }
+}
+
+@keyframes login-wall-caret-line-2 {
+    0%,
+    30%,
+    56%,
+    100% {
+        border-color: transparent;
     }
 
     32%,
-    40% {
-        opacity: 1;
-        transform: translate(
-            calc(var(--space-80) * 2 + var(--space-8)),
-            var(--space-28)
-        );
-    }
-
-    42%,
     54% {
-        opacity: 1;
-        transform: translate(
-            calc(var(--space-80) * 6 + var(--space-8)),
-            var(--space-28)
-        );
+        border-color: var(--clr-login-text);
+    }
+}
+
+@keyframes login-wall-caret-line-3 {
+    0%,
+    58%,
+    84%,
+    100% {
+        border-color: transparent;
     }
 
     60%,
-    68% {
-        opacity: 1;
-        transform: translate(calc(var(--space-64) * 3), var(--space-56));
-    }
-
-    70%,
     82% {
-        opacity: 1;
-        transform: translate(
-            calc(var(--space-80) * 5 + var(--space-56)),
-            var(--space-56)
-        );
+        border-color: var(--clr-login-text);
     }
 }
 
@@ -1018,35 +847,6 @@
     76% {
         opacity: 1;
         transform: scale(1);
-    }
-}
-
-@keyframes login-wall-pr-enter {
-    0% {
-        opacity: 0;
-        transform: translateY(var(--space-24)) scale(0.97);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes login-wall-pr-sheen {
-    0% {
-        opacity: 0;
-        transform: translateX(-18%);
-    }
-
-    20%,
-    80% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(18%);
     }
 }
 
@@ -1118,11 +918,6 @@
         max-width: 18ch;
     }
 
-    .login-wall__automation-stage-head,
-    .login-wall__automation-list {
-        width: 100%;
-    }
-
     .login-wall__title {
         max-width: none;
     }
@@ -1170,15 +965,6 @@
         padding: var(--space-16);
     }
 
-    .login-wall__pr-card {
-        grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .login-wall__pr-button {
-        grid-column: 1 / -1;
-        width: fit-content;
-    }
-
     .login-wall__automation-dialog-actions {
         flex-direction: column-reverse;
         align-items: stretch;
@@ -1190,9 +976,7 @@
     .login-wall__typing-line,
     .login-wall__assign-preview,
     .login-wall__assign-preview::after,
-    .login-wall__value-button::before,
-    .login-wall__pr-card,
-    .login-wall__pr-card::after {
+    .login-wall__value-button::before {
         animation: none;
     }
 
@@ -1203,10 +987,6 @@
     .login-wall__typing-line {
         opacity: 1;
         transform: none;
-    }
-
-    .login-wall__pr-card {
-        opacity: 1;
     }
 }
 

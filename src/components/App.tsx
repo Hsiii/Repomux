@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties, JSX } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowDown,
@@ -55,6 +55,7 @@ export function App(): JSX.Element {
     const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
     const [isAutomationDialogOpen, setIsAutomationDialogOpen] = useState(false);
     const [hasAutomationReminder, setHasAutomationReminder] = useState(false);
+    const loginTopbarControlsRef = useRef<HTMLDivElement>(null);
 
     const {
         connectGitHub,
@@ -174,6 +175,37 @@ export function App(): JSX.Element {
             return next;
         });
     }, [availableRepositories]);
+
+    useEffect(() => {
+        if (!isLanguageMenuOpen && !isThemeMenuOpen) {
+            return undefined;
+        }
+
+        function closeLoginMenusOnOutsideClick(event: PointerEvent) {
+            const { target } = event;
+            const topbarControls = loginTopbarControlsRef.current;
+
+            if (
+                target instanceof Node &&
+                topbarControls !== null &&
+                topbarControls.contains(target)
+            ) {
+                return;
+            }
+
+            setIsLanguageMenuOpen(false);
+            setIsThemeMenuOpen(false);
+        }
+
+        document.addEventListener('pointerdown', closeLoginMenusOnOutsideClick);
+
+        return () => {
+            document.removeEventListener(
+                'pointerdown',
+                closeLoginMenusOnOutsideClick
+            );
+        };
+    }, [isLanguageMenuOpen, isThemeMenuOpen]);
 
     function updateActiveRepositories(nextRepositoryNames: readonly string[]) {
         setStoredActiveRepositories(nextRepositoryNames);
@@ -364,7 +396,10 @@ export function App(): JSX.Element {
                                     Repomux
                                 </span>
                             </div>
-                            <div className='login-wall__topbar-controls'>
+                            <div
+                                className='login-wall__topbar-controls'
+                                ref={loginTopbarControlsRef}
+                            >
                                 <a
                                     className='login-wall__footer-link'
                                     href='https://github.com/Hsiii/LazyHub'
@@ -847,52 +882,10 @@ export function App(): JSX.Element {
 
                                         <div className='login-wall__automation-stage'>
                                             <div className='login-wall__automation-graphic'>
-                                                <div className='login-wall__automation-stage-head'>
-                                                    <span className='login-wall__automation-stage-label'>
-                                                        Automation rule
-                                                    </span>
-                                                    <span className='login-wall__automation-stage-value'>
-                                                        Start a Codex pass when
-                                                        an item becomes
+                                                <div className='login-wall__automation-flow'>
+                                                    <span className='login-wall__automation-badge'>
                                                         codex-ready
                                                     </span>
-                                                    <p className='login-wall__automation-stage-copy'>
-                                                        Repomux keeps the issue,
-                                                        prompt, and result
-                                                        connected so the handoff
-                                                        stays clear.
-                                                    </p>
-                                                </div>
-                                                <div className='login-wall__automation-flow'>
-                                                    <div className='login-wall__automation-issue queue-row'>
-                                                        <span className='queue-row__type'>
-                                                            <CircleDot
-                                                                aria-label='Issue'
-                                                                size={18}
-                                                            />
-                                                        </span>
-                                                        <span className='queue-row__content'>
-                                                            <span className='queue-row__title'>
-                                                                Consider
-                                                                supporting
-                                                                Claude
-                                                            </span>
-                                                            <span className='queue-row__meta'>
-                                                                <span className='queue-row__repo'>
-                                                                    Hsiii/comux
-                                                                </span>
-                                                                <span className='queue-row__number'>
-                                                                    #41
-                                                                </span>
-                                                            </span>
-                                                        </span>
-                                                        <span className='readiness'>
-                                                            <Check
-                                                                aria-label='Codex ready'
-                                                                size={18}
-                                                            />
-                                                        </span>
-                                                    </div>
                                                     <ArrowDown
                                                         aria-hidden='true'
                                                         className='login-wall__automation-arrow'
@@ -932,32 +925,34 @@ export function App(): JSX.Element {
                                             </p>
                                         </div>
                                         <div className='login-wall__result-stage'>
-                                            <div className='login-wall__pr-card queue-row'>
-                                                <span className='queue-row__type login-wall__pr-icon'>
-                                                    <GitPullRequestArrow
-                                                        aria-label='Pull request'
-                                                        size={22}
-                                                    />
-                                                </span>
-                                                <span className='queue-row__content login-wall__pr-copy'>
-                                                    <span className='queue-row__title'>
-                                                        Add user menu pop up
+                                            <div className='queue-list login-wall__result-list'>
+                                                <div className='queue-row login-wall__pr-card'>
+                                                    <span className='queue-row__type'>
+                                                        <GitPullRequestArrow
+                                                            aria-label='Pull request'
+                                                            size={18}
+                                                        />
                                                     </span>
-                                                    <span className='queue-row__meta'>
-                                                        <span className='queue-row__repo'>
-                                                            Hsiii/create-hsi-app
+                                                    <span className='queue-row__content'>
+                                                        <span className='queue-row__title'>
+                                                            Add user menu pop up
                                                         </span>
-                                                        <span className='queue-row__number'>
-                                                            #72
+                                                        <span className='queue-row__meta'>
+                                                            <span className='queue-row__repo'>
+                                                                Hsiii/create-hsi-app
+                                                            </span>
+                                                            <span className='queue-row__number'>
+                                                                #72
+                                                            </span>
                                                         </span>
                                                     </span>
-                                                </span>
-                                                <button
-                                                    className='login-wall__pr-button'
-                                                    type='button'
-                                                >
-                                                    Review
-                                                </button>
+                                                    <span className='readiness'>
+                                                        <Check
+                                                            aria-label='Codex ready'
+                                                            size={18}
+                                                        />
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </article>
