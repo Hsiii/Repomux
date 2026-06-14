@@ -99,11 +99,12 @@ const canvasWidth = 1248;
 const canvasHeight = 2600;
 const snapThreshold = 12;
 const legacyStorageKeys = [
+    'repomux:landing-line-tool:v4',
     'repomux:landing-line-tool:v3',
     'repomux:landing-line-tool:v2',
     'repomux:landing-line-tool:v1',
 ];
-const storageKey = 'repomux:landing-line-tool:v4';
+const storageKey = 'repomux:landing-line-tool:v5';
 
 const defaultDraft: CurveDraft = {
     start: { x: 704, y: 612 },
@@ -235,7 +236,7 @@ const defaultLayout: readonly LayoutItem[] = [
         y: 104,
     },
     {
-        height: 112,
+        height: 84,
         id: 'repo-row',
         label: 'Repository cards',
         width: 536,
@@ -251,7 +252,7 @@ const defaultLayout: readonly LayoutItem[] = [
         y: 528,
     },
     {
-        height: 216,
+        height: 244,
         id: 'queue-card',
         label: 'Work queue',
         width: 552,
@@ -275,7 +276,7 @@ const defaultLayout: readonly LayoutItem[] = [
         y: 1512,
     },
     {
-        height: 308,
+        height: 384,
         id: 'prompt-card',
         label: 'Prompt card',
         width: 480,
@@ -307,7 +308,7 @@ const defaultLayout: readonly LayoutItem[] = [
         y: 2296,
     },
     {
-        height: 96,
+        height: 84,
         id: 'result-card',
         label: 'Returned PR',
         width: 520,
@@ -338,6 +339,24 @@ function cloneRepoCurves(
 
 function cloneLayout(layout: readonly LayoutItem[]): readonly LayoutItem[] {
     return layout.map((item) => ({ ...item }));
+}
+
+function alignLayoutDimensions(
+    layout: readonly LayoutItem[]
+): readonly LayoutItem[] {
+    return layout.map((item) => {
+        const defaultItem = defaultLayout.find(({ id }) => id === item.id);
+
+        if (defaultItem === undefined) {
+            return { ...item };
+        }
+
+        return {
+            ...item,
+            height: defaultItem.height,
+            width: defaultItem.width,
+        };
+    });
 }
 
 function normalizeLayoutItem(item: Readonly<LayoutItem>) {
@@ -667,7 +686,7 @@ export function LandingLineTool(): JSX.Element {
             if ('curve' in parsedDraft) {
                 setDraft({
                     curve: parsedDraft.curve,
-                    layout: parsedDraft.layout,
+                    layout: alignLayoutDimensions(parsedDraft.layout),
                     repoCurves:
                         parsedDraft.repoCurves ??
                         cloneRepoCurves(defaultRepoCurves),
@@ -675,7 +694,7 @@ export function LandingLineTool(): JSX.Element {
             } else {
                 setDraft({
                     curve: parsedDraft,
-                    layout: cloneLayout(defaultLayout),
+                    layout: alignLayoutDimensions(defaultLayout),
                     repoCurves: cloneRepoCurves(defaultRepoCurves),
                 });
             }
@@ -993,10 +1012,12 @@ export function LandingLineTool(): JSX.Element {
                                 Polish landing page benefit section
                             </span>
                         </div>
-                        <div className='prompt-input login-wall__prompt-preview line-tool__prompt-preview'>
-                            {toolPromptLines.map((line) => (
-                                <span key={line}>{line}</span>
-                            ))}
+                        <div className='login-wall__prompt-editor'>
+                            <div className='prompt-input login-wall__prompt-preview line-tool__prompt-preview'>
+                                {toolPromptLines.map((line) => (
+                                    <span key={line}>{line}</span>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 );
@@ -1015,51 +1036,55 @@ export function LandingLineTool(): JSX.Element {
 
             case 'queue-card': {
                 return (
-                    <div className='queue-list line-tool__queue-card'>
-                        {toolQueueItems.map(
-                            ({
-                                icon: Icon,
-                                meta,
-                                number,
-                                status: itemStatus,
-                                title,
-                                type,
-                            }) => (
-                                <div className='queue-row' key={title}>
-                                    <span className='queue-row__type'>
-                                        <Icon
-                                            aria-label={
-                                                type === 'issue'
-                                                    ? 'Issue'
-                                                    : 'Pull request'
-                                            }
-                                            size={18}
-                                        />
-                                    </span>
-                                    <span className='queue-row__content'>
-                                        <span className='queue-row__title'>
-                                            {title}
-                                        </span>
-                                        <span className='queue-row__meta'>
-                                            <span className='queue-row__repo'>
-                                                {meta}
+                    <section className='work-panel login-wall__work-panel-preview line-tool__work-panel-preview'>
+                        <div className='custom-scrollbar work-panel__queue-scroll'>
+                            <div className='queue-list'>
+                                {toolQueueItems.map(
+                                    ({
+                                        icon: Icon,
+                                        meta,
+                                        number,
+                                        status: itemStatus,
+                                        title,
+                                        type,
+                                    }) => (
+                                        <div className='queue-row' key={title}>
+                                            <span className='queue-row__type'>
+                                                <Icon
+                                                    aria-label={
+                                                        type === 'issue'
+                                                            ? 'Issue'
+                                                            : 'Pull request'
+                                                    }
+                                                    size={18}
+                                                />
                                             </span>
-                                            <span className='queue-row__number'>
-                                                #{number}
+                                            <span className='queue-row__content'>
+                                                <span className='queue-row__title'>
+                                                    {title}
+                                                </span>
+                                                <span className='queue-row__meta'>
+                                                    <span className='queue-row__repo'>
+                                                        {meta}
+                                                    </span>
+                                                    <span className='queue-row__number'>
+                                                        #{number}
+                                                    </span>
+                                                </span>
                                             </span>
-                                        </span>
-                                    </span>
-                                    <span className='readiness'>
-                                        {itemStatus === 'Ready' ? (
-                                            <Check size={18} />
-                                        ) : (
-                                            <span className='readiness__empty' />
-                                        )}
-                                    </span>
-                                </div>
-                            )
-                        )}
-                    </div>
+                                            <span className='readiness'>
+                                                {itemStatus === 'Ready' ? (
+                                                    <Check size={18} />
+                                                ) : (
+                                                    <span className='readiness__empty' />
+                                                )}
+                                            </span>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        </div>
+                    </section>
                 );
             }
 

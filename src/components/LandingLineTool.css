@@ -150,7 +150,7 @@
 }
 
 .line-tool__repo-row.login-wall__repo-row {
-    height: 100%;
+    height: auto;
 }
 
 .line-tool__mux-node {
@@ -162,14 +162,23 @@
     background-color: var(--clr-login-bg);
 }
 
-.line-tool__queue-card.queue-list,
-.line-tool__result-list.queue-list {
+.line-tool__work-panel-preview.work-panel.login-wall__work-panel-preview {
+    width: 100%;
     height: 100%;
-    background-color: var(--clr-login-card-solid);
-    overflow: hidden;
+    min-height: 0;
 }
 
-.line-tool__queue-card .queue-row:last-child {
+.line-tool__work-panel-preview .queue-list {
+    width: 100%;
+}
+
+.line-tool__result-list.queue-list {
+    min-height: 100%;
+    background-color: var(--clr-login-card-solid);
+    overflow: visible;
+}
+
+.line-tool__work-panel-preview .queue-row:last-child {
     border-bottom: 0;
 }
 
@@ -199,7 +208,7 @@
 .line-tool__layout-item {
     position: absolute;
     z-index: 1;
-    border: var(--size-border-1) solid transparent;
+    outline: var(--size-border-1) solid transparent;
     border-radius: var(--radius-8);
 }
 
@@ -210,7 +219,7 @@
 
 .line-tool__canvas-frame--layout .line-tool__layout-item:hover,
 .line-tool__layout-item--active {
-    border-color: var(--clr-login-flow-cyan);
+    outline-color: var(--clr-login-flow-cyan);
 }
 
 .line-tool__layout-item--active {
