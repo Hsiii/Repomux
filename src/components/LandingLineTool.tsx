@@ -59,6 +59,7 @@ interface LayoutItem {
     height: number;
     id: LayoutItemId;
     label: string;
+    layer?: number;
     width: number;
     x: number;
     y: number;
@@ -368,6 +369,10 @@ function cloneLayout(layout: readonly LayoutItem[]): readonly LayoutItem[] {
     return layout.map((item) => ({ ...item }));
 }
 
+function getDefaultLayoutLayer(itemId: LayoutItemId): number {
+    return defaultLayout.findIndex(({ id }) => id === itemId) + 1;
+}
+
 function alignLayoutDimensions(
     layout: readonly LayoutItem[]
 ): readonly LayoutItem[] {
@@ -381,9 +386,23 @@ function alignLayoutDimensions(
         return {
             ...item,
             height: defaultItem.height,
+            layer: item.layer ?? getDefaultLayoutLayer(item.id),
             width: defaultItem.width,
         };
     });
+}
+
+function raiseLayoutItem(
+    layout: readonly LayoutItem[],
+    itemId: LayoutItemId
+): readonly LayoutItem[] {
+    const highestLayer = Math.max(
+        ...layout.map((item) => item.layer ?? getDefaultLayoutLayer(item.id))
+    );
+
+    return layout.map((item) =>
+        item.id === itemId ? { ...item, layer: highestLayer + 1 } : item
+    );
 }
 
 function formatPoint(point: Readonly<Point>): string {
@@ -1071,6 +1090,10 @@ export function LandingLineTool(): JSX.Element {
             offsetX: point.x - item.x,
             offsetY: point.y - item.y,
         });
+        setDraft((currentDraft) => ({
+            ...currentDraft,
+            layout: raiseLayoutItem(currentDraft.layout, item.id),
+        }));
         setSelectedNode(undefined);
         setStatus(`Moving ${item.label}`);
     }
@@ -1600,6 +1623,9 @@ export function LandingLineTool(): JSX.Element {
                                     left: item.x,
                                     top: item.y,
                                     width: item.width,
+                                    zIndex:
+                                        item.layer ??
+                                        getDefaultLayoutLayer(item.id),
                                 }}
                                 tabIndex={mode === 'node' ? 0 : -1}
                             >

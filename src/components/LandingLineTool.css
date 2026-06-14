@@ -128,6 +128,7 @@
 }
 
 .line-tool__mockup {
+    z-index: 1;
     color: var(--clr-login-text);
     pointer-events: none;
 }
@@ -265,7 +266,6 @@
 
 .line-tool__layout-item {
     position: absolute;
-    z-index: 1;
     outline: var(--size-border-1) solid transparent;
     border-radius: var(--radius-8);
     user-select: none;
