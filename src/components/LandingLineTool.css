@@ -44,29 +44,23 @@
     background-color: var(--clr-surface-active);
 }
 
-.line-tool__color-input {
+.line-tool__color-swatch {
     width: var(--space-40);
     height: var(--space-40);
     padding: var(--space-4);
     border: var(--size-border-1) solid var(--clr-border);
     border-radius: var(--radius-4);
     display: block;
-    background-color: var(--clr-surface);
 }
 
-.line-tool__color-input:hover,
-.line-tool__color-input:focus-visible {
+.line-tool__color-swatch:hover,
+.line-tool__color-swatch:focus-visible,
+.line-tool__color-swatch--active {
     border-color: var(--clr-border-strong);
-    background-color: var(--clr-surface-active);
 }
 
-.line-tool__color-input::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-.line-tool__color-input::-webkit-color-swatch {
-    border: 0;
-    border-radius: var(--radius-4);
+.line-tool__color-swatch--active {
+    box-shadow: inset 0 0 0 var(--space-4) var(--clr-bg-shell);
 }
 
 .line-tool__status {

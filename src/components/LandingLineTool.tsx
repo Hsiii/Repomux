@@ -6,7 +6,6 @@ import {
     BookMarked,
     Check,
     CircleDot,
-    Copy,
     GitPullRequestArrow,
     MousePointer2,
     PenTool,
@@ -122,6 +121,7 @@ const defaultLineColors: Readonly<Record<CurveTargetId, string>> = {
     'repo-2': '#ff7ab6',
     'repo-3': '#8839ef',
 };
+const lineColorOptions = Object.values(defaultLineColors);
 const repoCardGap = 16;
 const snapThreshold = 12;
 const legacyStorageKeys = [
@@ -386,16 +386,6 @@ function alignLayoutDimensions(
     });
 }
 
-function normalizeLayoutItem(item: Readonly<LayoutItem>) {
-    return {
-        ...item,
-        height: Number((item.height / canvasHeight).toFixed(4)),
-        width: Number((item.width / canvasWidth).toFixed(4)),
-        x: Number((item.x / canvasWidth).toFixed(4)),
-        y: Number((item.y / canvasHeight).toFixed(4)),
-    };
-}
-
 function formatPoint(point: Readonly<Point>): string {
     return `${Math.round(point.x)} ${Math.round(point.y)}`;
 }
@@ -408,53 +398,6 @@ function createPath(draft: Readonly<CurveDraft>): string {
                 `C ${formatPoint(segment.c1)} ${formatPoint(segment.c2)} ${formatPoint(segment.end)}`
         ),
     ].join(' ');
-}
-
-function normalizePoint(point: Readonly<Point>): Point {
-    return {
-        x: Number((point.x / canvasWidth).toFixed(4)),
-        y: Number((point.y / canvasHeight).toFixed(4)),
-    };
-}
-
-function normalizeCurve(curve: Readonly<CurveDraft>) {
-    return {
-        segments: curve.segments.map((segment) => ({
-            c1: normalizePoint(segment.c1),
-            c2: normalizePoint(segment.c2),
-            end: normalizePoint(segment.end),
-        })),
-        start: normalizePoint(curve.start),
-    };
-}
-
-function createExport(draft: Readonly<ToolDraft>): string {
-    return JSON.stringify(
-        {
-            canvas: {
-                height: canvasHeight,
-                width: canvasWidth,
-            },
-            layout: draft.layout,
-            lineColors: draft.lineColors,
-            repoCurves: draft.repoCurves.map((repoCurve) => ({
-                ...repoCurve,
-                path: createPath(repoCurve.curve),
-            })),
-            normalized: {
-                curve: normalizeCurve(draft.curve),
-                layout: draft.layout.map(normalizeLayoutItem),
-                repoCurves: draft.repoCurves.map((repoCurve) => ({
-                    ...repoCurve,
-                    curve: normalizeCurve(repoCurve.curve),
-                })),
-            },
-            path: createPath(draft.curve),
-            points: draft.curve,
-        },
-        undefined,
-        2
-    );
 }
 
 function createInitialDraft(): ToolDraft {
@@ -853,7 +796,6 @@ export function LandingLineTool(): JSX.Element {
     }, []);
 
     const path = useMemo(() => createPath(draft.curve), [draft.curve]);
-    const exportValue = useMemo(() => createExport(draft), [draft]);
     const activeLineColor = draft.lineColors[activeCurveId];
 
     useEffect(() => {
@@ -916,7 +858,7 @@ export function LandingLineTool(): JSX.Element {
 
     function saveDraft() {
         localStorage.setItem(storageKey, JSON.stringify(draft));
-        setStatus('Saved in this browser');
+        setStatus('Saved context');
     }
 
     function resetDraft() {
@@ -925,17 +867,6 @@ export function LandingLineTool(): JSX.Element {
         setSelectedNode(undefined);
         setSnapGuides([]);
         setStatus('Reset to current landing curve and layout');
-    }
-
-    function copyExport() {
-        navigator.clipboard
-            .writeText(exportValue)
-            .then(() => {
-                setStatus('Copied export JSON');
-            })
-            .catch(() => {
-                setStatus('Clipboard access failed');
-            });
     }
 
     function addPoint(event: PointerEvent<SVGSVGElement>) {
@@ -1601,21 +1532,28 @@ export function LandingLineTool(): JSX.Element {
                         className='line-tool__toolbar-group'
                         role='group'
                     >
-                        <input
-                            aria-label='Line color'
-                            className='line-tool__color-input'
-                            onChange={(event) => {
-                                updateActiveLineColor(event.target.value);
-                            }}
-                            title='Line color'
-                            type='color'
-                            value={activeLineColor}
-                        />
+                        {lineColorOptions.map((color) => (
+                            <button
+                                aria-label={`Set line color ${color}`}
+                                className={
+                                    activeLineColor === color
+                                        ? 'line-tool__color-swatch line-tool__color-swatch--active'
+                                        : 'line-tool__color-swatch'
+                                }
+                                key={color}
+                                onClick={() => {
+                                    updateActiveLineColor(color);
+                                }}
+                                style={{ backgroundColor: color }}
+                                title={`Set line color ${color}`}
+                                type='button'
+                            />
+                        ))}
                         <button
-                            aria-label='Save draft'
+                            aria-label='Save context'
                             className='line-tool__button'
                             onClick={saveDraft}
-                            title='Save draft'
+                            title='Save context'
                             type='button'
                         >
                             <Save aria-hidden='true' size={16} />
@@ -1628,15 +1566,6 @@ export function LandingLineTool(): JSX.Element {
                             type='button'
                         >
                             <RotateCcw aria-hidden='true' size={16} />
-                        </button>
-                        <button
-                            aria-label='Copy context for Codex'
-                            className='line-tool__button'
-                            onClick={copyExport}
-                            title='Copy context for Codex'
-                            type='button'
-                        >
-                            <Copy aria-hidden='true' size={16} />
                         </button>
                     </div>
                     <p className='line-tool__status'>{status}</p>
