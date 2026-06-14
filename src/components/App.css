@@ -829,6 +829,166 @@
     background-color: var(--clr-login-card-solid);
 }
 
+@media (min-width: 881px) {
+    .login-wall__benefits {
+        aspect-ratio: 1248 / 2600;
+        display: block;
+        padding-bottom: 0;
+    }
+
+    .login-wall__feature--mux,
+    .login-wall__feature--queue,
+    .login-wall__feature--prompt,
+    .login-wall__feature--result {
+        display: contents;
+    }
+
+    .login-wall__feature--mux > .login-wall__feature-copy,
+    .login-wall__feature--mux > .login-wall__feature-visual,
+    .login-wall__flow-mux-node,
+    .login-wall__feature--queue > .login-wall__app-preview,
+    .login-wall__feature--queue > .login-wall__feature-copy,
+    .login-wall__feature--prompt > .login-wall__feature-copy,
+    .login-wall__prompt-stage,
+    .login-wall__codex-node,
+    .login-wall__bento-cell--automation,
+    .login-wall__feature--result > .login-wall__feature-copy,
+    .login-wall__result-stage {
+        position: absolute;
+        box-sizing: border-box;
+    }
+
+    .login-wall__feature--mux > .login-wall__feature-copy {
+        top: 4%;
+        left: 6.4103%;
+        z-index: 20;
+        width: 31.4103%;
+        height: 6.7692%;
+        padding: 0;
+    }
+
+    .login-wall__feature--mux > .login-wall__feature-visual {
+        top: 5.7692%;
+        left: 50.641%;
+        z-index: 19;
+        width: 42.9487%;
+        height: 3.2308%;
+        padding: 0;
+    }
+
+    .login-wall__repo-flow,
+    .login-wall__repo-row {
+        height: 100%;
+        min-height: 0;
+    }
+
+    .login-wall__flow-mux-node {
+        top: 22.1154%;
+        left: 40.3846%;
+        z-index: 17;
+        width: 13.4615%;
+        height: 6.4615%;
+        min-height: 0;
+        padding: 0;
+        display: grid;
+        place-items: center;
+    }
+
+    .login-wall__flow-mux-node::before {
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        transform: translate(-50%, -50%);
+    }
+
+    .login-wall__feature--queue > .login-wall__app-preview {
+        top: 36.8462%;
+        left: 6.4103%;
+        z-index: 33;
+        width: 44.2308%;
+        height: 9.3846%;
+    }
+
+    .login-wall__feature--queue > .login-wall__feature-copy {
+        top: 38.7692%;
+        left: 55.1282%;
+        z-index: 53;
+        width: 31.4103%;
+        height: 5.5385%;
+        padding: 0;
+    }
+
+    .login-wall__feature--prompt > .login-wall__feature-copy {
+        top: 59.3846%;
+        left: 19.2308%;
+        z-index: 55;
+        width: 31.4103%;
+        height: 6.1538%;
+        padding: 0;
+    }
+
+    .login-wall__prompt-stage {
+        top: 55.0769%;
+        left: 55.1282%;
+        z-index: 49;
+        width: 38.4615%;
+        height: 14.7692%;
+        padding: 0;
+    }
+
+    .login-wall__prompt-card {
+        width: 100%;
+        height: 100%;
+    }
+
+    .login-wall__codex-node {
+        top: 79.8462%;
+        left: 19.5513%;
+        z-index: 66;
+        width: 8.9744%;
+        height: 4.3077%;
+        margin: 0;
+        justify-self: auto;
+    }
+
+    .login-wall__bento-cell--automation {
+        top: 79.6538%;
+        left: 41.9872%;
+        z-index: 67;
+        width: 28.8462%;
+        height: 5.5385%;
+    }
+
+    .login-wall__bento-cell--automation .login-wall__feature-copy {
+        padding: 0;
+    }
+
+    .login-wall__feature--result > .login-wall__feature-copy {
+        top: 90.8462%;
+        left: 9.2949%;
+        z-index: 70;
+        width: 31.4103%;
+        height: 5.8462%;
+        padding: 0;
+    }
+
+    .login-wall__result-stage {
+        top: 92.1538%;
+        left: 47.1154%;
+        z-index: 11;
+        width: 41.6667%;
+        height: 3.2308%;
+        padding: 0;
+    }
+
+    .queue-list.login-wall__result-list,
+    .queue-row.login-wall__pr-card {
+        width: 100%;
+        height: 100%;
+    }
+}
+
 .login-wall__button {
     min-height: var(--size-login-button);
     padding: 0 var(--space-12);
@@ -894,6 +1054,17 @@
 .login-wall__feature--automation .login-wall__feature-copy p {
     max-width: 38ch;
     text-wrap: balance;
+}
+
+@media (min-width: 881px) {
+    .login-wall__feature--queue > .login-wall__feature-copy {
+        width: 31.4103%;
+        gap: var(--space-16);
+    }
+
+    .login-wall__bento-cell--automation .login-wall__feature-copy {
+        max-width: none;
+    }
 }
 
 .login-wall__button.login-wall__topbar-login {

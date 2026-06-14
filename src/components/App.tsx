@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties, JSX } from 'react';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
     ArrowRight,
@@ -45,82 +45,6 @@ const automationSetupPrompt = [
     '',
     'If auth, prompt text, local paths, or repo state are missing or conflicting, stop and report the blocker instead of guessing.',
 ].join('\n');
-
-interface FlowPoint {
-    x: number;
-    y: number;
-}
-
-interface LoginWallFlowGeometry {
-    height: number;
-    purplePath: string;
-    repoDots: readonly FlowPoint[];
-    repoPaths: readonly string[];
-    width: number;
-}
-
-function getRelativeAnchor(
-    rootRect: Readonly<DOMRect>,
-    element: Readonly<Element>,
-    xRatio: number,
-    yRatio: number
-): FlowPoint {
-    const rect = element.getBoundingClientRect();
-
-    return {
-        x: Math.round(rect.left - rootRect.left + rect.width * xRatio),
-        y: Math.round(rect.top - rootRect.top + rect.height * yRatio),
-    };
-}
-
-function createRepoFlowPath(
-    start: Readonly<FlowPoint>,
-    end: Readonly<FlowPoint>
-) {
-    const bend = Math.max(96, Math.round((end.y - start.y) * 0.36));
-    const horizontalDrift = Math.round((end.x - start.x) * 0.24);
-
-    return [
-        `M ${start.x} ${start.y}`,
-        `C ${start.x} ${start.y + bend}`,
-        `${end.x - horizontalDrift} ${end.y - bend}`,
-        `${end.x} ${end.y}`,
-    ].join(' ');
-}
-
-function createPurpleFlowPath(
-    muxCenter: Readonly<FlowPoint>,
-    queueTopCenter: Readonly<FlowPoint>,
-    queueBottomCenter: Readonly<FlowPoint>,
-    promptTopCenter: Readonly<FlowPoint>,
-    codexCenter: Readonly<FlowPoint>,
-    resultBottomCenter: Readonly<FlowPoint>,
-    width: number
-) {
-    const offscreenRight = width + 160;
-
-    return [
-        `M ${muxCenter.x} ${muxCenter.y}`,
-        `C ${muxCenter.x - 64} ${muxCenter.y + 168}`,
-        `${queueTopCenter.x - 220} ${queueTopCenter.y - 152}`,
-        `${queueTopCenter.x} ${queueTopCenter.y}`,
-        `C ${queueTopCenter.x + 24} ${queueTopCenter.y + 176}`,
-        `${queueBottomCenter.x + 188} ${queueBottomCenter.y - 120}`,
-        `${queueBottomCenter.x} ${queueBottomCenter.y}`,
-        `C ${queueBottomCenter.x + 172} ${queueBottomCenter.y + 120}`,
-        `${promptTopCenter.x - 160} ${promptTopCenter.y - 108}`,
-        `${promptTopCenter.x} ${promptTopCenter.y}`,
-        `C ${promptTopCenter.x + 96} ${promptTopCenter.y + 152}`,
-        `${codexCenter.x + 192} ${codexCenter.y - 136}`,
-        `${codexCenter.x} ${codexCenter.y}`,
-        `C ${codexCenter.x + 340} ${codexCenter.y + 64}`,
-        `${offscreenRight} ${codexCenter.y + 240}`,
-        `${offscreenRight} ${resultBottomCenter.y - 168}`,
-        `C ${offscreenRight} ${resultBottomCenter.y + 104}`,
-        `${resultBottomCenter.x + 120} ${resultBottomCenter.y + 128}`,
-        `${resultBottomCenter.x} ${resultBottomCenter.y}`,
-    ].join(' ');
-}
 
 const loginWallQueueItems = [
     {
@@ -173,6 +97,23 @@ const loginWallRepositoryNodes = [
     { name: 'comux', owner: 'Hsiii' },
 ] as const;
 
+const loginWallFlowCanvas = {
+    height: 2600,
+    purplePath:
+        'M 575 726 C 563 898 235 941 301 1077 C 311 1265 955 1388 914 1578 C 1086 1698 715 1434 913 1579 C 921 1829 81 2187 -51 2273 C -284 2363 -59 2331 -30 2429 C 27 2608 -140 2783 -4 2627 C 219 2617 727 2631 829 2424',
+    repoDots: [
+        { x: 700, y: 227 },
+        { x: 880, y: 229 },
+        { x: 1060, y: 227 },
+    ],
+    repoPaths: [
+        'M 700 227 C 700 371 577 438 575 566',
+        'M 880 229 C 884 356 562 448 575 566',
+        'M 1060 227 C 1060 371 576 449 575 562',
+    ],
+    width: 1248,
+} as const;
+
 export function App(): JSX.Element {
     const [repositorySearchQuery, setRepositorySearchQuery] = useState('');
     const [activeRepositoryNames, setActiveRepositoryNames] = useState<
@@ -194,9 +135,6 @@ export function App(): JSX.Element {
     const [isAutomationPromptCopied, setIsAutomationPromptCopied] =
         useState(false);
     const [isAutomationDialogOpen, setIsAutomationDialogOpen] = useState(false);
-    const [loginFlowGeometry, setLoginFlowGeometry] = useState<
-        LoginWallFlowGeometry | undefined
-    >();
     const loginBenefitsRef = useRef<HTMLDivElement>(null);
     const loginRepoRefs = useRef<Array<HTMLDivElement | undefined>>([]);
     const loginMuxNodeRef = useRef<HTMLDivElement>(null);
@@ -355,118 +293,6 @@ export function App(): JSX.Element {
             );
         };
     }, [isLanguageMenuOpen, isThemeMenuOpen]);
-
-    useLayoutEffect(() => {
-        const root = loginBenefitsRef.current;
-
-        if (!root) {
-            return undefined;
-        }
-
-        let frame = 0;
-
-        function updateLoginFlowGeometry() {
-            globalThis.cancelAnimationFrame(frame);
-
-            frame = globalThis.requestAnimationFrame(() => {
-                const rootElement = loginBenefitsRef.current;
-                const muxLogo = loginMuxNodeRef.current?.querySelector('img');
-                const queuePreview = loginQueuePreviewRef.current;
-                const promptCard = loginPromptCardRef.current;
-                const codexNode = loginCodexNodeRef.current;
-                const resultCard = loginResultCardRef.current;
-                const repoCards = loginRepoRefs.current.filter(
-                    (card): card is HTMLDivElement => card !== undefined
-                );
-
-                if (
-                    !rootElement ||
-                    !muxLogo ||
-                    !queuePreview ||
-                    !promptCard ||
-                    !codexNode ||
-                    !resultCard ||
-                    repoCards.length !== loginWallRepositoryNodes.length
-                ) {
-                    setLoginFlowGeometry(undefined);
-                    return;
-                }
-
-                const rootRect = rootElement.getBoundingClientRect();
-                const width = Math.round(rootRect.width);
-                const height = Math.round(rootElement.scrollHeight);
-                const muxCenter = getRelativeAnchor(
-                    rootRect,
-                    muxLogo,
-                    0.5,
-                    0.5
-                );
-                const queueTopCenter = getRelativeAnchor(
-                    rootRect,
-                    queuePreview,
-                    0.5,
-                    0
-                );
-                const queueBottomCenter = getRelativeAnchor(
-                    rootRect,
-                    queuePreview,
-                    0.5,
-                    1
-                );
-                const promptTopCenter = getRelativeAnchor(
-                    rootRect,
-                    promptCard,
-                    0.5,
-                    0
-                );
-                const codexCenter = getRelativeAnchor(
-                    rootRect,
-                    codexNode,
-                    0.5,
-                    0.5
-                );
-                const resultBottomCenter = getRelativeAnchor(
-                    rootRect,
-                    resultCard,
-                    0.5,
-                    1
-                );
-                const repoDots = repoCards.map((card) =>
-                    getRelativeAnchor(rootRect, card, 0.5, 1)
-                );
-
-                setLoginFlowGeometry({
-                    height,
-                    purplePath: createPurpleFlowPath(
-                        muxCenter,
-                        queueTopCenter,
-                        queueBottomCenter,
-                        promptTopCenter,
-                        codexCenter,
-                        resultBottomCenter,
-                        width
-                    ),
-                    repoDots,
-                    repoPaths: repoDots.map((dot) =>
-                        createRepoFlowPath(dot, muxCenter)
-                    ),
-                    width,
-                });
-            });
-        }
-
-        updateLoginFlowGeometry();
-        globalThis.addEventListener('resize', updateLoginFlowGeometry);
-
-        const resizeObserver = new ResizeObserver(updateLoginFlowGeometry);
-        resizeObserver.observe(root);
-
-        return () => {
-            globalThis.cancelAnimationFrame(frame);
-            globalThis.removeEventListener('resize', updateLoginFlowGeometry);
-            resizeObserver.disconnect();
-        };
-    }, []);
 
     function updateActiveRepositories(nextRepositoryNames: readonly string[]) {
         setStoredActiveRepositories(nextRepositoryNames);
@@ -814,44 +640,41 @@ export function App(): JSX.Element {
                                     className='login-wall__benefits'
                                     ref={loginBenefitsRef}
                                 >
-                                    {loginFlowGeometry ===
-                                    undefined ? undefined : (
-                                        <svg
-                                            aria-hidden='true'
-                                            className='login-wall__flow-lines'
-                                            height={loginFlowGeometry.height}
-                                            preserveAspectRatio='none'
-                                            viewBox={`0 0 ${loginFlowGeometry.width} ${loginFlowGeometry.height}`}
-                                            width={loginFlowGeometry.width}
-                                        >
-                                            {loginFlowGeometry.repoPaths.map(
-                                                (path, index) => (
-                                                    <path
-                                                        className={`login-wall__flow-line login-wall__flow-line--repo login-wall__flow-line--repo-${index + 1}`}
-                                                        d={path}
-                                                        key={path}
-                                                        pathLength='1'
-                                                    />
-                                                )
-                                            )}
-                                            <path
-                                                className='login-wall__flow-line login-wall__flow-line--purple'
-                                                d={loginFlowGeometry.purplePath}
-                                                pathLength='1'
-                                            />
-                                            {loginFlowGeometry.repoDots.map(
-                                                ({ x, y }, index) => (
-                                                    <circle
-                                                        className='login-wall__flow-dot'
-                                                        cx={x}
-                                                        cy={y}
-                                                        key={`${x}-${y}-${index}`}
-                                                        r='5'
-                                                    />
-                                                )
-                                            )}
-                                        </svg>
-                                    )}
+                                    <svg
+                                        aria-hidden='true'
+                                        className='login-wall__flow-lines'
+                                        height={loginWallFlowCanvas.height}
+                                        preserveAspectRatio='none'
+                                        viewBox={`0 0 ${loginWallFlowCanvas.width} ${loginWallFlowCanvas.height}`}
+                                        width={loginWallFlowCanvas.width}
+                                    >
+                                        {loginWallFlowCanvas.repoPaths.map(
+                                            (path, index) => (
+                                                <path
+                                                    className={`login-wall__flow-line login-wall__flow-line--repo login-wall__flow-line--repo-${index + 1}`}
+                                                    d={path}
+                                                    key={path}
+                                                    pathLength='1'
+                                                />
+                                            )
+                                        )}
+                                        <path
+                                            className='login-wall__flow-line login-wall__flow-line--purple'
+                                            d={loginWallFlowCanvas.purplePath}
+                                            pathLength='1'
+                                        />
+                                        {loginWallFlowCanvas.repoDots.map(
+                                            ({ x, y }, index) => (
+                                                <circle
+                                                    className='login-wall__flow-dot'
+                                                    cx={x}
+                                                    cy={y}
+                                                    key={`${x}-${y}-${index}`}
+                                                    r='5'
+                                                />
+                                            )
+                                        )}
+                                    </svg>
                                     <article className='login-wall__feature login-wall__feature--mux'>
                                         <div className='login-wall__feature-copy'>
                                             <h2>
