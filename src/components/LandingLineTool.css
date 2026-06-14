@@ -268,11 +268,11 @@
     z-index: 1;
     outline: var(--size-border-1) solid transparent;
     border-radius: var(--radius-8);
+    user-select: none;
 }
 
 .line-tool__canvas-frame--node .line-tool__layout-item {
     cursor: grab;
-    pointer-events: auto;
 }
 
 .line-tool__canvas-frame--node .line-tool__layout-item:hover,
@@ -296,6 +296,30 @@
     font: var(--font-label);
     opacity: 0;
     pointer-events: none;
+}
+
+.line-tool__layout-drag-hit {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: block;
+    border-radius: inherit;
+    cursor: grab;
+    pointer-events: none;
+    touch-action: none;
+}
+
+.line-tool__canvas-frame--node .line-tool__layout-drag-hit {
+    pointer-events: auto;
+}
+
+.line-tool__layout-item--active .line-tool__layout-drag-hit {
+    cursor: grabbing;
+}
+
+.line-tool__layout-item * {
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 .line-tool__canvas-frame--node

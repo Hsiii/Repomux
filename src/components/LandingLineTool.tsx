@@ -1060,6 +1060,8 @@ export function LandingLineTool(): JSX.Element {
             return;
         }
 
+        event.preventDefault();
+        event.stopPropagation();
         event.currentTarget.setPointerCapture(event.pointerId);
         const point = getFramePoint(frame, event);
 
@@ -1073,7 +1075,7 @@ export function LandingLineTool(): JSX.Element {
         setStatus(`Moving ${item.label}`);
     }
 
-    function updateLayoutDrag(event: PointerEvent<HTMLDivElement>) {
+    function updateLayoutDrag(event: PointerEvent<HTMLElement>) {
         const frame = frameRef.current;
 
         if (frame === null || layoutDragTarget === undefined) {
@@ -1592,9 +1594,6 @@ export function LandingLineTool(): JSX.Element {
                                         : 'line-tool__layout-item'
                                 }
                                 key={item.id}
-                                onPointerDown={(event) => {
-                                    startLayoutDrag(item, event);
-                                }}
                                 role='button'
                                 style={{
                                     height: item.height,
@@ -1608,6 +1607,16 @@ export function LandingLineTool(): JSX.Element {
                                     {item.label}
                                 </span>
                                 {renderLayoutItemContent(item)}
+                                <span
+                                    aria-hidden='true'
+                                    className='line-tool__layout-drag-hit'
+                                    onLostPointerCapture={finishLayoutDrag}
+                                    onPointerDown={(event) => {
+                                        startLayoutDrag(item, event);
+                                    }}
+                                    onPointerMove={updateLayoutDrag}
+                                    onPointerUp={finishLayoutDrag}
+                                />
                             </div>
                         ))}
                     </div>
