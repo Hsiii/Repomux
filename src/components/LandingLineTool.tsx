@@ -1,6 +1,6 @@
 'use client';
 
-import type { JSX, PointerEvent } from 'react';
+import type { CSSProperties, JSX, PointerEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
     BookMarked,
@@ -76,12 +76,14 @@ interface SnapRect {
 interface ToolDraft {
     curve: CurveDraft;
     layout: readonly LayoutItem[];
+    lineColors: Readonly<Record<CurveTargetId, string>>;
     repoCurves: readonly RepoCurve[];
 }
 
 interface StoredToolDraft {
     curve: CurveDraft;
     layout: readonly LayoutItem[];
+    lineColors?: Readonly<Record<CurveTargetId, string>>;
     repoCurves?: readonly RepoCurve[];
 }
 
@@ -89,6 +91,12 @@ interface DragTarget {
     curveId: CurveTargetId;
     index: number;
     kind: 'c1' | 'c2' | 'end' | 'start';
+}
+
+interface SelectedNode {
+    curveId: CurveTargetId;
+    index: number;
+    kind: 'end' | 'start';
 }
 
 interface LayoutDragTarget {
@@ -109,15 +117,22 @@ interface PointSnapResult {
 
 const canvasWidth = 1248;
 const canvasHeight = 2600;
+const defaultLineColors: Readonly<Record<CurveTargetId, string>> = {
+    'main': '#a78bfa',
+    'repo-1': '#04a5e5',
+    'repo-2': '#ff7ab6',
+    'repo-3': '#8839ef',
+};
 const repoCardGap = 16;
 const snapThreshold = 12;
 const legacyStorageKeys = [
+    'repomux:landing-line-tool:v5',
     'repomux:landing-line-tool:v4',
     'repomux:landing-line-tool:v3',
     'repomux:landing-line-tool:v2',
     'repomux:landing-line-tool:v1',
 ];
-const storageKey = 'repomux:landing-line-tool:v5';
+const storageKey = 'repomux:landing-line-tool:v6';
 
 const defaultDraft: CurveDraft = {
     start: { x: 704, y: 612 },
@@ -422,6 +437,7 @@ function createExport(draft: Readonly<ToolDraft>): string {
                 width: canvasWidth,
             },
             layout: draft.layout,
+            lineColors: draft.lineColors,
             repoCurves: draft.repoCurves.map((repoCurve) => ({
                 ...repoCurve,
                 path: createPath(repoCurve.curve),
@@ -446,6 +462,7 @@ function createInitialDraft(): ToolDraft {
     return {
         curve: cloneDraft(defaultDraft),
         layout: cloneLayout(defaultLayout),
+        lineColors: { ...defaultLineColors },
         repoCurves: cloneRepoCurves(defaultRepoCurves),
     };
 }
@@ -567,6 +584,32 @@ function updateCurveWithDrag(
     } else {
         segment[target.kind] = { ...nextPoint };
     }
+
+    return nextCurve;
+}
+
+function deleteNodeFromCurve(
+    curve: Readonly<CurveDraft>,
+    target: Readonly<SelectedNode>
+): CurveDraft {
+    const nextCurve = cloneDraft(curve);
+
+    if (target.kind === 'start') {
+        const firstSegment = nextCurve.segments.at(0);
+
+        if (firstSegment === undefined) {
+            return nextCurve;
+        }
+
+        nextCurve.start = { ...firstSegment.end };
+        nextCurve.segments = nextCurve.segments.slice(1);
+
+        return nextCurve;
+    }
+
+    nextCurve.segments = nextCurve.segments.filter(
+        (_segment, index) => index !== target.index
+    );
 
     return nextCurve;
 }
@@ -758,9 +801,13 @@ function snapLayoutItem(
 export function LandingLineTool(): JSX.Element {
     const [draft, setDraft] = useState<ToolDraft>(createInitialDraft);
     const [mode, setMode] = useState<'layout' | 'node' | 'pen'>('node');
+    const [activeCurveId, setActiveCurveId] = useState<CurveTargetId>('main');
     const [dragTarget, setDragTarget] = useState<DragTarget | undefined>();
     const [layoutDragTarget, setLayoutDragTarget] = useState<
         LayoutDragTarget | undefined
+    >();
+    const [selectedNode, setSelectedNode] = useState<
+        SelectedNode | undefined
     >();
     const [snapGuides, setSnapGuides] = useState<readonly SnapGuide[]>([]);
     const [status, setStatus] = useState('Unsaved');
@@ -783,6 +830,10 @@ export function LandingLineTool(): JSX.Element {
                 setDraft({
                     curve: parsedDraft.curve,
                     layout: alignLayoutDimensions(parsedDraft.layout),
+                    lineColors: {
+                        ...defaultLineColors,
+                        ...parsedDraft.lineColors,
+                    },
                     repoCurves:
                         parsedDraft.repoCurves ??
                         cloneRepoCurves(defaultRepoCurves),
@@ -791,6 +842,7 @@ export function LandingLineTool(): JSX.Element {
                 setDraft({
                     curve: parsedDraft,
                     layout: alignLayoutDimensions(defaultLayout),
+                    lineColors: { ...defaultLineColors },
                     repoCurves: cloneRepoCurves(defaultRepoCurves),
                 });
             }
@@ -803,6 +855,65 @@ export function LandingLineTool(): JSX.Element {
 
     const path = useMemo(() => createPath(draft.curve), [draft.curve]);
     const exportValue = useMemo(() => createExport(draft), [draft]);
+    const activeLineColor = draft.lineColors[activeCurveId];
+
+    useEffect(() => {
+        function deleteSelectedNode(event: KeyboardEvent) {
+            if (
+                selectedNode === undefined ||
+                (event.key !== 'Backspace' && event.key !== 'Delete')
+            ) {
+                return;
+            }
+
+            const { target } = event;
+
+            if (
+                target instanceof HTMLInputElement ||
+                target instanceof HTMLTextAreaElement ||
+                target instanceof HTMLSelectElement
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+            setDraft((currentDraft) => {
+                if (selectedNode.curveId === 'main') {
+                    return {
+                        ...currentDraft,
+                        curve: deleteNodeFromCurve(
+                            currentDraft.curve,
+                            selectedNode
+                        ),
+                    };
+                }
+
+                return {
+                    ...currentDraft,
+                    repoCurves: currentDraft.repoCurves.map((repoCurve) =>
+                        repoCurve.id === selectedNode.curveId
+                            ? {
+                                  ...repoCurve,
+                                  curve: deleteNodeFromCurve(
+                                      repoCurve.curve,
+                                      selectedNode
+                                  ),
+                              }
+                            : repoCurve
+                    ),
+                };
+            });
+            setSelectedNode(undefined);
+            setSnapGuides([]);
+            setStatus('Deleted node');
+        }
+
+        globalThis.addEventListener('keydown', deleteSelectedNode);
+
+        return () => {
+            globalThis.removeEventListener('keydown', deleteSelectedNode);
+        };
+    }, [selectedNode]);
 
     function saveDraft() {
         localStorage.setItem(storageKey, JSON.stringify(draft));
@@ -811,6 +922,8 @@ export function LandingLineTool(): JSX.Element {
 
     function resetDraft() {
         setDraft(createInitialDraft());
+        setActiveCurveId('main');
+        setSelectedNode(undefined);
         setSnapGuides([]);
         setStatus('Reset to current landing curve and layout');
     }
@@ -857,8 +970,60 @@ export function LandingLineTool(): JSX.Element {
     function startDrag(target: DragTarget) {
         setDragTarget(target);
         setLayoutDragTarget(undefined);
+        setActiveCurveId(target.curveId);
+        setSelectedNode(
+            target.kind === 'start' || target.kind === 'end'
+                ? {
+                      curveId: target.curveId,
+                      index: target.index,
+                      kind: target.kind,
+                  }
+                : undefined
+        );
         setSnapGuides([]);
         setMode('node');
+    }
+
+    function updateActiveLineColor(color: string) {
+        setDraft((currentDraft) => ({
+            ...currentDraft,
+            lineColors: {
+                ...currentDraft.lineColors,
+                [activeCurveId]: color,
+            },
+        }));
+        setStatus('Changed line color');
+    }
+
+    function getLineStyle(curveId: CurveTargetId): CSSProperties {
+        const color = draft.lineColors[curveId];
+
+        return {
+            color,
+            stroke: color,
+        };
+    }
+
+    function getNodeClassName(
+        curveId: CurveTargetId,
+        kind: SelectedNode['kind'],
+        index: number
+    ) {
+        const isSelected =
+            selectedNode?.curveId === curveId &&
+            selectedNode.kind === kind &&
+            selectedNode.index === index;
+        const classNames = ['line-tool__node'];
+
+        if (kind === 'start') {
+            classNames.push('line-tool__node--start');
+        }
+
+        if (isSelected) {
+            classNames.push('line-tool__node--selected');
+        }
+
+        return classNames.join(' ');
     }
 
     function updateDrag(event: PointerEvent<SVGSVGElement>) {
@@ -941,6 +1106,7 @@ export function LandingLineTool(): JSX.Element {
             offsetX: point.x - item.x,
             offsetY: point.y - item.y,
         });
+        setSelectedNode(undefined);
         setStatus(`Moving ${item.label}`);
     }
 
@@ -1041,7 +1207,11 @@ export function LandingLineTool(): JSX.Element {
                                 r='8'
                             />
                             <circle
-                                className='line-tool__node'
+                                className={getNodeClassName(
+                                    curveId,
+                                    'end',
+                                    index
+                                )}
                                 cx={segment.end.x}
                                 cy={segment.end.y}
                                 onPointerDown={(event) => {
@@ -1054,7 +1224,7 @@ export function LandingLineTool(): JSX.Element {
                     );
                 })}
                 <circle
-                    className='line-tool__node line-tool__node--start'
+                    className={getNodeClassName(curveId, 'start', 0)}
                     cx={curve.start.x}
                     cy={curve.start.y}
                     onPointerDown={(event) => {
@@ -1332,6 +1502,16 @@ export function LandingLineTool(): JSX.Element {
                         className='line-tool__toolbar-group'
                         role='group'
                     >
+                        <input
+                            aria-label='Line color'
+                            className='line-tool__color-input'
+                            onChange={(event) => {
+                                updateActiveLineColor(event.target.value);
+                            }}
+                            title='Line color'
+                            type='color'
+                            value={activeLineColor}
+                        />
                         <button
                             aria-label='Save draft'
                             className='line-tool__button'
@@ -1448,10 +1628,19 @@ export function LandingLineTool(): JSX.Element {
                                 className={`line-tool__repo-curve line-tool__repo-curve--${repoCurve.id}`}
                                 d={createPath(repoCurve.curve)}
                                 key={repoCurve.id}
+                                style={getLineStyle(repoCurve.id)}
                             />
                         ))}
-                        <path className='line-tool__curve-shadow' d={path} />
-                        <path className='line-tool__curve' d={path} />
+                        <path
+                            className='line-tool__curve-shadow'
+                            d={path}
+                            style={getLineStyle('main')}
+                        />
+                        <path
+                            className='line-tool__curve'
+                            d={path}
+                            style={getLineStyle('main')}
+                        />
 
                         {draft.repoCurves.map((repoCurve) => (
                             <g key={`${repoCurve.id}-controls`}>

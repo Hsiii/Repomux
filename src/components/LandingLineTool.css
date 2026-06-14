@@ -44,6 +44,31 @@
     background-color: var(--clr-surface-active);
 }
 
+.line-tool__color-input {
+    width: var(--space-40);
+    height: var(--space-40);
+    padding: var(--space-4);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-4);
+    display: block;
+    background-color: var(--clr-surface);
+}
+
+.line-tool__color-input:hover,
+.line-tool__color-input:focus-visible {
+    border-color: var(--clr-border-strong);
+    background-color: var(--clr-surface-active);
+}
+
+.line-tool__color-input::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.line-tool__color-input::-webkit-color-swatch {
+    border: 0;
+    border-radius: var(--radius-4);
+}
+
 .line-tool__status {
     max-width: 168px;
     overflow: hidden;
@@ -335,6 +360,11 @@
 
 .line-tool__node--start {
     fill: var(--clr-login-flow-pink);
+}
+
+.line-tool__node--selected {
+    stroke: var(--clr-login-flow-cyan);
+    stroke-width: 5;
 }
 
 @media (max-width: 880px) {
