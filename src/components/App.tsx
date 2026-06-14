@@ -998,10 +998,7 @@ export function App(): JSX.Element {
                                         </article>
                                         <div className='login-wall__feature-copy'>
                                             <h2>One queue for active work.</h2>
-                                            <p>
-                                                See issues and PRs from active
-                                                repos in one queue.
-                                            </p>
+                                            <p>Check work items at a glance.</p>
                                         </div>
                                     </article>
 
