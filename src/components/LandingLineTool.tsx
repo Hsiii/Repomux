@@ -10,6 +10,7 @@ import {
     Download,
     GitPullRequestArrow,
     MousePointer2,
+    Move,
     PenTool,
     RotateCcw,
     Save,
@@ -31,14 +32,54 @@ interface CurveDraft {
     start: Point;
 }
 
+type LayoutItemId =
+    | 'automation-copy'
+    | 'codex-node'
+    | 'mux-copy'
+    | 'mux-node'
+    | 'prompt-card'
+    | 'prompt-copy'
+    | 'queue-card'
+    | 'queue-copy'
+    | 'repo-row'
+    | 'result-card'
+    | 'result-copy';
+
+interface LayoutItem {
+    height: number;
+    id: LayoutItemId;
+    label: string;
+    width: number;
+    x: number;
+    y: number;
+}
+
+interface ToolDraft {
+    curve: CurveDraft;
+    layout: readonly LayoutItem[];
+}
+
 interface DragTarget {
     index: number;
     kind: 'c1' | 'c2' | 'end' | 'start';
 }
 
+interface LayoutDragTarget {
+    id: LayoutItemId;
+    offsetX: number;
+    offsetY: number;
+}
+
+interface SnapGuide {
+    axis: 'x' | 'y';
+    value: number;
+}
+
 const canvasWidth = 1248;
 const canvasHeight = 2600;
-const storageKey = 'repomux:landing-line-tool:v1';
+const snapThreshold = 12;
+const legacyStorageKey = 'repomux:landing-line-tool:v1';
+const storageKey = 'repomux:landing-line-tool:v2';
 
 const defaultDraft: CurveDraft = {
     start: { x: 704, y: 612 },
@@ -115,6 +156,97 @@ const toolPromptLines = [
     'Remove decorative clutter and keep the review path obvious.',
 ] as const;
 
+const defaultLayout: readonly LayoutItem[] = [
+    {
+        height: 176,
+        id: 'mux-copy',
+        label: 'Workspace copy',
+        width: 392,
+        x: 80,
+        y: 104,
+    },
+    {
+        height: 112,
+        id: 'repo-row',
+        label: 'Repository cards',
+        width: 536,
+        x: 632,
+        y: 104,
+    },
+    {
+        height: 168,
+        id: 'mux-node',
+        label: 'Repomux node',
+        width: 168,
+        x: 620,
+        y: 528,
+    },
+    {
+        height: 216,
+        id: 'queue-card',
+        label: 'Work queue',
+        width: 552,
+        x: 80,
+        y: 972,
+    },
+    {
+        height: 144,
+        id: 'queue-copy',
+        label: 'Queue copy',
+        width: 392,
+        x: 696,
+        y: 1008,
+    },
+    {
+        height: 160,
+        id: 'prompt-copy',
+        label: 'Prompt copy',
+        width: 392,
+        x: 80,
+        y: 1512,
+    },
+    {
+        height: 308,
+        id: 'prompt-card',
+        label: 'Prompt card',
+        width: 480,
+        x: 688,
+        y: 1512,
+    },
+    {
+        height: 112,
+        id: 'codex-node',
+        label: 'Codex node',
+        width: 112,
+        x: 340,
+        y: 1944,
+    },
+    {
+        height: 144,
+        id: 'automation-copy',
+        label: 'Automation copy',
+        width: 360,
+        x: 704,
+        y: 1932,
+    },
+    {
+        height: 152,
+        id: 'result-copy',
+        label: 'Result copy',
+        width: 392,
+        x: 80,
+        y: 2296,
+    },
+    {
+        height: 96,
+        id: 'result-card',
+        label: 'Returned PR',
+        width: 520,
+        x: 588,
+        y: 2396,
+    },
+];
+
 function cloneDraft(draft: Readonly<CurveDraft>): CurveDraft {
     return {
         segments: draft.segments.map((segment) => ({
@@ -123,6 +255,20 @@ function cloneDraft(draft: Readonly<CurveDraft>): CurveDraft {
             end: { ...segment.end },
         })),
         start: { ...draft.start },
+    };
+}
+
+function cloneLayout(layout: readonly LayoutItem[]): readonly LayoutItem[] {
+    return layout.map((item) => ({ ...item }));
+}
+
+function normalizeLayoutItem(item: Readonly<LayoutItem>) {
+    return {
+        ...item,
+        height: Number((item.height / canvasHeight).toFixed(4)),
+        width: Number((item.width / canvasWidth).toFixed(4)),
+        x: Number((item.x / canvasWidth).toFixed(4)),
+        y: Number((item.y / canvasHeight).toFixed(4)),
     };
 }
 
@@ -147,27 +293,38 @@ function normalizePoint(point: Readonly<Point>): Point {
     };
 }
 
-function createExport(draft: Readonly<CurveDraft>): string {
+function createExport(draft: Readonly<ToolDraft>): string {
     return JSON.stringify(
         {
             canvas: {
                 height: canvasHeight,
                 width: canvasWidth,
             },
+            layout: draft.layout,
             normalized: {
-                segments: draft.segments.map((segment) => ({
-                    c1: normalizePoint(segment.c1),
-                    c2: normalizePoint(segment.c2),
-                    end: normalizePoint(segment.end),
-                })),
-                start: normalizePoint(draft.start),
+                curve: {
+                    segments: draft.curve.segments.map((segment) => ({
+                        c1: normalizePoint(segment.c1),
+                        c2: normalizePoint(segment.c2),
+                        end: normalizePoint(segment.end),
+                    })),
+                    start: normalizePoint(draft.curve.start),
+                },
+                layout: draft.layout.map(normalizeLayoutItem),
             },
-            path: createPath(draft),
-            points: draft,
+            path: createPath(draft.curve),
+            points: draft.curve,
         },
         undefined,
         2
     );
+}
+
+function createInitialDraft(): ToolDraft {
+    return {
+        curve: cloneDraft(defaultDraft),
+        layout: cloneLayout(defaultLayout),
+    };
 }
 
 function getPreviousAnchor(
@@ -219,29 +376,152 @@ function createSegment(start: Readonly<Point>, end: Readonly<Point>) {
     };
 }
 
+function getAnchors(item: Readonly<LayoutItem>) {
+    return {
+        bottom: item.y + item.height,
+        centerX: item.x + item.width / 2,
+        centerY: item.y + item.height / 2,
+        left: item.x,
+        right: item.x + item.width,
+        top: item.y,
+    };
+}
+
+function getFramePoint(
+    frame: Readonly<HTMLDivElement>,
+    event: Readonly<PointerEvent<HTMLElement>>
+): Point {
+    const rect = frame.getBoundingClientRect();
+
+    return {
+        x: ((event.clientX - rect.left) / rect.width) * canvasWidth,
+        y: ((event.clientY - rect.top) / rect.height) * canvasHeight,
+    };
+}
+
+function snapLayoutItem(
+    item: Readonly<LayoutItem>,
+    layout: readonly LayoutItem[]
+) {
+    let xGuide: SnapGuide | undefined;
+    let yGuide: SnapGuide | undefined;
+    const anchors = getAnchors(item);
+    let nextX = item.x;
+    let nextY = item.y;
+    let bestXDistance = snapThreshold + 1;
+    let bestYDistance = snapThreshold + 1;
+
+    for (const candidate of layout) {
+        if (candidate.id === item.id) {
+            continue;
+        }
+
+        const candidateAnchors = getAnchors(candidate);
+        const xPairs = [
+            [anchors.left, candidateAnchors.left],
+            [anchors.left, candidateAnchors.centerX],
+            [anchors.left, candidateAnchors.right],
+            [anchors.centerX, candidateAnchors.left],
+            [anchors.centerX, candidateAnchors.centerX],
+            [anchors.centerX, candidateAnchors.right],
+            [anchors.right, candidateAnchors.left],
+            [anchors.right, candidateAnchors.centerX],
+            [anchors.right, candidateAnchors.right],
+        ] as const;
+        const yPairs = [
+            [anchors.top, candidateAnchors.top],
+            [anchors.top, candidateAnchors.centerY],
+            [anchors.top, candidateAnchors.bottom],
+            [anchors.centerY, candidateAnchors.top],
+            [anchors.centerY, candidateAnchors.centerY],
+            [anchors.centerY, candidateAnchors.bottom],
+            [anchors.bottom, candidateAnchors.top],
+            [anchors.bottom, candidateAnchors.centerY],
+            [anchors.bottom, candidateAnchors.bottom],
+        ] as const;
+
+        for (const [source, target] of xPairs) {
+            const distance = Math.abs(source - target);
+
+            if (distance <= snapThreshold && distance < bestXDistance) {
+                nextX += target - source;
+                bestXDistance = distance;
+                xGuide = { axis: 'x', value: target };
+            }
+        }
+
+        for (const [source, target] of yPairs) {
+            const distance = Math.abs(source - target);
+
+            if (distance <= snapThreshold && distance < bestYDistance) {
+                nextY += target - source;
+                bestYDistance = distance;
+                yGuide = { axis: 'y', value: target };
+            }
+        }
+    }
+
+    return {
+        guides: [xGuide, yGuide].filter(
+            (guide): guide is SnapGuide => guide !== undefined
+        ),
+        item: {
+            ...item,
+            x: Math.round(
+                Math.min(Math.max(nextX, 0), canvasWidth - item.width)
+            ),
+            y: Math.round(
+                Math.min(Math.max(nextY, 0), canvasHeight - item.height)
+            ),
+        },
+    };
+}
+
 export function LandingLineTool(): JSX.Element {
-    const [draft, setDraft] = useState(defaultDraft);
-    const [mode, setMode] = useState<'node' | 'pen'>('node');
+    const [draft, setDraft] = useState<ToolDraft>(createInitialDraft);
+    const [mode, setMode] = useState<'layout' | 'node' | 'pen'>('node');
     const [dragTarget, setDragTarget] = useState<DragTarget | undefined>();
+    const [layoutDragTarget, setLayoutDragTarget] = useState<
+        LayoutDragTarget | undefined
+    >();
+    const [snapGuides, setSnapGuides] = useState<readonly SnapGuide[]>([]);
     const [status, setStatus] = useState('Unsaved');
+    const frameRef = useRef<HTMLDivElement>(null);
     const svgRef = useRef<SVGSVGElement>(null);
 
     useEffect(() => {
-        const savedDraft = localStorage.getItem(storageKey);
+        const savedDraft =
+            localStorage.getItem(storageKey) ??
+            localStorage.getItem(legacyStorageKey);
 
         if (savedDraft === null) {
             return;
         }
 
         try {
-            setDraft(JSON.parse(savedDraft) as CurveDraft);
+            const parsedDraft = JSON.parse(savedDraft) as
+                | CurveDraft
+                | ToolDraft;
+
+            if ('curve' in parsedDraft) {
+                setDraft({
+                    curve: parsedDraft.curve,
+                    layout: parsedDraft.layout,
+                });
+            } else {
+                setDraft({
+                    curve: parsedDraft,
+                    layout: cloneLayout(defaultLayout),
+                });
+            }
+
             setStatus('Loaded saved draft');
         } catch {
             setStatus('Saved draft could not be loaded');
         }
     }, []);
 
-    const path = useMemo(() => createPath(draft), [draft]);
+    const path = useMemo(() => createPath(draft.curve), [draft.curve]);
     const exportValue = useMemo(() => createExport(draft), [draft]);
 
     function saveDraft() {
@@ -250,8 +530,9 @@ export function LandingLineTool(): JSX.Element {
     }
 
     function resetDraft() {
-        setDraft(cloneDraft(defaultDraft));
-        setStatus('Reset to current landing curve');
+        setDraft(createInitialDraft());
+        setSnapGuides([]);
+        setStatus('Reset to current landing curve and layout');
     }
 
     function copyExport() {
@@ -288,14 +569,18 @@ export function LandingLineTool(): JSX.Element {
 
         setDraft((currentDraft) => {
             const previous =
-                currentDraft.segments.at(-1)?.end ?? currentDraft.start;
+                currentDraft.curve.segments.at(-1)?.end ??
+                currentDraft.curve.start;
 
             return {
                 ...currentDraft,
-                segments: [
-                    ...currentDraft.segments,
-                    createSegment(previous, point),
-                ],
+                curve: {
+                    ...currentDraft.curve,
+                    segments: [
+                        ...currentDraft.curve.segments,
+                        createSegment(previous, point),
+                    ],
+                },
             };
         });
         setStatus('Point added');
@@ -303,6 +588,7 @@ export function LandingLineTool(): JSX.Element {
 
     function startDrag(target: DragTarget) {
         setDragTarget(target);
+        setLayoutDragTarget(undefined);
         setMode('node');
     }
 
@@ -316,27 +602,30 @@ export function LandingLineTool(): JSX.Element {
         const nextPoint = getSvgPoint(svg, event);
 
         setDraft((currentDraft) => {
-            const nextDraft = cloneDraft(currentDraft);
+            const nextCurve = cloneDraft(currentDraft.curve);
 
             if (dragTarget.kind === 'start') {
                 const delta = {
-                    x: nextPoint.x - nextDraft.start.x,
-                    y: nextPoint.y - nextDraft.start.y,
+                    x: nextPoint.x - nextCurve.start.x,
+                    y: nextPoint.y - nextCurve.start.y,
                 };
 
-                nextDraft.start = nextPoint;
+                nextCurve.start = nextPoint;
 
-                const firstSegment = nextDraft.segments.at(0);
+                const firstSegment = nextCurve.segments.at(0);
 
                 if (firstSegment !== undefined) {
                     firstSegment.c1.x += delta.x;
                     firstSegment.c1.y += delta.y;
                 }
 
-                return nextDraft;
+                return {
+                    ...currentDraft,
+                    curve: nextCurve,
+                };
             }
 
-            const segment = nextDraft.segments.at(dragTarget.index);
+            const segment = nextCurve.segments.at(dragTarget.index);
 
             if (segment === undefined) {
                 return currentDraft;
@@ -352,7 +641,7 @@ export function LandingLineTool(): JSX.Element {
                 segment.c2.x += delta.x;
                 segment.c2.y += delta.y;
 
-                const nextSegment = nextDraft.segments.at(dragTarget.index + 1);
+                const nextSegment = nextCurve.segments.at(dragTarget.index + 1);
 
                 if (nextSegment !== undefined) {
                     nextSegment.c1.x += delta.x;
@@ -362,7 +651,10 @@ export function LandingLineTool(): JSX.Element {
                 segment[dragTarget.kind] = nextPoint;
             }
 
-            return nextDraft;
+            return {
+                ...currentDraft,
+                curve: nextCurve,
+            };
         });
     }
 
@@ -373,6 +665,245 @@ export function LandingLineTool(): JSX.Element {
 
         setDragTarget(undefined);
         setStatus('Adjusted curve');
+    }
+
+    function startLayoutDrag(
+        item: Readonly<LayoutItem>,
+        event: PointerEvent<HTMLElement>
+    ) {
+        const frame = frameRef.current;
+
+        if (frame === null || mode !== 'layout') {
+            return;
+        }
+
+        const point = getFramePoint(frame, event);
+
+        setDragTarget(undefined);
+        setLayoutDragTarget({
+            id: item.id,
+            offsetX: point.x - item.x,
+            offsetY: point.y - item.y,
+        });
+        setStatus(`Moving ${item.label}`);
+    }
+
+    function updateLayoutDrag(event: PointerEvent<HTMLDivElement>) {
+        const frame = frameRef.current;
+
+        if (frame === null || layoutDragTarget === undefined) {
+            return;
+        }
+
+        const point = getFramePoint(frame, event);
+
+        setDraft((currentDraft) => {
+            const currentItem = currentDraft.layout.find(
+                (item) => item.id === layoutDragTarget.id
+            );
+
+            if (currentItem === undefined) {
+                return currentDraft;
+            }
+
+            const rawItem = {
+                ...currentItem,
+                x: Math.round(point.x - layoutDragTarget.offsetX),
+                y: Math.round(point.y - layoutDragTarget.offsetY),
+            };
+            const { guides, item: snappedItem } = snapLayoutItem(
+                rawItem,
+                currentDraft.layout
+            );
+
+            setSnapGuides(guides);
+
+            return {
+                ...currentDraft,
+                layout: currentDraft.layout.map((item) =>
+                    item.id === snappedItem.id ? snappedItem : item
+                ),
+            };
+        });
+    }
+
+    function finishLayoutDrag() {
+        if (layoutDragTarget === undefined) {
+            return;
+        }
+
+        setLayoutDragTarget(undefined);
+        setSnapGuides([]);
+        setStatus('Adjusted layout');
+    }
+
+    function renderLayoutItemContent(item: Readonly<LayoutItem>) {
+        switch (item.id) {
+            case 'automation-copy': {
+                return (
+                    <div className='line-tool__copy'>
+                        <h2>Let Codex pick up the work.</h2>
+                        <p>
+                            Set up automation with a single prompt in seconds.
+                        </p>
+                    </div>
+                );
+            }
+
+            case 'codex-node': {
+                return (
+                    <div className='line-tool__codex-node'>
+                        <span>Codex</span>
+                    </div>
+                );
+            }
+
+            case 'mux-copy': {
+                return (
+                    <div className='line-tool__copy'>
+                        <h2>One workspace for every repo.</h2>
+                        <p>
+                            Repomux connects your GitHub repositories and
+                            surfaces the scattered issues and PRs you need to
+                            work through.
+                        </p>
+                    </div>
+                );
+            }
+
+            case 'mux-node': {
+                return (
+                    <div className='line-tool__mux-node'>
+                        <img alt='' src='/repomux-logo.svg' />
+                    </div>
+                );
+            }
+
+            case 'prompt-card': {
+                return (
+                    <div className='line-tool__prompt-card'>
+                        <div className='line-tool__prompt-issue'>
+                            <span>GitHub issue #128</span>
+                            <strong>Polish landing page benefit section</strong>
+                        </div>
+                        <div className='line-tool__prompt-preview'>
+                            {toolPromptLines.map((line) => (
+                                <span key={line}>{line}</span>
+                            ))}
+                        </div>
+                    </div>
+                );
+            }
+
+            case 'prompt-copy': {
+                return (
+                    <div className='line-tool__copy'>
+                        <h2>Add your prompt.</h2>
+                        <p>
+                            Write the handoff, send it to Codex, then step away.
+                        </p>
+                    </div>
+                );
+            }
+
+            case 'queue-card': {
+                return (
+                    <div className='line-tool__queue-card'>
+                        {toolQueueItems.map(
+                            ({
+                                icon: Icon,
+                                meta,
+                                number,
+                                status: itemStatus,
+                                title,
+                                type,
+                            }) => (
+                                <div
+                                    className='line-tool__queue-row'
+                                    key={title}
+                                >
+                                    <span className='line-tool__queue-type'>
+                                        <Icon
+                                            aria-label={
+                                                type === 'issue'
+                                                    ? 'Issue'
+                                                    : 'Pull request'
+                                            }
+                                            size={18}
+                                        />
+                                    </span>
+                                    <span className='line-tool__queue-content'>
+                                        <span className='line-tool__queue-title'>
+                                            {title}
+                                        </span>
+                                        <span className='line-tool__queue-meta'>
+                                            {meta} #{number}
+                                        </span>
+                                    </span>
+                                    <span className='line-tool__readiness'>
+                                        {itemStatus === 'Ready' ? (
+                                            <Check size={18} />
+                                        ) : (
+                                            <span />
+                                        )}
+                                    </span>
+                                </div>
+                            )
+                        )}
+                    </div>
+                );
+            }
+
+            case 'queue-copy': {
+                return (
+                    <div className='line-tool__copy'>
+                        <h2>One queue for active work.</h2>
+                        <p>
+                            See issues and PRs from active repos in one queue.
+                        </p>
+                    </div>
+                );
+            }
+
+            case 'repo-row': {
+                return (
+                    <div className='line-tool__repo-row'>
+                        {toolRepositories.map(({ name, owner }) => (
+                            <div className='line-tool__repo-card' key={name}>
+                                <BookMarked size={18} />
+                                <span>{owner}</span>
+                                <strong>{name}</strong>
+                            </div>
+                        ))}
+                    </div>
+                );
+            }
+
+            case 'result-card': {
+                return (
+                    <div className='line-tool__result-card'>
+                        <GitPullRequestArrow size={18} />
+                        <span>
+                            <strong>Add user menu pop up</strong>
+                            <small>Hsiii/create-hsi-app #72</small>
+                        </span>
+                        <Check size={18} />
+                    </div>
+                );
+            }
+
+            case 'result-copy': {
+                return (
+                    <div className='line-tool__copy'>
+                        <h2>Come back to PRs.</h2>
+                        <p>
+                            Review the PRs submitted by Codex without leaving
+                            the dashboard.
+                        </p>
+                    </div>
+                );
+            }
+        }
     }
 
     return (
@@ -413,6 +944,21 @@ export function LandingLineTool(): JSX.Element {
                     >
                         <MousePointer2 aria-hidden='true' size={16} />
                         <span>Node</span>
+                    </button>
+                    <button
+                        className={
+                            mode === 'layout'
+                                ? 'line-tool__button line-tool__button--active'
+                                : 'line-tool__button'
+                        }
+                        onClick={() => {
+                            setMode('layout');
+                        }}
+                        title='Layout tool'
+                        type='button'
+                    >
+                        <Move aria-hidden='true' size={16} />
+                        <span>Layout</span>
                     </button>
                     <button
                         className='line-tool__button'
@@ -462,139 +1008,62 @@ export function LandingLineTool(): JSX.Element {
             </aside>
 
             <section className='line-tool__workspace'>
-                <div className='line-tool__canvas-frame'>
-                    <div aria-hidden='true' className='line-tool__mockup'>
-                        <section className='line-tool__story line-tool__story--mux'>
-                            <div className='line-tool__copy line-tool__copy--left'>
-                                <h2>One workspace for every repo.</h2>
-                                <p>
-                                    Repomux connects your GitHub repositories
-                                    and surfaces the scattered issues and PRs
-                                    you need to work through.
-                                </p>
-                            </div>
-                            <div className='line-tool__repo-row'>
-                                {toolRepositories.map(({ name, owner }) => (
-                                    <div
-                                        className='line-tool__repo-card'
-                                        key={name}
-                                    >
-                                        <BookMarked size={18} />
-                                        <span>{owner}</span>
-                                        <strong>{name}</strong>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-
-                        <div className='line-tool__mux-node'>
-                            <img alt='' src='/repomux-logo.svg' />
-                        </div>
-
-                        <section className='line-tool__story line-tool__story--queue'>
-                            <div className='line-tool__queue-card'>
-                                {toolQueueItems.map(
-                                    ({
-                                        icon: Icon,
-                                        meta,
-                                        number,
-                                        status: itemStatus,
-                                        title,
-                                        type,
-                                    }) => (
-                                        <div
-                                            className='line-tool__queue-row'
-                                            key={title}
-                                        >
-                                            <span className='line-tool__queue-type'>
-                                                <Icon
-                                                    aria-label={
-                                                        type === 'issue'
-                                                            ? 'Issue'
-                                                            : 'Pull request'
-                                                    }
-                                                    size={18}
-                                                />
-                                            </span>
-                                            <span className='line-tool__queue-content'>
-                                                <span className='line-tool__queue-title'>
-                                                    {title}
-                                                </span>
-                                                <span className='line-tool__queue-meta'>
-                                                    {meta} #{number}
-                                                </span>
-                                            </span>
-                                            <span className='line-tool__readiness'>
-                                                {itemStatus === 'Ready' ? (
-                                                    <Check size={18} />
-                                                ) : (
-                                                    <span />
-                                                )}
-                                            </span>
-                                        </div>
-                                    )
-                                )}
-                            </div>
-                            <div className='line-tool__copy'>
-                                <h2>One queue for active work.</h2>
-                                <p>
-                                    See issues and PRs from active repos in one
-                                    queue.
-                                </p>
-                            </div>
-                        </section>
-
-                        <section className='line-tool__story line-tool__story--prompt'>
-                            <div className='line-tool__copy line-tool__copy--left'>
-                                <h2>Add your prompt.</h2>
-                                <p>
-                                    Write the handoff, send it to Codex, then
-                                    step away.
-                                </p>
-                            </div>
-                            <div className='line-tool__prompt-card'>
-                                <div className='line-tool__prompt-issue'>
-                                    <span>GitHub issue #128</span>
-                                    <strong>
-                                        Polish landing page benefit section
-                                    </strong>
-                                </div>
-                                <div className='line-tool__prompt-preview'>
-                                    {toolPromptLines.map((line) => (
-                                        <span key={line}>{line}</span>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className='line-tool__codex-node'>
-                                <span>Codex</span>
-                            </div>
-                            <div className='line-tool__copy line-tool__copy--automation'>
-                                <h2>Let Codex pick up the work.</h2>
-                                <p>
-                                    Set up automation with a single prompt in
-                                    seconds.
-                                </p>
-                            </div>
-                        </section>
-
-                        <section className='line-tool__story line-tool__story--result'>
-                            <div className='line-tool__copy line-tool__copy--left'>
-                                <h2>Come back to PRs.</h2>
-                                <p>
-                                    Review the PRs submitted by Codex without
-                                    leaving the dashboard.
-                                </p>
-                            </div>
-                            <div className='line-tool__result-card'>
-                                <GitPullRequestArrow size={18} />
-                                <span>
-                                    <strong>Add user menu pop up</strong>
-                                    <small>Hsiii/create-hsi-app #72</small>
+                <div
+                    className={
+                        mode === 'layout'
+                            ? 'line-tool__canvas-frame line-tool__canvas-frame--layout'
+                            : 'line-tool__canvas-frame'
+                    }
+                    onPointerLeave={finishLayoutDrag}
+                    onPointerMove={updateLayoutDrag}
+                    onPointerUp={finishLayoutDrag}
+                    ref={frameRef}
+                >
+                    <div className='line-tool__mockup'>
+                        {draft.layout.map((item) => (
+                            <div
+                                aria-label={item.label}
+                                className={
+                                    layoutDragTarget?.id === item.id
+                                        ? 'line-tool__layout-item line-tool__layout-item--active'
+                                        : 'line-tool__layout-item'
+                                }
+                                key={item.id}
+                                onPointerDown={(event) => {
+                                    startLayoutDrag(item, event);
+                                }}
+                                role='button'
+                                style={{
+                                    height: item.height,
+                                    left: item.x,
+                                    top: item.y,
+                                    width: item.width,
+                                }}
+                                tabIndex={mode === 'layout' ? 0 : -1}
+                            >
+                                <span className='line-tool__layout-label'>
+                                    {item.label}
                                 </span>
-                                <Check size={18} />
+                                {renderLayoutItemContent(item)}
                             </div>
-                        </section>
+                        ))}
                     </div>
+
+                    {snapGuides.map((guide) => (
+                        <span
+                            className={
+                                guide.axis === 'x'
+                                    ? 'line-tool__snap-guide line-tool__snap-guide--x'
+                                    : 'line-tool__snap-guide line-tool__snap-guide--y'
+                            }
+                            key={`${guide.axis}-${guide.value}`}
+                            style={
+                                guide.axis === 'x'
+                                    ? { left: guide.value }
+                                    : { top: guide.value }
+                            }
+                        />
+                    ))}
 
                     <svg
                         className={
@@ -622,9 +1091,9 @@ export function LandingLineTool(): JSX.Element {
                         <path className='line-tool__curve-shadow' d={path} />
                         <path className='line-tool__curve' d={path} />
 
-                        {draft.segments.map((segment, index) => {
+                        {draft.curve.segments.map((segment, index) => {
                             const previousAnchor = getPreviousAnchor(
-                                draft,
+                                draft.curve,
                                 index
                             );
 
@@ -681,8 +1150,8 @@ export function LandingLineTool(): JSX.Element {
                         })}
                         <circle
                             className='line-tool__node line-tool__node--start'
-                            cx={draft.start.x}
-                            cy={draft.start.y}
+                            cx={draft.curve.start.x}
+                            cy={draft.curve.start.y}
                             onPointerDown={(event) => {
                                 event.stopPropagation();
                                 startDrag({ index: 0, kind: 'start' });

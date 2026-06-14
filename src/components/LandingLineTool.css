@@ -144,6 +144,11 @@
 
 .line-tool__mockup {
     color: var(--clr-login-text);
+    pointer-events: none;
+}
+
+.line-tool__canvas-frame--layout .line-tool__mockup {
+    pointer-events: auto;
 }
 
 .line-tool__canvas {
@@ -151,6 +156,10 @@
     height: 100%;
     display: block;
     touch-action: none;
+}
+
+.line-tool__canvas-frame--layout .line-tool__canvas {
+    pointer-events: none;
 }
 
 .line-tool__canvas--pen {
@@ -161,56 +170,11 @@
     fill: transparent;
 }
 
-.line-tool__story {
-    width: 100%;
-    position: absolute;
-    display: grid;
-    align-items: center;
-}
-
-.line-tool__story--mux {
-    top: var(--line-tool-story-mux-top);
-    grid-template-columns: minmax(0, 1fr) var(--size-line-tool-repo-row);
-    padding: 0 var(--line-tool-inset);
-}
-
-.line-tool__story--queue {
-    top: var(--line-tool-story-queue-top);
-    grid-template-columns: var(--size-line-tool-card-wide) minmax(0, 1fr);
-    gap: var(--space-64);
-    padding: 0 var(--line-tool-inset);
-}
-
-.line-tool__story--prompt {
-    top: var(--line-tool-story-prompt-top);
-    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
-    grid-template-areas:
-        'copy prompt'
-        'codex automation';
-    row-gap: var(--space-96);
-    padding: 0 var(--line-tool-inset);
-}
-
-.line-tool__story--result {
-    top: var(--line-tool-story-result-top);
-    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
-    padding: 0 var(--line-tool-inset);
-}
-
 .line-tool__copy {
+    height: 100%;
     display: grid;
     gap: var(--space-16);
     align-content: start;
-}
-
-.line-tool__copy--left {
-    justify-self: start;
-}
-
-.line-tool__copy--automation {
-    grid-area: automation;
-    width: var(--size-line-tool-automation-copy);
-    justify-self: center;
 }
 
 .line-tool__copy h2 {
@@ -226,6 +190,7 @@
 }
 
 .line-tool__repo-row {
+    height: 100%;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-16);
@@ -280,11 +245,8 @@
 }
 
 .line-tool__mux-node {
-    width: calc(var(--space-128) + var(--space-40));
-    height: calc(var(--space-128) + var(--space-40));
-    position: absolute;
-    top: var(--line-tool-mux-top);
-    left: var(--line-tool-mux-left);
+    width: 100%;
+    height: 100%;
     border-radius: var(--radius-pill);
     display: grid;
     place-items: center;
@@ -299,6 +261,7 @@
 }
 
 .line-tool__queue-card {
+    height: 100%;
     overflow: hidden;
 }
 
@@ -341,7 +304,7 @@
 }
 
 .line-tool__prompt-card {
-    grid-area: prompt;
+    height: 100%;
     min-width: 0;
     padding: var(--space-24);
     display: grid;
@@ -376,12 +339,8 @@
 }
 
 .line-tool__codex-node {
-    grid-area: codex;
-    justify-self: end;
-    align-self: center;
-    width: var(--size-login-flow-node);
-    height: var(--size-login-flow-node);
-    margin-right: var(--space-40);
+    width: 100%;
+    height: 100%;
     border: var(--size-border-1) solid var(--clr-login-border);
     border-radius: var(--radius-pill);
     display: grid;
@@ -392,9 +351,71 @@
 }
 
 .line-tool__result-card {
-    width: var(--size-line-tool-result-card);
-    justify-self: center;
+    width: 100%;
+    height: 100%;
     border-bottom: 0;
+}
+
+.line-tool__layout-item {
+    position: absolute;
+    z-index: 1;
+    border: var(--size-border-1) solid transparent;
+    border-radius: var(--radius-8);
+}
+
+.line-tool__canvas-frame--layout .line-tool__layout-item {
+    cursor: grab;
+    pointer-events: auto;
+}
+
+.line-tool__canvas-frame--layout .line-tool__layout-item:hover,
+.line-tool__layout-item--active {
+    border-color: var(--clr-login-flow-cyan);
+}
+
+.line-tool__layout-item--active {
+    cursor: grabbing;
+}
+
+.line-tool__layout-label {
+    position: absolute;
+    top: calc(var(--space-20) * -1);
+    left: 0;
+    z-index: 2;
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-4);
+    color: var(--clr-bg);
+    background-color: var(--clr-login-flow-cyan);
+    font: var(--font-label);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.line-tool__canvas-frame--layout
+    .line-tool__layout-item:hover
+    .line-tool__layout-label,
+.line-tool__layout-item--active .line-tool__layout-label {
+    opacity: 1;
+}
+
+.line-tool__snap-guide {
+    position: absolute;
+    z-index: 3;
+    display: block;
+    background-color: var(--clr-login-flow-cyan);
+    pointer-events: none;
+}
+
+.line-tool__snap-guide--x {
+    top: 0;
+    bottom: 0;
+    width: var(--size-outline);
+}
+
+.line-tool__snap-guide--y {
+    right: 0;
+    left: 0;
+    height: var(--size-outline);
 }
 
 .line-tool__curve-shadow,
