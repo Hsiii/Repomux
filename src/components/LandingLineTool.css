@@ -1,65 +1,39 @@
 .line-tool {
-    --size-line-tool-canvas: 1248px;
-    --size-line-tool-automation-copy: 360px;
-    --size-line-tool-card-wide: 552px;
-    --size-line-tool-repo-row: 536px;
-    --size-line-tool-result-card: 520px;
-    --line-tool-inset: var(--space-80);
-    --line-tool-mux-left: 620px;
-    --line-tool-mux-top: 528px;
-    --line-tool-story-mux-top: 104px;
-    --line-tool-story-prompt-top: 1512px;
-    --line-tool-story-queue-top: 972px;
-    --line-tool-story-result-top: 2296px;
-
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: 360px minmax(0, 1fr);
+    position: relative;
     background: var(--clr-bg);
     color: var(--clr-text);
 }
 
-.line-tool__sidebar {
-    height: 100vh;
-    position: sticky;
-    top: 0;
-    border-right: var(--size-border-1) solid var(--clr-border);
-    display: grid;
-    grid-template-rows: auto auto auto minmax(0, 1fr);
-    gap: var(--space-20);
-    padding: var(--space-24);
-    background-color: var(--clr-bg-soft);
-}
-
-.line-tool__header {
-    display: grid;
+.line-tool__toolbar {
+    position: fixed;
+    top: var(--space-16);
+    left: var(--space-16);
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
     gap: var(--space-8);
+    padding: var(--space-8);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-8);
+    background-color: var(--clr-bg-shell);
+    box-shadow: var(--shadow-surface);
+    backdrop-filter: blur(var(--space-12));
 }
 
-.line-tool__eyebrow {
-    color: var(--clr-text-dim);
-    font: var(--font-label);
-    text-transform: uppercase;
-}
-
-.line-tool__header h1 {
-    font: var(--font-title-md);
-}
-
-.line-tool__controls {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-8);
+.line-tool__toolbar-group {
+    display: inline-flex;
+    gap: var(--space-4);
 }
 
 .line-tool__button {
-    min-height: var(--space-40);
+    width: var(--space-40);
+    height: var(--space-40);
     border: var(--size-border-1) solid var(--clr-border);
     border-radius: var(--radius-4);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-8);
     color: var(--clr-text);
     background-color: var(--clr-surface);
 }
@@ -71,20 +45,12 @@
 }
 
 .line-tool__status {
-    min-height: var(--space-24);
+    max-width: 168px;
+    overflow: hidden;
     color: var(--clr-text-muted);
     font: var(--font-body-sm);
-}
-
-.line-tool__export {
-    min-height: 0;
-    resize: none;
-    border: var(--size-border-1) solid var(--clr-border);
-    border-radius: var(--radius-4);
-    padding: var(--space-12);
-    color: var(--clr-text-muted);
-    background-color: var(--clr-input);
-    font: var(--font-body-sm);
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .line-tool__workspace {
@@ -170,78 +136,21 @@
     fill: transparent;
 }
 
-.line-tool__copy {
+.line-tool__landing-copy.login-wall__feature-copy {
     height: 100%;
     display: grid;
     gap: var(--space-16);
     align-content: start;
+    padding: 0;
 }
 
-.line-tool__copy h2 {
+.line-tool__landing-copy.login-wall__feature-copy h2 {
     max-width: 13ch;
-    font: var(--font-title-md);
     letter-spacing: 0;
 }
 
-.line-tool__copy p {
-    max-width: 34rem;
-    color: var(--clr-login-text-muted);
-    font: var(--font-body-lg);
-}
-
-.line-tool__repo-row {
+.line-tool__repo-row.login-wall__repo-row {
     height: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-16);
-}
-
-.line-tool__repo-card,
-.line-tool__prompt-card,
-.line-tool__queue-card,
-.line-tool__result-card {
-    border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-8);
-    background-color: var(--clr-login-card-solid);
-    box-shadow: var(--clr-login-shadow);
-}
-
-.line-tool__repo-card {
-    min-width: 0;
-    min-height: var(--space-80);
-    padding: var(--space-16);
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-content: center;
-    gap: var(--space-4) var(--space-12);
-    color: var(--clr-login-text-muted);
-}
-
-.line-tool__repo-card svg {
-    grid-row: span 2;
-    align-self: center;
-}
-
-.line-tool__repo-card span,
-.line-tool__queue-meta,
-.line-tool__prompt-issue span,
-.line-tool__result-card small {
-    overflow: hidden;
-    color: var(--clr-login-text-dim);
-    font: var(--font-label);
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.line-tool__repo-card strong,
-.line-tool__queue-title,
-.line-tool__prompt-issue strong,
-.line-tool__result-card strong {
-    overflow: hidden;
-    color: var(--clr-login-text);
-    font: var(--font-body-lg);
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .line-tool__mux-node {
@@ -253,86 +162,22 @@
     background-color: var(--clr-login-bg);
 }
 
-.line-tool__mux-node img {
-    width: calc(var(--space-128) + var(--space-32));
-    height: calc(var(--space-128) + var(--space-32));
-    filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(196%)
-        hue-rotate(204deg) brightness(104%) contrast(97%);
-}
-
-.line-tool__queue-card {
+.line-tool__queue-card.queue-list,
+.line-tool__result-list.queue-list {
     height: 100%;
+    background-color: var(--clr-login-card-solid);
     overflow: hidden;
 }
 
-.line-tool__queue-row,
-.line-tool__result-card {
-    min-height: var(--space-72);
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--space-16);
-    padding: var(--space-16) var(--space-20);
-    border-bottom: var(--size-border-1) solid var(--clr-login-border);
-}
-
-.line-tool__queue-row:last-child {
+.line-tool__queue-card .queue-row:last-child {
     border-bottom: 0;
 }
 
-.line-tool__queue-type,
-.line-tool__readiness {
-    width: var(--space-32);
-    height: var(--space-32);
-    display: grid;
-    place-items: center;
-    color: var(--clr-login-text-muted);
-}
-
-.line-tool__queue-content,
-.line-tool__result-card span {
-    min-width: 0;
-    display: grid;
-    gap: var(--space-4);
-}
-
-.line-tool__readiness span {
-    width: var(--space-16);
-    height: var(--space-16);
-    border: var(--size-border-1) solid var(--clr-login-border-strong);
-    border-radius: var(--radius-pill);
-}
-
-.line-tool__prompt-card {
+.line-tool__prompt-card.login-wall__prompt-card {
     height: 100%;
-    min-width: 0;
-    padding: var(--space-24);
-    display: grid;
-    gap: var(--space-20);
 }
 
-.line-tool__prompt-issue {
-    padding-bottom: var(--space-20);
-    border-bottom: var(--size-border-1) solid var(--clr-login-border);
-    display: grid;
-    gap: var(--space-8);
-}
-
-.line-tool__prompt-preview {
-    min-height: calc(var(--size-login-prompt-compact) + var(--space-24));
-    padding: var(--space-16);
-    border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-8);
-    display: grid;
-    align-content: start;
-    gap: var(--space-8);
-    overflow: hidden;
-    color: var(--clr-login-text-muted);
-    background-color: var(--clr-login-control);
-    font: var(--font-body-sm);
-}
-
-.line-tool__prompt-preview span {
+.line-tool__prompt-preview.login-wall__prompt-preview span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -341,16 +186,11 @@
 .line-tool__codex-node {
     width: 100%;
     height: 100%;
-    border: var(--size-border-1) solid var(--clr-login-border);
-    border-radius: var(--radius-pill);
     display: grid;
     place-items: center;
-    color: var(--clr-login-text);
-    background-color: var(--clr-login-card-solid);
-    font: var(--font-label);
 }
 
-.line-tool__result-card {
+.line-tool__result-card.login-wall__pr-card {
     width: 100%;
     height: 100%;
     border-bottom: 0;
@@ -471,15 +311,9 @@
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .line-tool__sidebar {
-        height: auto;
-        position: static;
-        border-right: 0;
-        border-bottom: var(--size-border-1) solid var(--clr-border);
-    }
-
-    .line-tool__export {
-        min-height: 240px;
+    .line-tool__toolbar {
+        max-width: calc(100vw - var(--space-32));
+        flex-wrap: wrap;
     }
 
     .line-tool__workspace {

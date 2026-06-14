@@ -7,7 +7,6 @@ import {
     Check,
     CircleDot,
     Copy,
-    Download,
     GitPullRequestArrow,
     MousePointer2,
     Move,
@@ -15,6 +14,9 @@ import {
     RotateCcw,
     Save,
 } from 'lucide-react';
+
+import { BrandLogo } from './BrandLogo';
+import { CodexMark } from './CodexMark';
 
 interface Point {
     x: number;
@@ -78,8 +80,11 @@ interface SnapGuide {
 const canvasWidth = 1248;
 const canvasHeight = 2600;
 const snapThreshold = 12;
-const legacyStorageKey = 'repomux:landing-line-tool:v1';
-const storageKey = 'repomux:landing-line-tool:v2';
+const legacyStorageKeys = [
+    'repomux:landing-line-tool:v2',
+    'repomux:landing-line-tool:v1',
+] as const;
+const storageKey = 'repomux:landing-line-tool:v3';
 
 const defaultDraft: CurveDraft = {
     start: { x: 704, y: 612 },
@@ -327,6 +332,24 @@ function createInitialDraft(): ToolDraft {
     };
 }
 
+function getStoredDraft(): string | undefined {
+    const savedDraft = localStorage.getItem(storageKey);
+
+    if (savedDraft !== null) {
+        return savedDraft;
+    }
+
+    for (const key of legacyStorageKeys) {
+        const legacyDraft = localStorage.getItem(key);
+
+        if (legacyDraft !== null) {
+            return legacyDraft;
+        }
+    }
+
+    return undefined;
+}
+
 function getPreviousAnchor(
     draft: Readonly<CurveDraft>,
     segmentIndex: number
@@ -490,11 +513,9 @@ export function LandingLineTool(): JSX.Element {
     const svgRef = useRef<SVGSVGElement>(null);
 
     useEffect(() => {
-        const savedDraft =
-            localStorage.getItem(storageKey) ??
-            localStorage.getItem(legacyStorageKey);
+        const savedDraft = getStoredDraft();
 
-        if (savedDraft === null) {
+        if (savedDraft === undefined) {
             return;
         }
 
@@ -544,18 +565,6 @@ export function LandingLineTool(): JSX.Element {
             .catch(() => {
                 setStatus('Clipboard access failed');
             });
-    }
-
-    function downloadExport() {
-        const url = URL.createObjectURL(
-            new Blob([exportValue], { type: 'application/json' })
-        );
-        const link = document.createElement('a');
-        link.download = 'repomux-landing-line.json';
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
-        setStatus('Downloaded export JSON');
     }
 
     function addPoint(event: PointerEvent<SVGSVGElement>) {
@@ -741,7 +750,7 @@ export function LandingLineTool(): JSX.Element {
         switch (item.id) {
             case 'automation-copy': {
                 return (
-                    <div className='line-tool__copy'>
+                    <div className='login-wall__feature-copy line-tool__landing-copy'>
                         <h2>Let Codex pick up the work.</h2>
                         <p>
                             Set up automation with a single prompt in seconds.
@@ -753,14 +762,14 @@ export function LandingLineTool(): JSX.Element {
             case 'codex-node': {
                 return (
                     <div className='line-tool__codex-node'>
-                        <span>Codex</span>
+                        <CodexMark className='login-wall__mux-codex' />
                     </div>
                 );
             }
 
             case 'mux-copy': {
                 return (
-                    <div className='line-tool__copy'>
+                    <div className='login-wall__feature-copy line-tool__landing-copy'>
                         <h2>One workspace for every repo.</h2>
                         <p>
                             Repomux connects your GitHub repositories and
@@ -774,19 +783,26 @@ export function LandingLineTool(): JSX.Element {
             case 'mux-node': {
                 return (
                     <div className='line-tool__mux-node'>
-                        <img alt='' src='/repomux-logo.svg' />
+                        <BrandLogo
+                            alt='Repomux'
+                            className='login-wall__flow-mux-logo'
+                        />
                     </div>
                 );
             }
 
             case 'prompt-card': {
                 return (
-                    <div className='line-tool__prompt-card'>
-                        <div className='line-tool__prompt-issue'>
-                            <span>GitHub issue #128</span>
-                            <strong>Polish landing page benefit section</strong>
+                    <div className='login-wall__prompt-card line-tool__prompt-card'>
+                        <div className='login-wall__prompt-issue'>
+                            <span className='login-wall__prompt-issue-label'>
+                                GitHub issue #128
+                            </span>
+                            <span className='login-wall__prompt-issue-title'>
+                                Polish landing page benefit section
+                            </span>
                         </div>
-                        <div className='line-tool__prompt-preview'>
+                        <div className='prompt-input login-wall__prompt-preview line-tool__prompt-preview'>
                             {toolPromptLines.map((line) => (
                                 <span key={line}>{line}</span>
                             ))}
@@ -797,7 +813,7 @@ export function LandingLineTool(): JSX.Element {
 
             case 'prompt-copy': {
                 return (
-                    <div className='line-tool__copy'>
+                    <div className='login-wall__feature-copy line-tool__landing-copy'>
                         <h2>Add your prompt.</h2>
                         <p>
                             Write the handoff, send it to Codex, then step away.
@@ -808,7 +824,7 @@ export function LandingLineTool(): JSX.Element {
 
             case 'queue-card': {
                 return (
-                    <div className='line-tool__queue-card'>
+                    <div className='queue-list line-tool__queue-card'>
                         {toolQueueItems.map(
                             ({
                                 icon: Icon,
@@ -818,11 +834,8 @@ export function LandingLineTool(): JSX.Element {
                                 title,
                                 type,
                             }) => (
-                                <div
-                                    className='line-tool__queue-row'
-                                    key={title}
-                                >
-                                    <span className='line-tool__queue-type'>
+                                <div className='queue-row' key={title}>
+                                    <span className='queue-row__type'>
                                         <Icon
                                             aria-label={
                                                 type === 'issue'
@@ -832,19 +845,24 @@ export function LandingLineTool(): JSX.Element {
                                             size={18}
                                         />
                                     </span>
-                                    <span className='line-tool__queue-content'>
-                                        <span className='line-tool__queue-title'>
+                                    <span className='queue-row__content'>
+                                        <span className='queue-row__title'>
                                             {title}
                                         </span>
-                                        <span className='line-tool__queue-meta'>
-                                            {meta} #{number}
+                                        <span className='queue-row__meta'>
+                                            <span className='queue-row__repo'>
+                                                {meta}
+                                            </span>
+                                            <span className='queue-row__number'>
+                                                #{number}
+                                            </span>
                                         </span>
                                     </span>
-                                    <span className='line-tool__readiness'>
+                                    <span className='readiness'>
                                         {itemStatus === 'Ready' ? (
                                             <Check size={18} />
                                         ) : (
-                                            <span />
+                                            <span className='readiness__empty' />
                                         )}
                                     </span>
                                 </div>
@@ -856,7 +874,7 @@ export function LandingLineTool(): JSX.Element {
 
             case 'queue-copy': {
                 return (
-                    <div className='line-tool__copy'>
+                    <div className='login-wall__feature-copy line-tool__landing-copy'>
                         <h2>One queue for active work.</h2>
                         <p>
                             See issues and PRs from active repos in one queue.
@@ -867,9 +885,9 @@ export function LandingLineTool(): JSX.Element {
 
             case 'repo-row': {
                 return (
-                    <div className='line-tool__repo-row'>
+                    <div className='login-wall__repo-row line-tool__repo-row'>
                         {toolRepositories.map(({ name, owner }) => (
-                            <div className='line-tool__repo-card' key={name}>
+                            <div className='login-wall__mux-repo' key={name}>
                                 <BookMarked size={18} />
                                 <span>{owner}</span>
                                 <strong>{name}</strong>
@@ -881,20 +899,38 @@ export function LandingLineTool(): JSX.Element {
 
             case 'result-card': {
                 return (
-                    <div className='line-tool__result-card'>
-                        <GitPullRequestArrow size={18} />
-                        <span>
-                            <strong>Add user menu pop up</strong>
-                            <small>Hsiii/create-hsi-app #72</small>
-                        </span>
-                        <Check size={18} />
+                    <div className='queue-list line-tool__result-list'>
+                        <div className='queue-row login-wall__pr-card line-tool__result-card'>
+                            <span className='queue-row__type'>
+                                <GitPullRequestArrow
+                                    aria-label='Pull request'
+                                    size={18}
+                                />
+                            </span>
+                            <span className='queue-row__content'>
+                                <span className='queue-row__title'>
+                                    Add user menu pop up
+                                </span>
+                                <span className='queue-row__meta'>
+                                    <span className='queue-row__repo'>
+                                        Hsiii/create-hsi-app
+                                    </span>
+                                    <span className='queue-row__number'>
+                                        #72
+                                    </span>
+                                </span>
+                            </span>
+                            <span className='readiness'>
+                                <Check size={18} />
+                            </span>
+                        </div>
                     </div>
                 );
             }
 
             case 'result-copy': {
                 return (
-                    <div className='line-tool__copy'>
+                    <div className='login-wall__feature-copy line-tool__landing-copy'>
                         <h2>Come back to PRs.</h2>
                         <p>
                             Review the PRs submitted by Codex without leaving
@@ -908,106 +944,95 @@ export function LandingLineTool(): JSX.Element {
 
     return (
         <main className='line-tool'>
-            <aside className='line-tool__sidebar'>
-                <div className='line-tool__header'>
-                    <span className='line-tool__eyebrow'>Repomux</span>
-                    <h1>Landing line tool</h1>
-                </div>
-
-                <div className='line-tool__controls'>
-                    <button
-                        className={
-                            mode === 'pen'
-                                ? 'line-tool__button line-tool__button--active'
-                                : 'line-tool__button'
-                        }
-                        onClick={() => {
-                            setMode('pen');
-                        }}
-                        title='Pen tool'
-                        type='button'
-                    >
-                        <PenTool aria-hidden='true' size={16} />
-                        <span>Pen</span>
-                    </button>
-                    <button
-                        className={
-                            mode === 'node'
-                                ? 'line-tool__button line-tool__button--active'
-                                : 'line-tool__button'
-                        }
-                        onClick={() => {
-                            setMode('node');
-                        }}
-                        title='Node tool'
-                        type='button'
-                    >
-                        <MousePointer2 aria-hidden='true' size={16} />
-                        <span>Node</span>
-                    </button>
-                    <button
-                        className={
-                            mode === 'layout'
-                                ? 'line-tool__button line-tool__button--active'
-                                : 'line-tool__button'
-                        }
-                        onClick={() => {
-                            setMode('layout');
-                        }}
-                        title='Layout tool'
-                        type='button'
-                    >
-                        <Move aria-hidden='true' size={16} />
-                        <span>Layout</span>
-                    </button>
-                    <button
-                        className='line-tool__button'
-                        onClick={saveDraft}
-                        title='Save in browser'
-                        type='button'
-                    >
-                        <Save aria-hidden='true' size={16} />
-                        <span>Save</span>
-                    </button>
-                    <button
-                        className='line-tool__button'
-                        onClick={resetDraft}
-                        title='Reset'
-                        type='button'
-                    >
-                        <RotateCcw aria-hidden='true' size={16} />
-                        <span>Reset</span>
-                    </button>
-                    <button
-                        className='line-tool__button'
-                        onClick={copyExport}
-                        title='Copy export'
-                        type='button'
-                    >
-                        <Copy aria-hidden='true' size={16} />
-                        <span>Copy</span>
-                    </button>
-                    <button
-                        className='line-tool__button'
-                        onClick={downloadExport}
-                        title='Download export'
-                        type='button'
-                    >
-                        <Download aria-hidden='true' size={16} />
-                        <span>JSON</span>
-                    </button>
-                </div>
-
-                <p className='line-tool__status'>{status}</p>
-
-                <textarea
-                    className='line-tool__export custom-scrollbar'
-                    readOnly
-                    value={exportValue}
-                />
-            </aside>
-
             <section className='line-tool__workspace'>
+                <div className='line-tool__toolbar'>
+                    <div
+                        aria-label='Tool mode'
+                        className='line-tool__toolbar-group'
+                        role='group'
+                    >
+                        <button
+                            aria-label='Pen tool'
+                            className={
+                                mode === 'pen'
+                                    ? 'line-tool__button line-tool__button--active'
+                                    : 'line-tool__button'
+                            }
+                            onClick={() => {
+                                setMode('pen');
+                            }}
+                            title='Pen tool'
+                            type='button'
+                        >
+                            <PenTool aria-hidden='true' size={16} />
+                        </button>
+                        <button
+                            aria-label='Node tool'
+                            className={
+                                mode === 'node'
+                                    ? 'line-tool__button line-tool__button--active'
+                                    : 'line-tool__button'
+                            }
+                            onClick={() => {
+                                setMode('node');
+                            }}
+                            title='Node tool'
+                            type='button'
+                        >
+                            <MousePointer2 aria-hidden='true' size={16} />
+                        </button>
+                        <button
+                            aria-label='Layout tool'
+                            className={
+                                mode === 'layout'
+                                    ? 'line-tool__button line-tool__button--active'
+                                    : 'line-tool__button'
+                            }
+                            onClick={() => {
+                                setMode('layout');
+                            }}
+                            title='Layout tool'
+                            type='button'
+                        >
+                            <Move aria-hidden='true' size={16} />
+                        </button>
+                    </div>
+                    <div
+                        aria-label='Draft actions'
+                        className='line-tool__toolbar-group'
+                        role='group'
+                    >
+                        <button
+                            aria-label='Save draft'
+                            className='line-tool__button'
+                            onClick={saveDraft}
+                            title='Save draft'
+                            type='button'
+                        >
+                            <Save aria-hidden='true' size={16} />
+                        </button>
+                        <button
+                            aria-label='Reset draft'
+                            className='line-tool__button'
+                            onClick={resetDraft}
+                            title='Reset draft'
+                            type='button'
+                        >
+                            <RotateCcw aria-hidden='true' size={16} />
+                        </button>
+                        <button
+                            aria-label='Copy context for Codex'
+                            className='line-tool__button'
+                            onClick={copyExport}
+                            title='Copy context for Codex'
+                            type='button'
+                        >
+                            <Copy aria-hidden='true' size={16} />
+                        </button>
+                    </div>
+                    <p className='line-tool__status'>{status}</p>
+                </div>
+
                 <div
                     className={
                         mode === 'layout'
