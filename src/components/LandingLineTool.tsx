@@ -95,6 +95,11 @@ interface SnapGuide {
     value: number;
 }
 
+interface PointSnapResult {
+    guides: readonly SnapGuide[];
+    point: Point;
+}
+
 const canvasWidth = 1248;
 const canvasHeight = 2600;
 const snapThreshold = 12;
@@ -569,6 +574,49 @@ function getAnchors(item: Readonly<LayoutItem>) {
     };
 }
 
+function getBorderCenterPoints(item: Readonly<LayoutItem>): readonly Point[] {
+    const anchors = getAnchors(item);
+
+    return [
+        { x: anchors.centerX, y: anchors.top },
+        { x: anchors.right, y: anchors.centerY },
+        { x: anchors.centerX, y: anchors.bottom },
+        { x: anchors.left, y: anchors.centerY },
+    ];
+}
+
+function snapPointToLayout(
+    point: Readonly<Point>,
+    layout: readonly LayoutItem[]
+): PointSnapResult {
+    let snappedPoint = { ...point };
+    let shortestDistance = snapThreshold + 1;
+
+    for (const item of layout) {
+        for (const snapPoint of getBorderCenterPoints(item)) {
+            const xDistance = point.x - snapPoint.x;
+            const yDistance = point.y - snapPoint.y;
+            const distance = Math.hypot(xDistance, yDistance);
+
+            if (distance <= snapThreshold && distance < shortestDistance) {
+                snappedPoint = { ...snapPoint };
+                shortestDistance = distance;
+            }
+        }
+    }
+
+    return {
+        guides:
+            shortestDistance <= snapThreshold
+                ? [
+                      { axis: 'x', value: snappedPoint.x },
+                      { axis: 'y', value: snappedPoint.y },
+                  ]
+                : [],
+        point: snappedPoint,
+    };
+}
+
 function getFramePoint(
     frame: Readonly<HTMLDivElement>,
     event: Readonly<PointerEvent<HTMLElement>>
@@ -761,6 +809,7 @@ export function LandingLineTool(): JSX.Element {
     function startDrag(target: DragTarget) {
         setDragTarget(target);
         setLayoutDragTarget(undefined);
+        setSnapGuides([]);
         setMode('node');
     }
 
@@ -771,9 +820,16 @@ export function LandingLineTool(): JSX.Element {
             return;
         }
 
-        const nextPoint = getSvgPoint(svg, event);
+        const rawPoint = getSvgPoint(svg, event);
 
         setDraft((currentDraft) => {
+            const { guides, point: nextPoint } =
+                dragTarget.kind === 'start' || dragTarget.kind === 'end'
+                    ? snapPointToLayout(rawPoint, currentDraft.layout)
+                    : { guides: [], point: rawPoint };
+
+            setSnapGuides(guides);
+
             if (dragTarget.curveId === 'main') {
                 return {
                     ...currentDraft,
@@ -809,6 +865,7 @@ export function LandingLineTool(): JSX.Element {
         }
 
         setDragTarget(undefined);
+        setSnapGuides([]);
         setStatus('Adjusted curve');
     }
 
