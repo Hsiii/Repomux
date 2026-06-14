@@ -259,7 +259,8 @@
 }
 
 .line-tool__curve-shadow,
-.line-tool__curve {
+.line-tool__curve,
+.line-tool__repo-curve {
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -274,6 +275,27 @@
 .line-tool__curve {
     stroke: var(--clr-accent);
     stroke-width: 6;
+}
+
+.line-tool__repo-curve {
+    stroke-width: 5;
+    filter: drop-shadow(0 0 var(--space-12) currentcolor);
+    opacity: 0.88;
+}
+
+.line-tool__repo-curve--repo-1 {
+    stroke: var(--clr-login-flow-blue);
+    color: var(--clr-login-flow-blue);
+}
+
+.line-tool__repo-curve--repo-2 {
+    stroke: var(--clr-login-flow-pink);
+    color: var(--clr-login-flow-pink);
+}
+
+.line-tool__repo-curve--repo-3 {
+    stroke: var(--clr-login-flow-yellow);
+    color: var(--clr-login-flow-yellow);
 }
 
 .line-tool__handle-line {

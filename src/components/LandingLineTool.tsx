@@ -34,6 +34,16 @@ interface CurveDraft {
     start: Point;
 }
 
+type RepoCurveId = 'repo-1' | 'repo-2' | 'repo-3';
+
+type CurveTargetId = 'main' | RepoCurveId;
+
+interface RepoCurve {
+    curve: CurveDraft;
+    id: RepoCurveId;
+    label: string;
+}
+
 type LayoutItemId =
     | 'automation-copy'
     | 'codex-node'
@@ -59,9 +69,17 @@ interface LayoutItem {
 interface ToolDraft {
     curve: CurveDraft;
     layout: readonly LayoutItem[];
+    repoCurves: readonly RepoCurve[];
+}
+
+interface StoredToolDraft {
+    curve: CurveDraft;
+    layout: readonly LayoutItem[];
+    repoCurves?: readonly RepoCurve[];
 }
 
 interface DragTarget {
+    curveId: CurveTargetId;
     index: number;
     kind: 'c1' | 'c2' | 'end' | 'start';
 }
@@ -81,10 +99,11 @@ const canvasWidth = 1248;
 const canvasHeight = 2600;
 const snapThreshold = 12;
 const legacyStorageKeys = [
+    'repomux:landing-line-tool:v3',
     'repomux:landing-line-tool:v2',
     'repomux:landing-line-tool:v1',
-] as const;
-const storageKey = 'repomux:landing-line-tool:v3';
+];
+const storageKey = 'repomux:landing-line-tool:v4';
 
 const defaultDraft: CurveDraft = {
     start: { x: 704, y: 612 },
@@ -121,6 +140,51 @@ const defaultDraft: CurveDraft = {
         },
     ],
 };
+
+const defaultRepoCurves: readonly RepoCurve[] = [
+    {
+        curve: {
+            segments: [
+                {
+                    c1: { x: 716, y: 360 },
+                    c2: { x: 672, y: 488 },
+                    end: { x: 704, y: 612 },
+                },
+            ],
+            start: { x: 716, y: 216 },
+        },
+        id: 'repo-1',
+        label: 'Repo 1 to mux',
+    },
+    {
+        curve: {
+            segments: [
+                {
+                    c1: { x: 900, y: 360 },
+                    c2: { x: 760, y: 488 },
+                    end: { x: 704, y: 612 },
+                },
+            ],
+            start: { x: 900, y: 216 },
+        },
+        id: 'repo-2',
+        label: 'Repo 2 to mux',
+    },
+    {
+        curve: {
+            segments: [
+                {
+                    c1: { x: 1084, y: 360 },
+                    c2: { x: 848, y: 488 },
+                    end: { x: 704, y: 612 },
+                },
+            ],
+            start: { x: 1084, y: 216 },
+        },
+        id: 'repo-3',
+        label: 'Repo 3 to mux',
+    },
+];
 
 const toolQueueItems = [
     {
@@ -263,6 +327,15 @@ function cloneDraft(draft: Readonly<CurveDraft>): CurveDraft {
     };
 }
 
+function cloneRepoCurves(
+    repoCurves: readonly RepoCurve[]
+): readonly RepoCurve[] {
+    return repoCurves.map((repoCurve) => ({
+        ...repoCurve,
+        curve: cloneDraft(repoCurve.curve),
+    }));
+}
+
 function cloneLayout(layout: readonly LayoutItem[]): readonly LayoutItem[] {
     return layout.map((item) => ({ ...item }));
 }
@@ -298,6 +371,17 @@ function normalizePoint(point: Readonly<Point>): Point {
     };
 }
 
+function normalizeCurve(curve: Readonly<CurveDraft>) {
+    return {
+        segments: curve.segments.map((segment) => ({
+            c1: normalizePoint(segment.c1),
+            c2: normalizePoint(segment.c2),
+            end: normalizePoint(segment.end),
+        })),
+        start: normalizePoint(curve.start),
+    };
+}
+
 function createExport(draft: Readonly<ToolDraft>): string {
     return JSON.stringify(
         {
@@ -306,16 +390,17 @@ function createExport(draft: Readonly<ToolDraft>): string {
                 width: canvasWidth,
             },
             layout: draft.layout,
+            repoCurves: draft.repoCurves.map((repoCurve) => ({
+                ...repoCurve,
+                path: createPath(repoCurve.curve),
+            })),
             normalized: {
-                curve: {
-                    segments: draft.curve.segments.map((segment) => ({
-                        c1: normalizePoint(segment.c1),
-                        c2: normalizePoint(segment.c2),
-                        end: normalizePoint(segment.end),
-                    })),
-                    start: normalizePoint(draft.curve.start),
-                },
+                curve: normalizeCurve(draft.curve),
                 layout: draft.layout.map(normalizeLayoutItem),
+                repoCurves: draft.repoCurves.map((repoCurve) => ({
+                    ...repoCurve,
+                    curve: normalizeCurve(repoCurve.curve),
+                })),
             },
             path: createPath(draft.curve),
             points: draft.curve,
@@ -329,6 +414,7 @@ function createInitialDraft(): ToolDraft {
     return {
         curve: cloneDraft(defaultDraft),
         layout: cloneLayout(defaultLayout),
+        repoCurves: cloneRepoCurves(defaultRepoCurves),
     };
 }
 
@@ -397,6 +483,60 @@ function createSegment(start: Readonly<Point>, end: Readonly<Point>) {
         },
         end: { ...end },
     };
+}
+
+function updateCurveWithDrag(
+    curve: Readonly<CurveDraft>,
+    target: Readonly<DragTarget>,
+    nextPoint: Readonly<Point>
+): CurveDraft {
+    const nextCurve = cloneDraft(curve);
+
+    if (target.kind === 'start') {
+        const delta = {
+            x: nextPoint.x - nextCurve.start.x,
+            y: nextPoint.y - nextCurve.start.y,
+        };
+
+        nextCurve.start = { ...nextPoint };
+
+        const firstSegment = nextCurve.segments.at(0);
+
+        if (firstSegment !== undefined) {
+            firstSegment.c1.x += delta.x;
+            firstSegment.c1.y += delta.y;
+        }
+
+        return nextCurve;
+    }
+
+    const segment = nextCurve.segments.at(target.index);
+
+    if (segment === undefined) {
+        return nextCurve;
+    }
+
+    if (target.kind === 'end') {
+        const delta = {
+            x: nextPoint.x - segment.end.x,
+            y: nextPoint.y - segment.end.y,
+        };
+
+        segment.end = { ...nextPoint };
+        segment.c2.x += delta.x;
+        segment.c2.y += delta.y;
+
+        const nextSegment = nextCurve.segments.at(target.index + 1);
+
+        if (nextSegment !== undefined) {
+            nextSegment.c1.x += delta.x;
+            nextSegment.c1.y += delta.y;
+        }
+    } else {
+        segment[target.kind] = { ...nextPoint };
+    }
+
+    return nextCurve;
 }
 
 function getAnchors(item: Readonly<LayoutItem>) {
@@ -522,17 +662,21 @@ export function LandingLineTool(): JSX.Element {
         try {
             const parsedDraft = JSON.parse(savedDraft) as
                 | CurveDraft
-                | ToolDraft;
+                | StoredToolDraft;
 
             if ('curve' in parsedDraft) {
                 setDraft({
                     curve: parsedDraft.curve,
                     layout: parsedDraft.layout,
+                    repoCurves:
+                        parsedDraft.repoCurves ??
+                        cloneRepoCurves(defaultRepoCurves),
                 });
             } else {
                 setDraft({
                     curve: parsedDraft,
                     layout: cloneLayout(defaultLayout),
+                    repoCurves: cloneRepoCurves(defaultRepoCurves),
                 });
             }
 
@@ -611,58 +755,31 @@ export function LandingLineTool(): JSX.Element {
         const nextPoint = getSvgPoint(svg, event);
 
         setDraft((currentDraft) => {
-            const nextCurve = cloneDraft(currentDraft.curve);
-
-            if (dragTarget.kind === 'start') {
-                const delta = {
-                    x: nextPoint.x - nextCurve.start.x,
-                    y: nextPoint.y - nextCurve.start.y,
-                };
-
-                nextCurve.start = nextPoint;
-
-                const firstSegment = nextCurve.segments.at(0);
-
-                if (firstSegment !== undefined) {
-                    firstSegment.c1.x += delta.x;
-                    firstSegment.c1.y += delta.y;
-                }
-
+            if (dragTarget.curveId === 'main') {
                 return {
                     ...currentDraft,
-                    curve: nextCurve,
+                    curve: updateCurveWithDrag(
+                        currentDraft.curve,
+                        dragTarget,
+                        nextPoint
+                    ),
                 };
-            }
-
-            const segment = nextCurve.segments.at(dragTarget.index);
-
-            if (segment === undefined) {
-                return currentDraft;
-            }
-
-            if (dragTarget.kind === 'end') {
-                const delta = {
-                    x: nextPoint.x - segment.end.x,
-                    y: nextPoint.y - segment.end.y,
-                };
-
-                segment.end = nextPoint;
-                segment.c2.x += delta.x;
-                segment.c2.y += delta.y;
-
-                const nextSegment = nextCurve.segments.at(dragTarget.index + 1);
-
-                if (nextSegment !== undefined) {
-                    nextSegment.c1.x += delta.x;
-                    nextSegment.c1.y += delta.y;
-                }
-            } else {
-                segment[dragTarget.kind] = nextPoint;
             }
 
             return {
                 ...currentDraft,
-                curve: nextCurve,
+                repoCurves: currentDraft.repoCurves.map((repoCurve) =>
+                    repoCurve.id === dragTarget.curveId
+                        ? {
+                              ...repoCurve,
+                              curve: updateCurveWithDrag(
+                                  repoCurve.curve,
+                                  dragTarget,
+                                  nextPoint
+                              ),
+                          }
+                        : repoCurve
+                ),
             };
         });
     }
@@ -744,6 +861,80 @@ export function LandingLineTool(): JSX.Element {
         setLayoutDragTarget(undefined);
         setSnapGuides([]);
         setStatus('Adjusted layout');
+    }
+
+    function renderCurveControls(
+        curve: Readonly<CurveDraft>,
+        curveId: CurveTargetId
+    ) {
+        return (
+            <>
+                {curve.segments.map((segment, index) => {
+                    const previousAnchor = getPreviousAnchor(curve, index);
+
+                    return (
+                        <g
+                            key={`${curveId}-${index}-${segment.end.x}-${segment.end.y}`}
+                        >
+                            <line
+                                className='line-tool__handle-line'
+                                x1={previousAnchor.x}
+                                x2={segment.c1.x}
+                                y1={previousAnchor.y}
+                                y2={segment.c1.y}
+                            />
+                            <line
+                                className='line-tool__handle-line'
+                                x1={segment.end.x}
+                                x2={segment.c2.x}
+                                y1={segment.end.y}
+                                y2={segment.c2.y}
+                            />
+                            <circle
+                                className='line-tool__handle'
+                                cx={segment.c1.x}
+                                cy={segment.c1.y}
+                                onPointerDown={(event) => {
+                                    event.stopPropagation();
+                                    startDrag({ curveId, index, kind: 'c1' });
+                                }}
+                                r='8'
+                            />
+                            <circle
+                                className='line-tool__handle'
+                                cx={segment.c2.x}
+                                cy={segment.c2.y}
+                                onPointerDown={(event) => {
+                                    event.stopPropagation();
+                                    startDrag({ curveId, index, kind: 'c2' });
+                                }}
+                                r='8'
+                            />
+                            <circle
+                                className='line-tool__node'
+                                cx={segment.end.x}
+                                cy={segment.end.y}
+                                onPointerDown={(event) => {
+                                    event.stopPropagation();
+                                    startDrag({ curveId, index, kind: 'end' });
+                                }}
+                                r='12'
+                            />
+                        </g>
+                    );
+                })}
+                <circle
+                    className='line-tool__node line-tool__node--start'
+                    cx={curve.start.x}
+                    cy={curve.start.y}
+                    onPointerDown={(event) => {
+                        event.stopPropagation();
+                        startDrag({ curveId, index: 0, kind: 'start' });
+                    }}
+                    r='12'
+                />
+            </>
+        );
     }
 
     function renderLayoutItemContent(item: Readonly<LayoutItem>) {
@@ -1113,76 +1304,25 @@ export function LandingLineTool(): JSX.Element {
                             height={canvasHeight}
                             width={canvasWidth}
                         />
+                        {draft.repoCurves.map((repoCurve) => (
+                            <path
+                                className={`line-tool__repo-curve line-tool__repo-curve--${repoCurve.id}`}
+                                d={createPath(repoCurve.curve)}
+                                key={repoCurve.id}
+                            />
+                        ))}
                         <path className='line-tool__curve-shadow' d={path} />
                         <path className='line-tool__curve' d={path} />
 
-                        {draft.curve.segments.map((segment, index) => {
-                            const previousAnchor = getPreviousAnchor(
-                                draft.curve,
-                                index
-                            );
-
-                            return (
-                                <g
-                                    key={`${index}-${segment.end.x}-${segment.end.y}`}
-                                >
-                                    <line
-                                        className='line-tool__handle-line'
-                                        x1={previousAnchor.x}
-                                        x2={segment.c1.x}
-                                        y1={previousAnchor.y}
-                                        y2={segment.c1.y}
-                                    />
-                                    <line
-                                        className='line-tool__handle-line'
-                                        x1={segment.end.x}
-                                        x2={segment.c2.x}
-                                        y1={segment.end.y}
-                                        y2={segment.c2.y}
-                                    />
-                                    <circle
-                                        className='line-tool__handle'
-                                        cx={segment.c1.x}
-                                        cy={segment.c1.y}
-                                        onPointerDown={(event) => {
-                                            event.stopPropagation();
-                                            startDrag({ index, kind: 'c1' });
-                                        }}
-                                        r='8'
-                                    />
-                                    <circle
-                                        className='line-tool__handle'
-                                        cx={segment.c2.x}
-                                        cy={segment.c2.y}
-                                        onPointerDown={(event) => {
-                                            event.stopPropagation();
-                                            startDrag({ index, kind: 'c2' });
-                                        }}
-                                        r='8'
-                                    />
-                                    <circle
-                                        className='line-tool__node'
-                                        cx={segment.end.x}
-                                        cy={segment.end.y}
-                                        onPointerDown={(event) => {
-                                            event.stopPropagation();
-                                            startDrag({ index, kind: 'end' });
-                                        }}
-                                        r='12'
-                                    />
-                                </g>
-                            );
-                        })}
-                        <circle
-                            className='line-tool__node line-tool__node--start'
-                            cx={draft.curve.start.x}
-                            cy={draft.curve.start.y}
-                            onPointerDown={(event) => {
-                                event.stopPropagation();
-                                startDrag({ index: 0, kind: 'start' });
-                            }}
-                            r='12'
-                        />
+                        {draft.repoCurves.map((repoCurve) => (
+                            <g key={`${repoCurve.id}-controls`}>
+                                {renderCurveControls(
+                                    repoCurve.curve,
+                                    repoCurve.id
+                                )}
+                            </g>
+                        ))}
+                        {renderCurveControls(draft.curve, 'main')}
                     </svg>
                 </div>
             </section>
