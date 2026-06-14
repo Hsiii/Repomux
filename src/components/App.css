@@ -474,6 +474,7 @@
 
 .login-wall__codex-node {
     grid-area: codex;
+    position: relative;
     justify-self: end;
     align-self: center;
     width: var(--size-login-flow-node);
@@ -481,6 +482,20 @@
     margin: 0 var(--space-40) 0 0;
     display: grid;
     place-items: center;
+}
+
+.login-wall__codex-node::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: var(--radius-pill);
+    background-color: var(--clr-login-bg);
+}
+
+.login-wall__codex-node .login-wall__mux-codex {
+    position: relative;
+    z-index: 2;
 }
 
 .login-wall--light .login-wall__flow-mux-logo {
@@ -493,12 +508,13 @@
     z-index: 2;
     padding: 0;
     margin-bottom: 0;
-    overflow: hidden;
+    overflow: visible;
     background-color: var(--clr-login-card-solid);
 }
 
 .login-wall__feature--queue .login-wall__app-preview {
     width: min(100%, var(--size-login-preview-wide));
+    overflow: visible;
     border: 0;
     background-color: transparent;
     box-shadow: none;
@@ -509,7 +525,7 @@
     padding: 0;
     grid-template-rows: auto auto;
     align-content: start;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .login-wall__work-panel-preview .queue-list {
@@ -907,7 +923,7 @@
         left: 6.4103%;
         z-index: 33;
         width: 44.2308%;
-        height: 9.3846%;
+        height: 10.4615%;
     }
 
     .login-wall__feature--queue > .login-wall__feature-copy {
@@ -917,6 +933,7 @@
         width: 31.4103%;
         height: 5.5385%;
         padding: 0;
+        align-content: center;
     }
 
     .login-wall__feature--prompt > .login-wall__feature-copy {
@@ -933,13 +950,14 @@
         left: 55.1282%;
         z-index: 49;
         width: 38.4615%;
-        height: 14.7692%;
+        height: 16%;
         padding: 0;
     }
 
     .login-wall__prompt-card {
         width: 100%;
         height: 100%;
+        overflow: visible;
     }
 
     .login-wall__codex-node {
