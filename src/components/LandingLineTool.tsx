@@ -9,7 +9,6 @@ import {
     Copy,
     GitPullRequestArrow,
     MousePointer2,
-    Move,
     PenTool,
     RotateCcw,
     Save,
@@ -657,9 +656,9 @@ function getSnapRects(layout: readonly LayoutItem[]): readonly SnapRect[] {
 
 function getElementSnapRects(
     frame: Readonly<HTMLDivElement>,
-    svg: Readonly<SVGSVGElement>
+    coordinateElement: Readonly<Element>
 ): readonly SnapRect[] {
-    const svgRect = svg.getBoundingClientRect();
+    const svgRect = coordinateElement.getBoundingClientRect();
     const snapElements = frame.querySelectorAll<HTMLElement>(
         '.line-tool__layout-item, .line-tool__repo-snap-target'
     );
@@ -800,7 +799,7 @@ function snapLayoutItem(
 
 export function LandingLineTool(): JSX.Element {
     const [draft, setDraft] = useState<ToolDraft>(createInitialDraft);
-    const [mode, setMode] = useState<'layout' | 'node' | 'pen'>('node');
+    const [mode, setMode] = useState<'node' | 'pen'>('node');
     const [activeCurveId, setActiveCurveId] = useState<CurveTargetId>('main');
     const [dragTarget, setDragTarget] = useState<DragTarget | undefined>();
     const [layoutDragTarget, setLayoutDragTarget] = useState<
@@ -1026,14 +1025,12 @@ export function LandingLineTool(): JSX.Element {
         return classNames.join(' ');
     }
 
-    function updateDrag(event: PointerEvent<SVGSVGElement>) {
-        const svg = svgRef.current;
-
-        if (svg === null || dragTarget === undefined) {
+    function updateCurveDrag(rawPoint: Readonly<Point>) {
+        if (dragTarget === undefined) {
             return;
         }
 
-        const rawPoint = getSvgPoint(svg, event);
+        const svg = svgRef.current;
         const frame = frameRef.current;
 
         setDraft((currentDraft) => {
@@ -1043,7 +1040,7 @@ export function LandingLineTool(): JSX.Element {
                           rawPoint,
                           frame === null
                               ? getSnapRects(currentDraft.layout)
-                              : getElementSnapRects(frame, svg)
+                              : getElementSnapRects(frame, svg ?? frame)
                       )
                     : { guides: [], point: rawPoint };
 
@@ -1078,6 +1075,40 @@ export function LandingLineTool(): JSX.Element {
         });
     }
 
+    function updateDrag(event: PointerEvent<SVGSVGElement>) {
+        const svg = svgRef.current;
+
+        if (svg === null || dragTarget === undefined) {
+            return;
+        }
+
+        updateCurveDrag(getSvgPoint(svg, event));
+    }
+
+    function updateFrameDrag(event: PointerEvent<HTMLDivElement>) {
+        const frame = frameRef.current;
+
+        if (frame === null) {
+            return;
+        }
+
+        if (dragTarget !== undefined) {
+            updateCurveDrag(getFramePoint(frame, event));
+            return;
+        }
+
+        updateLayoutDrag(event);
+    }
+
+    function finishFrameDrag() {
+        if (dragTarget !== undefined) {
+            finishDrag();
+            return;
+        }
+
+        finishLayoutDrag();
+    }
+
     function finishDrag() {
         if (dragTarget === undefined) {
             return;
@@ -1094,10 +1125,11 @@ export function LandingLineTool(): JSX.Element {
     ) {
         const frame = frameRef.current;
 
-        if (frame === null || mode !== 'layout') {
+        if (frame === null || mode !== 'node') {
             return;
         }
 
+        event.currentTarget.setPointerCapture(event.pointerId);
         const point = getFramePoint(frame, event);
 
         setDragTarget(undefined);
@@ -1192,6 +1224,9 @@ export function LandingLineTool(): JSX.Element {
                                 cy={segment.c1.y}
                                 onPointerDown={(event) => {
                                     event.stopPropagation();
+                                    event.currentTarget.setPointerCapture(
+                                        event.pointerId
+                                    );
                                     startDrag({ curveId, index, kind: 'c1' });
                                 }}
                                 r='8'
@@ -1202,6 +1237,9 @@ export function LandingLineTool(): JSX.Element {
                                 cy={segment.c2.y}
                                 onPointerDown={(event) => {
                                     event.stopPropagation();
+                                    event.currentTarget.setPointerCapture(
+                                        event.pointerId
+                                    );
                                     startDrag({ curveId, index, kind: 'c2' });
                                 }}
                                 r='8'
@@ -1216,6 +1254,9 @@ export function LandingLineTool(): JSX.Element {
                                 cy={segment.end.y}
                                 onPointerDown={(event) => {
                                     event.stopPropagation();
+                                    event.currentTarget.setPointerCapture(
+                                        event.pointerId
+                                    );
                                     startDrag({ curveId, index, kind: 'end' });
                                 }}
                                 r='12'
@@ -1229,9 +1270,82 @@ export function LandingLineTool(): JSX.Element {
                     cy={curve.start.y}
                     onPointerDown={(event) => {
                         event.stopPropagation();
+                        event.currentTarget.setPointerCapture(event.pointerId);
                         startDrag({ curveId, index: 0, kind: 'start' });
                     }}
                     r='12'
+                />
+            </>
+        );
+    }
+
+    function renderCurveHitControls(
+        curve: Readonly<CurveDraft>,
+        curveId: CurveTargetId
+    ) {
+        const createControlStyle = (point: Readonly<Point>): CSSProperties => ({
+            left: `${(point.x / canvasWidth) * 100}%`,
+            top: `${(point.y / canvasHeight) * 100}%`,
+        });
+
+        return (
+            <>
+                {curve.segments.map((segment, index) => (
+                    <span
+                        className='line-tool__control-hit-group'
+                        key={`${curveId}-${index}-hit`}
+                    >
+                        <button
+                            aria-label='Move curve handle'
+                            className='line-tool__control-hit line-tool__control-hit--handle'
+                            onPointerDown={(event) => {
+                                event.stopPropagation();
+                                event.currentTarget.setPointerCapture(
+                                    event.pointerId
+                                );
+                                startDrag({ curveId, index, kind: 'c1' });
+                            }}
+                            style={createControlStyle(segment.c1)}
+                            type='button'
+                        />
+                        <button
+                            aria-label='Move curve handle'
+                            className='line-tool__control-hit line-tool__control-hit--handle'
+                            onPointerDown={(event) => {
+                                event.stopPropagation();
+                                event.currentTarget.setPointerCapture(
+                                    event.pointerId
+                                );
+                                startDrag({ curveId, index, kind: 'c2' });
+                            }}
+                            style={createControlStyle(segment.c2)}
+                            type='button'
+                        />
+                        <button
+                            aria-label='Move curve node'
+                            className='line-tool__control-hit line-tool__control-hit--node'
+                            onPointerDown={(event) => {
+                                event.stopPropagation();
+                                event.currentTarget.setPointerCapture(
+                                    event.pointerId
+                                );
+                                startDrag({ curveId, index, kind: 'end' });
+                            }}
+                            style={createControlStyle(segment.end)}
+                            type='button'
+                        />
+                    </span>
+                ))}
+                <button
+                    aria-label='Move curve start node'
+                    className='line-tool__control-hit line-tool__control-hit--node'
+                    onPointerDown={(event) => {
+                        event.stopPropagation();
+                        event.currentTarget.setPointerCapture(event.pointerId);
+                        startDrag({ curveId, index: 0, kind: 'start' });
+                    }}
+                    style={createControlStyle(curve.start)}
+                    type='button'
                 />
             </>
         );
@@ -1481,21 +1595,6 @@ export function LandingLineTool(): JSX.Element {
                         >
                             <MousePointer2 aria-hidden='true' size={16} />
                         </button>
-                        <button
-                            aria-label='Layout tool'
-                            className={
-                                mode === 'layout'
-                                    ? 'line-tool__button line-tool__button--active'
-                                    : 'line-tool__button'
-                            }
-                            onClick={() => {
-                                setMode('layout');
-                            }}
-                            title='Layout tool'
-                            type='button'
-                        >
-                            <Move aria-hidden='true' size={16} />
-                        </button>
                     </div>
                     <div
                         aria-label='Draft actions'
@@ -1545,13 +1644,13 @@ export function LandingLineTool(): JSX.Element {
 
                 <div
                     className={
-                        mode === 'layout'
-                            ? 'line-tool__canvas-frame line-tool__canvas-frame--layout'
+                        mode === 'node'
+                            ? 'line-tool__canvas-frame line-tool__canvas-frame--node'
                             : 'line-tool__canvas-frame'
                     }
-                    onPointerLeave={finishLayoutDrag}
-                    onPointerMove={updateLayoutDrag}
-                    onPointerUp={finishLayoutDrag}
+                    onPointerLeave={finishFrameDrag}
+                    onPointerMove={updateFrameDrag}
+                    onPointerUp={finishFrameDrag}
                     ref={frameRef}
                 >
                     <div className='line-tool__mockup'>
@@ -1574,7 +1673,7 @@ export function LandingLineTool(): JSX.Element {
                                     top: item.y,
                                     width: item.width,
                                 }}
-                                tabIndex={mode === 'layout' ? 0 : -1}
+                                tabIndex={mode === 'node' ? 0 : -1}
                             >
                                 <span className='line-tool__layout-label'>
                                     {item.label}
@@ -1652,6 +1751,17 @@ export function LandingLineTool(): JSX.Element {
                         ))}
                         {renderCurveControls(draft.curve, 'main')}
                     </svg>
+                    <div className='line-tool__control-layer'>
+                        {draft.repoCurves.map((repoCurve) => (
+                            <span key={`${repoCurve.id}-hit-controls`}>
+                                {renderCurveHitControls(
+                                    repoCurve.curve,
+                                    repoCurve.id
+                                )}
+                            </span>
+                        ))}
+                        {renderCurveHitControls(draft.curve, 'main')}
+                    </div>
                 </div>
             </section>
         </main>

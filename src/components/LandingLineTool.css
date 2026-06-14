@@ -138,7 +138,7 @@
     pointer-events: none;
 }
 
-.line-tool__canvas-frame--layout .line-tool__mockup {
+.line-tool__canvas-frame--node .line-tool__mockup {
     pointer-events: auto;
 }
 
@@ -146,19 +146,58 @@
     width: 100%;
     height: 100%;
     display: block;
-    touch-action: none;
-}
-
-.line-tool__canvas-frame--layout .line-tool__canvas {
     pointer-events: none;
+    touch-action: none;
 }
 
 .line-tool__canvas--pen {
     cursor: crosshair;
+    pointer-events: auto;
+}
+
+.line-tool__control-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.line-tool__control-hit-group {
+    display: contents;
+}
+
+.line-tool__control-hit {
+    position: absolute;
+    border: 0;
+    border-radius: var(--radius-pill);
+    padding: 0;
+    background-color: transparent;
+    cursor: grab;
+    pointer-events: auto;
+    transform: translate(-50%, -50%);
+}
+
+.line-tool__control-hit:active {
+    cursor: grabbing;
+}
+
+.line-tool__control-hit--handle {
+    width: var(--space-24);
+    height: var(--space-24);
+}
+
+.line-tool__control-hit--node {
+    width: var(--space-40);
+    height: var(--space-40);
 }
 
 .line-tool__canvas-hit-area {
     fill: transparent;
+    pointer-events: none;
+}
+
+.line-tool__canvas--pen .line-tool__canvas-hit-area {
+    pointer-events: auto;
 }
 
 .line-tool__landing-copy.login-wall__feature-copy {
@@ -237,12 +276,12 @@
     border-radius: var(--radius-8);
 }
 
-.line-tool__canvas-frame--layout .line-tool__layout-item {
+.line-tool__canvas-frame--node .line-tool__layout-item {
     cursor: grab;
     pointer-events: auto;
 }
 
-.line-tool__canvas-frame--layout .line-tool__layout-item:hover,
+.line-tool__canvas-frame--node .line-tool__layout-item:hover,
 .line-tool__layout-item--active {
     outline-color: var(--clr-login-flow-cyan);
 }
@@ -265,7 +304,7 @@
     pointer-events: none;
 }
 
-.line-tool__canvas-frame--layout
+.line-tool__canvas-frame--node
     .line-tool__layout-item:hover
     .line-tool__layout-label,
 .line-tool__layout-item--active .line-tool__layout-label {
@@ -341,6 +380,7 @@
 .line-tool__handle,
 .line-tool__node {
     cursor: grab;
+    pointer-events: auto;
     stroke: var(--clr-login-card-solid);
     stroke-width: 3;
 }
