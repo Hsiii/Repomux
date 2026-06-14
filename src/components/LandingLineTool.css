@@ -208,6 +208,12 @@
     letter-spacing: 0;
 }
 
+.line-tool__landing-copy.login-wall__feature-copy
+    .login-wall__feature-heading--nowrap {
+    max-width: none;
+    white-space: nowrap;
+}
+
 .line-tool__repo-row.login-wall__repo-row {
     height: auto;
 }

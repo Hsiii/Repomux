@@ -1312,7 +1312,9 @@ export function LandingLineTool(): JSX.Element {
             case 'automation-copy': {
                 return (
                     <div className='login-wall__feature-copy line-tool__landing-copy'>
-                        <h2>Let Codex pick up the work.</h2>
+                        <h2 className='login-wall__feature-heading--nowrap'>
+                            Let Codex pick it up
+                        </h2>
                         <p>
                             Set up automation with a single prompt in seconds.
                         </p>
@@ -1501,7 +1503,9 @@ export function LandingLineTool(): JSX.Element {
             case 'result-copy': {
                 return (
                     <div className='login-wall__feature-copy line-tool__landing-copy'>
-                        <h2>Come back to PRs.</h2>
+                        <h2 className='login-wall__feature-heading--nowrap'>
+                            Come back to PRs.
+                        </h2>
                         <p>
                             Review the PRs submitted by Codex without leaving
                             the dashboard.

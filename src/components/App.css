@@ -289,6 +289,12 @@
     letter-spacing: -0.02em;
 }
 
+.login-wall__feature-copy .login-wall__feature-heading--nowrap {
+    max-width: none;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+
 .login-wall__feature-copy p {
     max-width: 34rem;
     color: var(--clr-login-text-muted);

@@ -1064,8 +1064,8 @@ export function App(): JSX.Element {
                                         </div>
                                         <section className='login-wall__bento-cell login-wall__bento-cell--automation'>
                                             <div className='login-wall__feature-copy'>
-                                                <h2>
-                                                    Let Codex pick up the work.
+                                                <h2 className='login-wall__feature-heading--nowrap'>
+                                                    Let Codex pick it up
                                                 </h2>
                                                 <p>
                                                     Set up{' '}
@@ -1104,7 +1104,9 @@ export function App(): JSX.Element {
 
                                     <article className='login-wall__feature login-wall__feature--result'>
                                         <div className='login-wall__feature-copy'>
-                                            <h2>Come back to PRs.</h2>
+                                            <h2 className='login-wall__feature-heading--nowrap'>
+                                                Come back to PRs.
+                                            </h2>
                                             <p>
                                                 Simply review the PRs submitted
                                                 by Codex, no need to leave the
