@@ -3,8 +3,12 @@
 import type { JSX, PointerEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+    BookMarked,
+    Check,
+    CircleDot,
     Copy,
     Download,
+    GitPullRequestArrow,
     MousePointer2,
     PenTool,
     RotateCcw,
@@ -72,13 +76,43 @@ const defaultDraft: CurveDraft = {
     ],
 };
 
-const layoutBlocks = [
-    { height: 124, label: 'repo cards', width: 536, x: 504, y: 104 },
-    { height: 168, label: 'repomux mark', width: 192, x: 608, y: 528 },
-    { height: 216, label: 'work queue', width: 552, x: 108, y: 972 },
-    { height: 308, label: 'prompt card', width: 480, x: 552, y: 1576 },
-    { height: 136, label: 'codex mark', width: 136, x: 316, y: 1996 },
-    { height: 96, label: 'returned PR', width: 520, x: 392, y: 2396 },
+const toolQueueItems = [
+    {
+        icon: CircleDot,
+        meta: 'Hsiii/repomux',
+        number: 128,
+        status: 'Ready',
+        title: 'Polish landing page',
+        type: 'issue',
+    },
+    {
+        icon: CircleDot,
+        meta: 'Hsiii/comux',
+        number: 41,
+        status: 'Prepared',
+        title: 'Consider supporting Claude',
+        type: 'issue',
+    },
+    {
+        icon: GitPullRequestArrow,
+        meta: 'Hsiii/create-hsi-app',
+        number: 72,
+        status: 'Assigned',
+        title: 'Add user menu pop up',
+        type: 'pr',
+    },
+] as const;
+
+const toolRepositories = [
+    { name: 'repomux', owner: 'Hsiii' },
+    { name: 'create-hsi-app', owner: 'Hsiii' },
+    { name: 'comux', owner: 'Hsiii' },
+] as const;
+
+const toolPromptLines = [
+    'Redesign the benefit section to show repo multiplexing.',
+    'Keep the queue, prompt handoff, and automation states easy to scan.',
+    'Remove decorative clutter and keep the review path obvious.',
 ] as const;
 
 function cloneDraft(draft: Readonly<CurveDraft>): CurveDraft {
@@ -246,7 +280,7 @@ export function LandingLineTool(): JSX.Element {
     function addPoint(event: PointerEvent<SVGSVGElement>) {
         const svg = svgRef.current;
 
-        if (svg === null || event.target !== svg) {
+        if (svg === null) {
             return;
         }
 
@@ -428,117 +462,235 @@ export function LandingLineTool(): JSX.Element {
             </aside>
 
             <section className='line-tool__workspace'>
-                <svg
-                    className={
-                        mode === 'pen'
-                            ? 'line-tool__canvas line-tool__canvas--pen'
-                            : 'line-tool__canvas'
-                    }
-                    height={canvasHeight}
-                    onPointerDown={(event) => {
-                        if (mode === 'pen') {
-                            addPoint(event);
+                <div className='line-tool__canvas-frame'>
+                    <div aria-hidden='true' className='line-tool__mockup'>
+                        <section className='line-tool__story line-tool__story--mux'>
+                            <div className='line-tool__copy line-tool__copy--left'>
+                                <h2>One workspace for every repo.</h2>
+                                <p>
+                                    Repomux connects your GitHub repositories
+                                    and surfaces the scattered issues and PRs
+                                    you need to work through.
+                                </p>
+                            </div>
+                            <div className='line-tool__repo-row'>
+                                {toolRepositories.map(({ name, owner }) => (
+                                    <div
+                                        className='line-tool__repo-card'
+                                        key={name}
+                                    >
+                                        <BookMarked size={18} />
+                                        <span>{owner}</span>
+                                        <strong>{name}</strong>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        <div className='line-tool__mux-node'>
+                            <img alt='' src='/repomux-logo.svg' />
+                        </div>
+
+                        <section className='line-tool__story line-tool__story--queue'>
+                            <div className='line-tool__queue-card'>
+                                {toolQueueItems.map(
+                                    ({
+                                        icon: Icon,
+                                        meta,
+                                        number,
+                                        status: itemStatus,
+                                        title,
+                                        type,
+                                    }) => (
+                                        <div
+                                            className='line-tool__queue-row'
+                                            key={title}
+                                        >
+                                            <span className='line-tool__queue-type'>
+                                                <Icon
+                                                    aria-label={
+                                                        type === 'issue'
+                                                            ? 'Issue'
+                                                            : 'Pull request'
+                                                    }
+                                                    size={18}
+                                                />
+                                            </span>
+                                            <span className='line-tool__queue-content'>
+                                                <span className='line-tool__queue-title'>
+                                                    {title}
+                                                </span>
+                                                <span className='line-tool__queue-meta'>
+                                                    {meta} #{number}
+                                                </span>
+                                            </span>
+                                            <span className='line-tool__readiness'>
+                                                {itemStatus === 'Ready' ? (
+                                                    <Check size={18} />
+                                                ) : (
+                                                    <span />
+                                                )}
+                                            </span>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                            <div className='line-tool__copy'>
+                                <h2>One queue for active work.</h2>
+                                <p>
+                                    See issues and PRs from active repos in one
+                                    queue.
+                                </p>
+                            </div>
+                        </section>
+
+                        <section className='line-tool__story line-tool__story--prompt'>
+                            <div className='line-tool__copy line-tool__copy--left'>
+                                <h2>Add your prompt.</h2>
+                                <p>
+                                    Write the handoff, send it to Codex, then
+                                    step away.
+                                </p>
+                            </div>
+                            <div className='line-tool__prompt-card'>
+                                <div className='line-tool__prompt-issue'>
+                                    <span>GitHub issue #128</span>
+                                    <strong>
+                                        Polish landing page benefit section
+                                    </strong>
+                                </div>
+                                <div className='line-tool__prompt-preview'>
+                                    {toolPromptLines.map((line) => (
+                                        <span key={line}>{line}</span>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className='line-tool__codex-node'>
+                                <span>Codex</span>
+                            </div>
+                            <div className='line-tool__copy line-tool__copy--automation'>
+                                <h2>Let Codex pick up the work.</h2>
+                                <p>
+                                    Set up automation with a single prompt in
+                                    seconds.
+                                </p>
+                            </div>
+                        </section>
+
+                        <section className='line-tool__story line-tool__story--result'>
+                            <div className='line-tool__copy line-tool__copy--left'>
+                                <h2>Come back to PRs.</h2>
+                                <p>
+                                    Review the PRs submitted by Codex without
+                                    leaving the dashboard.
+                                </p>
+                            </div>
+                            <div className='line-tool__result-card'>
+                                <GitPullRequestArrow size={18} />
+                                <span>
+                                    <strong>Add user menu pop up</strong>
+                                    <small>Hsiii/create-hsi-app #72</small>
+                                </span>
+                                <Check size={18} />
+                            </div>
+                        </section>
+                    </div>
+
+                    <svg
+                        className={
+                            mode === 'pen'
+                                ? 'line-tool__canvas line-tool__canvas--pen'
+                                : 'line-tool__canvas'
                         }
-                    }}
-                    onPointerMove={updateDrag}
-                    onPointerUp={finishDrag}
-                    ref={svgRef}
-                    viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
-                    width={canvasWidth}
-                >
-                    <rect
-                        className='line-tool__canvas-bg'
                         height={canvasHeight}
-                        width={canvasWidth}
-                    />
-                    {layoutBlocks.map((block) => (
-                        <g key={block.label}>
-                            <rect
-                                className='line-tool__layout-block'
-                                height={block.height}
-                                rx='8'
-                                width={block.width}
-                                x={block.x}
-                                y={block.y}
-                            />
-                            <text
-                                className='line-tool__layout-label'
-                                x={block.x + 16}
-                                y={block.y + 32}
-                            >
-                                {block.label}
-                            </text>
-                        </g>
-                    ))}
-
-                    <path className='line-tool__curve-shadow' d={path} />
-                    <path className='line-tool__curve' d={path} />
-
-                    {draft.segments.map((segment, index) => {
-                        const previousAnchor = getPreviousAnchor(draft, index);
-
-                        return (
-                            <g
-                                key={`${index}-${segment.end.x}-${segment.end.y}`}
-                            >
-                                <line
-                                    className='line-tool__handle-line'
-                                    x1={previousAnchor.x}
-                                    x2={segment.c1.x}
-                                    y1={previousAnchor.y}
-                                    y2={segment.c1.y}
-                                />
-                                <line
-                                    className='line-tool__handle-line'
-                                    x1={segment.end.x}
-                                    x2={segment.c2.x}
-                                    y1={segment.end.y}
-                                    y2={segment.c2.y}
-                                />
-                                <circle
-                                    className='line-tool__handle'
-                                    cx={segment.c1.x}
-                                    cy={segment.c1.y}
-                                    onPointerDown={(event) => {
-                                        event.stopPropagation();
-                                        startDrag({ index, kind: 'c1' });
-                                    }}
-                                    r='8'
-                                />
-                                <circle
-                                    className='line-tool__handle'
-                                    cx={segment.c2.x}
-                                    cy={segment.c2.y}
-                                    onPointerDown={(event) => {
-                                        event.stopPropagation();
-                                        startDrag({ index, kind: 'c2' });
-                                    }}
-                                    r='8'
-                                />
-                                <circle
-                                    className='line-tool__node'
-                                    cx={segment.end.x}
-                                    cy={segment.end.y}
-                                    onPointerDown={(event) => {
-                                        event.stopPropagation();
-                                        startDrag({ index, kind: 'end' });
-                                    }}
-                                    r='12'
-                                />
-                            </g>
-                        );
-                    })}
-                    <circle
-                        className='line-tool__node line-tool__node--start'
-                        cx={draft.start.x}
-                        cy={draft.start.y}
                         onPointerDown={(event) => {
-                            event.stopPropagation();
-                            startDrag({ index: 0, kind: 'start' });
+                            if (mode === 'pen') {
+                                addPoint(event);
+                            }
                         }}
-                        r='12'
-                    />
-                </svg>
+                        onPointerMove={updateDrag}
+                        onPointerUp={finishDrag}
+                        ref={svgRef}
+                        viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+                        width={canvasWidth}
+                    >
+                        <rect
+                            className='line-tool__canvas-hit-area'
+                            height={canvasHeight}
+                            width={canvasWidth}
+                        />
+                        <path className='line-tool__curve-shadow' d={path} />
+                        <path className='line-tool__curve' d={path} />
+
+                        {draft.segments.map((segment, index) => {
+                            const previousAnchor = getPreviousAnchor(
+                                draft,
+                                index
+                            );
+
+                            return (
+                                <g
+                                    key={`${index}-${segment.end.x}-${segment.end.y}`}
+                                >
+                                    <line
+                                        className='line-tool__handle-line'
+                                        x1={previousAnchor.x}
+                                        x2={segment.c1.x}
+                                        y1={previousAnchor.y}
+                                        y2={segment.c1.y}
+                                    />
+                                    <line
+                                        className='line-tool__handle-line'
+                                        x1={segment.end.x}
+                                        x2={segment.c2.x}
+                                        y1={segment.end.y}
+                                        y2={segment.c2.y}
+                                    />
+                                    <circle
+                                        className='line-tool__handle'
+                                        cx={segment.c1.x}
+                                        cy={segment.c1.y}
+                                        onPointerDown={(event) => {
+                                            event.stopPropagation();
+                                            startDrag({ index, kind: 'c1' });
+                                        }}
+                                        r='8'
+                                    />
+                                    <circle
+                                        className='line-tool__handle'
+                                        cx={segment.c2.x}
+                                        cy={segment.c2.y}
+                                        onPointerDown={(event) => {
+                                            event.stopPropagation();
+                                            startDrag({ index, kind: 'c2' });
+                                        }}
+                                        r='8'
+                                    />
+                                    <circle
+                                        className='line-tool__node'
+                                        cx={segment.end.x}
+                                        cy={segment.end.y}
+                                        onPointerDown={(event) => {
+                                            event.stopPropagation();
+                                            startDrag({ index, kind: 'end' });
+                                        }}
+                                        r='12'
+                                    />
+                                </g>
+                            );
+                        })}
+                        <circle
+                            className='line-tool__node line-tool__node--start'
+                            cx={draft.start.x}
+                            cy={draft.start.y}
+                            onPointerDown={(event) => {
+                                event.stopPropagation();
+                                startDrag({ index: 0, kind: 'start' });
+                            }}
+                            r='12'
+                        />
+                    </svg>
+                </div>
             </section>
         </main>
     );
