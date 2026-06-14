@@ -66,6 +66,13 @@ interface LayoutItem {
     y: number;
 }
 
+interface SnapRect {
+    height: number;
+    width: number;
+    x: number;
+    y: number;
+}
+
 interface ToolDraft {
     curve: CurveDraft;
     layout: readonly LayoutItem[];
@@ -102,6 +109,7 @@ interface PointSnapResult {
 
 const canvasWidth = 1248;
 const canvasHeight = 2600;
+const repoCardGap = 16;
 const snapThreshold = 12;
 const legacyStorageKeys = [
     'repomux:landing-line-tool:v4',
@@ -563,7 +571,7 @@ function updateCurveWithDrag(
     return nextCurve;
 }
 
-function getAnchors(item: Readonly<LayoutItem>) {
+function getAnchors(item: Readonly<SnapRect>) {
     return {
         bottom: item.y + item.height,
         centerX: item.x + item.width / 2,
@@ -574,7 +582,7 @@ function getAnchors(item: Readonly<LayoutItem>) {
     };
 }
 
-function getBorderCenterPoints(item: Readonly<LayoutItem>): readonly Point[] {
+function getBorderCenterPoints(item: Readonly<SnapRect>): readonly Point[] {
     const anchors = getAnchors(item);
 
     return [
@@ -585,14 +593,54 @@ function getBorderCenterPoints(item: Readonly<LayoutItem>): readonly Point[] {
     ];
 }
 
-function snapPointToLayout(
+function getSnapRects(layout: readonly LayoutItem[]): readonly SnapRect[] {
+    return layout.flatMap((item) => {
+        if (item.id !== 'repo-row') {
+            return [item];
+        }
+
+        const repoCount = toolRepositories.length;
+        const repoCardWidth =
+            (item.width - repoCardGap * (repoCount - 1)) / repoCount;
+
+        return Array.from({ length: repoCount }, (_, index) => ({
+            height: item.height,
+            width: repoCardWidth,
+            x: item.x + index * (repoCardWidth + repoCardGap),
+            y: item.y,
+        }));
+    });
+}
+
+function getElementSnapRects(
+    frame: Readonly<HTMLDivElement>,
+    svg: Readonly<SVGSVGElement>
+): readonly SnapRect[] {
+    const svgRect = svg.getBoundingClientRect();
+    const snapElements = frame.querySelectorAll<HTMLElement>(
+        '.line-tool__layout-item, .line-tool__repo-snap-target'
+    );
+
+    return [...snapElements].map((element) => {
+        const rect = element.getBoundingClientRect();
+
+        return {
+            height: (rect.height / svgRect.height) * canvasHeight,
+            width: (rect.width / svgRect.width) * canvasWidth,
+            x: ((rect.left - svgRect.left) / svgRect.width) * canvasWidth,
+            y: ((rect.top - svgRect.top) / svgRect.height) * canvasHeight,
+        };
+    });
+}
+
+function snapPointToRects(
     point: Readonly<Point>,
-    layout: readonly LayoutItem[]
+    snapRects: readonly SnapRect[]
 ): PointSnapResult {
     let snappedPoint = { ...point };
     let shortestDistance = snapThreshold + 1;
 
-    for (const item of layout) {
+    for (const item of snapRects) {
         for (const snapPoint of getBorderCenterPoints(item)) {
             const xDistance = point.x - snapPoint.x;
             const yDistance = point.y - snapPoint.y;
@@ -821,11 +869,17 @@ export function LandingLineTool(): JSX.Element {
         }
 
         const rawPoint = getSvgPoint(svg, event);
+        const frame = frameRef.current;
 
         setDraft((currentDraft) => {
             const { guides, point: nextPoint } =
                 dragTarget.kind === 'start' || dragTarget.kind === 'end'
-                    ? snapPointToLayout(rawPoint, currentDraft.layout)
+                    ? snapPointToRects(
+                          rawPoint,
+                          frame === null
+                              ? getSnapRects(currentDraft.layout)
+                              : getElementSnapRects(frame, svg)
+                      )
                     : { guides: [], point: rawPoint };
 
             setSnapGuides(guides);
@@ -1160,7 +1214,10 @@ export function LandingLineTool(): JSX.Element {
                 return (
                     <div className='login-wall__repo-row line-tool__repo-row'>
                         {toolRepositories.map(({ name, owner }) => (
-                            <div className='login-wall__mux-repo' key={name}>
+                            <div
+                                className='login-wall__mux-repo line-tool__repo-snap-target'
+                                key={name}
+                            >
                                 <BookMarked size={18} />
                                 <span>{owner}</span>
                                 <strong>{name}</strong>
