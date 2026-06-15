@@ -21,6 +21,10 @@ function getGitHubOAuthErrorMessage(error: string): string {
             return 'GitHub did not return an authorization code.';
         }
 
+        case 'github_oauth_config': {
+            return 'GitHub OAuth is not configured for this deployment.';
+        }
+
         case 'github_oauth_exchange': {
             return 'Unable to complete GitHub authentication.';
         }
