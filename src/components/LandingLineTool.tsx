@@ -125,47 +125,41 @@ const defaultLineColors: Readonly<Record<CurveTargetId, string>> = {
 const lineColorOptions = Object.values(defaultLineColors);
 const repoCardGap = 16;
 const snapThreshold = 12;
-const legacyStorageKeys = [
-    'repomux:landing-line-tool:v5',
-    'repomux:landing-line-tool:v4',
-    'repomux:landing-line-tool:v3',
-    'repomux:landing-line-tool:v2',
-    'repomux:landing-line-tool:v1',
-];
-const storageKey = 'repomux:landing-line-tool:v6';
+const legacyStorageKeys: readonly string[] = [];
+const storageKey = 'repomux:landing-line-tool:v7';
 
 const defaultDraft: CurveDraft = {
-    start: { x: 704, y: 612 },
+    start: { x: 575, y: 726 },
     segments: [
         {
-            c1: { x: 640, y: 780 },
-            c2: { x: 328, y: 900 },
-            end: { x: 440, y: 1060 },
+            c1: { x: 563, y: 898 },
+            c2: { x: 235, y: 941 },
+            end: { x: 301, y: 1077 },
         },
         {
-            c1: { x: 464, y: 1236 },
-            c2: { x: 628, y: 1220 },
-            end: { x: 440, y: 1352 },
+            c1: { x: 311, y: 1265 },
+            c2: { x: 955, y: 1388 },
+            end: { x: 914, y: 1578 },
         },
         {
-            c1: { x: 612, y: 1472 },
-            c2: { x: 456, y: 1588 },
-            end: { x: 608, y: 1704 },
+            c1: { x: 1086, y: 1698 },
+            c2: { x: 715, y: 1434 },
+            end: { x: 913, y: 1579 },
         },
         {
-            c1: { x: 704, y: 1856 },
-            c2: { x: 824, y: 1912 },
-            end: { x: 384, y: 2064 },
+            c1: { x: 921, y: 1829 },
+            c2: { x: 52, y: 2188 },
+            end: { x: -260, y: 2260 },
         },
         {
-            c1: { x: 724, y: 2128 },
-            c2: { x: 1248, y: 2320 },
-            end: { x: 1248, y: 2376 },
+            c1: { x: -664, y: 2360 },
+            c2: { x: -608, y: 2540 },
+            end: { x: -284, y: 2540 },
         },
         {
-            c1: { x: 1248, y: 2648 },
-            c2: { x: 820, y: 2536 },
-            end: { x: 648, y: 2476 },
+            c1: { x: 116, y: 2540 },
+            c2: { x: 620, y: 2552 },
+            end: { x: 829, y: 2424 },
         },
     ],
 };
@@ -175,12 +169,12 @@ const defaultRepoCurves: readonly RepoCurve[] = [
         curve: {
             segments: [
                 {
-                    c1: { x: 716, y: 360 },
-                    c2: { x: 672, y: 488 },
-                    end: { x: 704, y: 612 },
+                    c1: { x: 700, y: 371 },
+                    c2: { x: 577, y: 438 },
+                    end: { x: 575, y: 566 },
                 },
             ],
-            start: { x: 716, y: 216 },
+            start: { x: 700, y: 227 },
         },
         id: 'repo-1',
         label: 'Repo 1 to mux',
@@ -189,12 +183,12 @@ const defaultRepoCurves: readonly RepoCurve[] = [
         curve: {
             segments: [
                 {
-                    c1: { x: 900, y: 360 },
-                    c2: { x: 760, y: 488 },
-                    end: { x: 704, y: 612 },
+                    c1: { x: 884, y: 356 },
+                    c2: { x: 562, y: 448 },
+                    end: { x: 575, y: 566 },
                 },
             ],
-            start: { x: 900, y: 216 },
+            start: { x: 880, y: 229 },
         },
         id: 'repo-2',
         label: 'Repo 2 to mux',
@@ -203,12 +197,12 @@ const defaultRepoCurves: readonly RepoCurve[] = [
         curve: {
             segments: [
                 {
-                    c1: { x: 1084, y: 360 },
-                    c2: { x: 848, y: 488 },
-                    end: { x: 704, y: 612 },
+                    c1: { x: 1060, y: 371 },
+                    c2: { x: 576, y: 449 },
+                    end: { x: 575, y: 562 },
                 },
             ],
-            start: { x: 1084, y: 216 },
+            start: { x: 1060, y: 227 },
         },
         id: 'repo-3',
         label: 'Repo 3 to mux',
@@ -269,23 +263,23 @@ const defaultLayout: readonly LayoutItem[] = [
         label: 'Repository cards',
         width: 536,
         x: 632,
-        y: 104,
+        y: 150,
     },
     {
         height: 168,
         id: 'mux-node',
         label: 'Repomux node',
         width: 168,
-        x: 620,
-        y: 528,
+        x: 504,
+        y: 575,
     },
     {
-        height: 244,
+        height: 278,
         id: 'queue-card',
         label: 'Work queue',
         width: 552,
         x: 80,
-        y: 972,
+        y: 958,
     },
     {
         height: 144,
@@ -300,48 +294,48 @@ const defaultLayout: readonly LayoutItem[] = [
         id: 'prompt-copy',
         label: 'Prompt copy',
         width: 392,
-        x: 80,
-        y: 1512,
+        x: 240,
+        y: 1544,
     },
     {
-        height: 384,
+        height: 416,
         id: 'prompt-card',
         label: 'Prompt card',
         width: 480,
         x: 688,
-        y: 1512,
+        y: 1432,
     },
     {
         height: 112,
         id: 'codex-node',
         label: 'Codex node',
         width: 112,
-        x: 340,
-        y: 1944,
+        x: 244,
+        y: 2076,
     },
     {
         height: 144,
         id: 'automation-copy',
         label: 'Automation copy',
         width: 360,
-        x: 704,
-        y: 1932,
+        x: 524,
+        y: 2071,
     },
     {
         height: 152,
         id: 'result-copy',
         label: 'Result copy',
         width: 392,
-        x: 80,
-        y: 2296,
+        x: 116,
+        y: 2362,
     },
     {
-        height: 84,
+        height: 92,
         id: 'result-card',
         label: 'Returned PR',
-        width: 520,
-        x: 588,
-        y: 2396,
+        width: 518,
+        x: 589,
+        y: 2392,
     },
 ];
 
