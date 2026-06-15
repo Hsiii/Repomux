@@ -5,8 +5,15 @@ import {
     assignToCodex,
     getGitHubTokenFromRequest,
 } from '../../../../lib/server/github';
+import { assertSameOriginRequest } from '../../../../lib/server/security';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+    const forbiddenResponse = assertSameOriginRequest(request);
+
+    if (forbiddenResponse !== undefined) {
+        return forbiddenResponse;
+    }
+
     const token = getGitHubTokenFromRequest(request);
 
     if (token === undefined || token === '') {
