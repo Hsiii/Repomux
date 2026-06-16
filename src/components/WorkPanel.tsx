@@ -3,6 +3,7 @@ import { useId, useState } from 'react';
 import {
     ArrowDownWideNarrow,
     ArrowLeft,
+    ArrowUpWideNarrow,
     Bot,
     Check,
     ChevronDown,
@@ -312,6 +313,8 @@ function WorkQueue(props: {
     const selectedSortOption =
         sortOptions.find((option) => option.value === workSortKey) ??
         sortOptions[0];
+    const SortDirectionIcon =
+        workSortDirection === 'desc' ? ArrowDownWideNarrow : ArrowUpWideNarrow;
     const { t } = useI18n(language);
 
     return (
@@ -434,7 +437,7 @@ function WorkQueue(props: {
                         onClick={onToggleSortMenu}
                         type='button'
                     >
-                        <ArrowDownWideNarrow aria-hidden='true' size={16} />
+                        <SortDirectionIcon aria-hidden='true' size={16} />
                         <span>{selectedSortOption.label}</span>
                         <span className='sort-menu__direction'>
                             {workSortDirection === 'desc'
