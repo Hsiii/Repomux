@@ -74,8 +74,7 @@
     gap: var(--space-4);
 }
 
-.account-name,
-.account-meta {
+.account-name {
     max-width: 180px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -84,11 +83,6 @@
 
 .account-name {
     font: var(--font-label);
-}
-
-.account-meta {
-    color: var(--clr-text-dim);
-    font: var(--font-body-sm);
 }
 
 .account-connect,
@@ -178,57 +172,40 @@
     background-color: var(--clr-surface-muted);
 }
 
-.settings-selector {
+.settings-select {
     min-height: var(--space-40);
-    display: grid;
-    grid-template-columns: var(--space-20) minmax(0, 1fr);
-    align-items: center;
-    gap: var(--space-8);
-    padding: 0 var(--space-8);
-    color: var(--clr-text-muted);
+    min-width: 0;
 }
 
-.settings-segment,
-.work-filter {
-    min-width: 0;
-    display: inline-flex;
-    align-items: center;
+.settings-select select,
+.work-filter select {
+    width: 100%;
+    min-height: var(--space-40);
     padding: var(--space-4);
     border: var(--size-border-1) solid var(--clr-border);
     border-radius: var(--radius-8);
+    color: var(--clr-text);
+    font: var(--font-label);
     background-color: var(--clr-input);
 }
 
-.settings-segment__button,
-.work-filter__button {
-    min-height: var(--space-32);
-    border: 0;
-    border-radius: var(--radius-4);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-4);
+.work-filter {
+    min-width: 176px;
+}
+
+.settings-select select {
+    padding: 0 var(--space-8);
+}
+
+.work-filter select {
+    padding: 0 var(--space-12);
+}
+
+.settings-select select:hover,
+.settings-select select:focus-visible,
+.work-filter select:hover,
+.work-filter select:focus-visible {
     color: var(--clr-text-muted);
-    font: var(--font-label);
-    background-color: transparent;
-}
-
-.settings-segment__button {
-    flex: 1;
-    padding: 0 var(--space-8);
-}
-
-.work-filter__button {
-    padding: 0 var(--space-8);
-}
-
-.settings-segment__button:hover,
-.settings-segment__button:focus-visible,
-.settings-segment__button[aria-pressed='true'],
-.work-filter__button:hover,
-.work-filter__button:focus-visible,
-.work-filter__button[aria-pressed='true'] {
-    color: var(--clr-text);
     background-color: var(--clr-surface-muted);
 }
 
@@ -289,7 +266,7 @@
 
 .sort-menu__trigger {
     min-height: var(--space-40);
-    width: 360px;
+    width: 240px;
     padding: 0 var(--space-12);
     display: inline-flex;
     align-items: center;
@@ -557,13 +534,9 @@
         display: none;
     }
 
-    .work-filter {
+    .work-filter,
+    .work-filter select {
         width: 100%;
-        justify-content: stretch;
-    }
-
-    .work-filter__button {
-        flex: 1;
     }
 
     .sort-menu__trigger {

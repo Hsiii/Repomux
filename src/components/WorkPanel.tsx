@@ -8,17 +8,11 @@ import {
     CircleArrowUp,
     CircleDot,
     GitPullRequestArrow,
-    Languages,
     LogOut,
     MessageSquare,
-    Moon,
     Search,
     Settings,
-    Sun,
-    UserCheck,
     UserCircle,
-    UserPen,
-    Users,
 } from 'lucide-react';
 
 import { useI18n } from '../hooks/use-i18n';
@@ -26,13 +20,13 @@ import type { GitHubUser, WorkItem } from '../types/app';
 import type { WorkFilter } from './RepositorySidebar';
 
 export type SortDirection = 'asc' | 'desc';
+export type ThemePreference = 'dark' | 'light' | 'system';
 export type WorkSortKey = 'repo-count' | 'type' | 'comments';
 
 interface WorkPanelProps {
     filteredRepositoriesCount: number;
     filteredWorkItems: readonly WorkItem[];
     githubUser: GitHubUser | undefined;
-    hasGitHubError: boolean;
     isGitHubConnected: boolean;
     isAssigning: boolean;
     isSettingsMenuOpen: boolean;
@@ -42,11 +36,11 @@ interface WorkPanelProps {
     onConnectGitHub: () => void;
     onDisconnectGitHub: () => void;
     onSetLanguage: (language: string) => void;
+    onSetTheme: (theme: ThemePreference) => void;
     onSetupAutomation: () => void;
     onSelectItem: (item: Readonly<WorkItem> | undefined) => void;
     onToggleSettingsMenu: () => void;
     onToggleSortMenu: () => void;
-    onToggleTheme: () => void;
     onUpdatePrompt: (value: string) => void;
     onUpdateRepositorySearchQuery: (value: string) => void;
     onUpdateSort: (sortKey: WorkSortKey, direction: SortDirection) => void;
@@ -55,7 +49,7 @@ interface WorkPanelProps {
     selectedItem: Readonly<WorkItem> | undefined;
     selectedPrompt: string;
     statusText: string;
-    theme: 'dark' | 'light';
+    theme: ThemePreference;
     workFilter: WorkFilter;
     workSortDirection: SortDirection;
     workSortKey: WorkSortKey;
@@ -73,14 +67,20 @@ const sortDirectionOptions = [
 ] as const;
 
 const workFilterOptions = [
-    { icon: Users, label: 'All', value: 'all' },
-    { icon: UserCheck, label: 'Assigned', value: 'assigned' },
-    { icon: UserPen, label: 'Created', value: 'created' },
+    { label: 'All', value: 'all' },
+    { label: 'Assigned to me', value: 'assigned' },
+    { label: 'Created by me', value: 'created' },
 ] as const;
 
 const languageOptions = [
     { label: 'EN', value: 'en' },
     { label: 'ZH', value: 'zh' },
+] as const;
+
+const themeOptions = [
+    { label: 'Dark', value: 'dark' },
+    { label: 'Light', value: 'light' },
+    { label: 'System', value: 'system' },
 ] as const;
 
 function renderGitHubDisplayName(githubUser: GitHubUser | undefined) {
@@ -95,21 +95,6 @@ function renderGitHubDisplayName(githubUser: GitHubUser | undefined) {
         githubUser.name !== githubUser.login
     ) {
         return githubUser.name;
-    }
-
-    return githubUser.login;
-}
-
-function renderGitHubMeta(
-    githubUser: GitHubUser | undefined,
-    hasGitHubError: boolean
-) {
-    if (hasGitHubError) {
-        return 'Auth needs attention';
-    }
-
-    if (githubUser?.login === undefined) {
-        return 'Connected';
     }
 
     return githubUser.login;
@@ -169,7 +154,6 @@ function WorkQueue(props: {
     filteredRepositoriesCount: number;
     filteredWorkItems: readonly WorkItem[];
     githubUser: GitHubUser | undefined;
-    hasGitHubError: boolean;
     isGitHubConnected: boolean;
     isSettingsMenuOpen: boolean;
     isSortMenuOpen: boolean;
@@ -177,16 +161,16 @@ function WorkQueue(props: {
     onConnectGitHub: () => void;
     onDisconnectGitHub: () => void;
     onSetLanguage: (language: string) => void;
+    onSetTheme: (theme: ThemePreference) => void;
     onSetupAutomation: () => void;
     onSelectItem: (item: Readonly<WorkItem>) => void;
     onToggleSettingsMenu: () => void;
     onToggleSortMenu: () => void;
-    onToggleTheme: () => void;
     onUpdateRepositorySearchQuery: (value: string) => void;
     onUpdateSort: (sortKey: WorkSortKey, direction: SortDirection) => void;
     onUpdateWorkFilter: (filter: WorkFilter) => void;
     repositorySearchQuery: string;
-    theme: 'dark' | 'light';
+    theme: ThemePreference;
     workFilter: WorkFilter;
     workSortDirection: SortDirection;
     workSortKey: WorkSortKey;
@@ -195,7 +179,6 @@ function WorkQueue(props: {
         filteredRepositoriesCount,
         filteredWorkItems,
         githubUser,
-        hasGitHubError,
         isGitHubConnected,
         isSettingsMenuOpen,
         isSortMenuOpen,
@@ -204,10 +187,10 @@ function WorkQueue(props: {
         onDisconnectGitHub,
         onSelectItem,
         onSetLanguage,
+        onSetTheme,
         onSetupAutomation,
         onToggleSettingsMenu,
         onToggleSortMenu,
-        onToggleTheme,
         onUpdateRepositorySearchQuery,
         onUpdateSort,
         onUpdateWorkFilter,
@@ -240,12 +223,6 @@ function WorkQueue(props: {
                                 <span className='account-name'>
                                     {renderGitHubDisplayName(githubUser)}
                                 </span>
-                                <span className='account-meta'>
-                                    {renderGitHubMeta(
-                                        githubUser,
-                                        hasGitHubError
-                                    )}
-                                </span>
                             </div>
                             <button
                                 aria-expanded={isSettingsMenuOpen}
@@ -273,78 +250,51 @@ function WorkQueue(props: {
 
                                     <div
                                         aria-label='Theme'
-                                        className='settings-selector'
-                                        role='group'
+                                        className='settings-select'
                                     >
-                                        <Settings
-                                            aria-hidden='true'
-                                            size={16}
-                                        />
-                                        <div className='settings-segment'>
-                                            <button
-                                                aria-pressed={theme === 'dark'}
-                                                className='settings-segment__button'
-                                                onClick={() => {
-                                                    if (theme !== 'dark') {
-                                                        onToggleTheme();
-                                                    }
-                                                }}
-                                                type='button'
-                                            >
-                                                <Moon
-                                                    aria-hidden='true'
-                                                    size={14}
-                                                />
-                                                Dark
-                                            </button>
-                                            <button
-                                                aria-pressed={theme === 'light'}
-                                                className='settings-segment__button'
-                                                onClick={() => {
-                                                    if (theme !== 'light') {
-                                                        onToggleTheme();
-                                                    }
-                                                }}
-                                                type='button'
-                                            >
-                                                <Sun
-                                                    aria-hidden='true'
-                                                    size={14}
-                                                />
-                                                Light
-                                            </button>
-                                        </div>
+                                        <select
+                                            aria-label='Theme'
+                                            onChange={(event) => {
+                                                onSetTheme(
+                                                    event.target
+                                                        .value as ThemePreference
+                                                );
+                                            }}
+                                            value={theme}
+                                        >
+                                            {themeOptions.map((option) => (
+                                                <option
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
 
                                     <div
                                         aria-label='Language'
-                                        className='settings-selector'
-                                        role='group'
+                                        className='settings-select'
                                     >
-                                        <Languages
-                                            aria-hidden='true'
-                                            size={16}
-                                        />
-                                        <div className='settings-segment'>
+                                        <select
+                                            aria-label='Language'
+                                            onChange={(event) => {
+                                                onSetLanguage(
+                                                    event.target.value
+                                                );
+                                            }}
+                                            value={language}
+                                        >
                                             {languageOptions.map((option) => (
-                                                <button
-                                                    aria-pressed={
-                                                        option.value ===
-                                                        language
-                                                    }
-                                                    className='settings-segment__button'
+                                                <option
                                                     key={option.value}
-                                                    onClick={() => {
-                                                        onSetLanguage(
-                                                            option.value
-                                                        );
-                                                    }}
-                                                    type='button'
+                                                    value={option.value}
                                                 >
                                                     {option.label}
-                                                </button>
+                                                </option>
                                             ))}
-                                        </div>
+                                        </select>
                                     </div>
 
                                     <button
@@ -386,29 +336,22 @@ function WorkQueue(props: {
                     />
                 </label>
 
-                <div
-                    aria-label='Work queue filter'
-                    className='work-filter'
-                    role='group'
-                >
-                    {workFilterOptions.map((option) => {
-                        const FilterIcon = option.icon;
-
-                        return (
-                            <button
-                                aria-pressed={option.value === workFilter}
-                                className='work-filter__button'
-                                key={option.value}
-                                onClick={() => {
-                                    onUpdateWorkFilter(option.value);
-                                }}
-                                type='button'
-                            >
-                                <FilterIcon aria-hidden='true' size={16} />
-                                <span>{option.label}</span>
-                            </button>
-                        );
-                    })}
+                <div className='work-filter'>
+                    <select
+                        aria-label='Work queue filter'
+                        onChange={(event) => {
+                            onUpdateWorkFilter(
+                                event.target.value as WorkFilter
+                            );
+                        }}
+                        value={workFilter}
+                    >
+                        {workFilterOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className='sort-menu'>
@@ -621,7 +564,6 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
         filteredRepositoriesCount,
         filteredWorkItems,
         githubUser,
-        hasGitHubError,
         isGitHubConnected,
         isAssigning,
         isSettingsMenuOpen,
@@ -632,10 +574,10 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
         onDisconnectGitHub,
         onSelectItem,
         onSetLanguage,
+        onSetTheme,
         onSetupAutomation,
         onToggleSettingsMenu,
         onToggleSortMenu,
-        onToggleTheme,
         onUpdatePrompt,
         onUpdateRepositorySearchQuery,
         onUpdateSort,
@@ -657,7 +599,6 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
                     filteredRepositoriesCount={filteredRepositoriesCount}
                     filteredWorkItems={filteredWorkItems}
                     githubUser={githubUser}
-                    hasGitHubError={hasGitHubError}
                     isGitHubConnected={isGitHubConnected}
                     isSettingsMenuOpen={isSettingsMenuOpen}
                     isSortMenuOpen={isSortMenuOpen}
@@ -668,10 +609,10 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
                         onSelectItem(item);
                     }}
                     onSetLanguage={onSetLanguage}
+                    onSetTheme={onSetTheme}
                     onSetupAutomation={onSetupAutomation}
                     onToggleSettingsMenu={onToggleSettingsMenu}
                     onToggleSortMenu={onToggleSortMenu}
-                    onToggleTheme={onToggleTheme}
                     onUpdateRepositorySearchQuery={
                         onUpdateRepositorySearchQuery
                     }

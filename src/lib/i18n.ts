@@ -27,7 +27,7 @@ const translations: Record<AppLanguage, Record<TranslationKey, string>> = {
             'If auth, prompt text, local paths, or repo state are missing or conflicting, stop and report the blocker instead of guessing.',
         ].join('\n'),
         'automation.promptCardTitle': 'Copy into Codex',
-        'automation.settingsButton': 'Set up automation',
+        'automation.settingsButton': 'Connect Codex',
         'automation.title': 'Automation setup',
         'status.automationCopied':
             'Automation setup prompt copied. Paste it into Codex to create the suggested automation.',
@@ -49,7 +49,7 @@ const translations: Record<AppLanguage, Record<TranslationKey, string>> = {
             'If auth, prompt text, local paths, or repo state are missing or conflicting, stop and report the blocker instead of guessing.',
         ].join('\n'),
         'automation.promptCardTitle': 'Copy into Codex',
-        'automation.settingsButton': 'Set up automation',
+        'automation.settingsButton': 'Connect Codex',
         'automation.title': 'Automation setup',
         'status.automationCopied':
             'Automation setup prompt copied. Paste it into Codex to create the suggested automation.',

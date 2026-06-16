@@ -12,6 +12,7 @@ import {
     Clock3,
     GitPullRequestArrow,
     Languages,
+    Monitor,
     Moon,
     Sun,
 } from 'lucide-react';
@@ -31,6 +32,8 @@ import { GitHubMark } from './GitHubMark';
 import type { WorkFilter } from './RepositorySidebar';
 import type { SortDirection, WorkSortKey } from './WorkPanel';
 import { WorkPanel } from './WorkPanel';
+
+type ThemePreference = 'dark' | 'light' | 'system';
 
 const loginWallQueueItems = [
     {
@@ -112,7 +115,8 @@ export function App(): JSX.Element {
         {}
     );
     const [statusMessage, setStatusMessage] = useState('');
-    const [loginTheme, setLoginTheme] = useState<'dark' | 'light'>('dark');
+    const [loginTheme, setLoginTheme] = useState<ThemePreference>('dark');
+    const [systemTheme, setSystemTheme] = useState<'dark' | 'light'>('dark');
     const [loginLanguage, setLoginLanguage] = useState('en');
     const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
     const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
@@ -129,14 +133,11 @@ export function App(): JSX.Element {
     const loginCodexNodeRef = useRef<HTMLDivElement>(null);
     const loginResultCardRef = useRef<HTMLDivElement>(null);
     const loginTopbarControlsRef = useRef<HTMLDivElement>(null);
+    const effectiveLoginTheme =
+        loginTheme === 'system' ? systemTheme : loginTheme;
 
-    const {
-        connectGitHub,
-        disconnectGitHub,
-        githubSessionQuery,
-        githubUser,
-        isGitHubConnected,
-    } = useGitHubConnection(setStatusMessage);
+    const { connectGitHub, disconnectGitHub, githubUser, isGitHubConnected } =
+        useGitHubConnection(setStatusMessage);
 
     const accessibleRepositoriesQuery = useQuery({
         enabled: isGitHubConnected,
@@ -296,6 +297,23 @@ export function App(): JSX.Element {
         };
     }, [isLanguageMenuOpen, isThemeMenuOpen]);
 
+    useEffect(() => {
+        const mediaQuery = globalThis.matchMedia(
+            '(prefers-color-scheme: light)'
+        );
+
+        function updateSystemTheme() {
+            setSystemTheme(mediaQuery.matches ? 'light' : 'dark');
+        }
+
+        updateSystemTheme();
+        mediaQuery.addEventListener('change', updateSystemTheme);
+
+        return () => {
+            mediaQuery.removeEventListener('change', updateSystemTheme);
+        };
+    }, []);
+
     function updatePrompt(value: string) {
         if (selectedItem === undefined) {
             return;
@@ -328,6 +346,7 @@ export function App(): JSX.Element {
     const loginThemes = [
         { icon: Moon, label: 'Dark', value: 'dark' },
         { icon: Sun, label: 'Light', value: 'light' },
+        { icon: Monitor, label: 'System', value: 'system' },
     ] as const;
     const selectedLoginLanguage =
         loginLanguages.find((language) => language.value === loginLanguage) ??
@@ -377,12 +396,11 @@ export function App(): JSX.Element {
     return (
         <>
             {isGitHubConnected ? (
-                <main className={`app-shell app-shell--${loginTheme}`}>
+                <main className={`app-shell app-shell--${effectiveLoginTheme}`}>
                     <WorkPanel
                         filteredRepositoriesCount={filteredRepositories.length}
                         filteredWorkItems={filteredWorkItems}
                         githubUser={githubUser}
-                        hasGitHubError={githubSessionQuery.isError}
                         isAssigning={assignMutation.isPending}
                         isGitHubConnected={isGitHubConnected}
                         isSettingsMenuOpen={isSettingsMenuOpen}
@@ -395,6 +413,7 @@ export function App(): JSX.Element {
                         onDisconnectGitHub={disconnectGitHub}
                         onSelectItem={selectItem}
                         onSetLanguage={setLoginLanguage}
+                        onSetTheme={setLoginTheme}
                         onSetupAutomation={openAutomationSetupDialog}
                         onToggleSettingsMenu={() => {
                             setIsSettingsMenuOpen((current) => !current);
@@ -403,11 +422,6 @@ export function App(): JSX.Element {
                         onToggleSortMenu={() => {
                             setIsSortMenuOpen((current) => !current);
                             setIsSettingsMenuOpen(false);
-                        }}
-                        onToggleTheme={() => {
-                            setLoginTheme((current) =>
-                                current === 'dark' ? 'light' : 'dark'
-                            );
                         }}
                         onUpdatePrompt={updatePrompt}
                         onUpdateRepositorySearchQuery={setRepositorySearchQuery}
@@ -431,7 +445,9 @@ export function App(): JSX.Element {
                     />
                 </main>
             ) : (
-                <main className={`login-wall login-wall--${loginTheme}`}>
+                <main
+                    className={`login-wall login-wall--${effectiveLoginTheme}`}
+                >
                     <div className='login-wall__frame'>
                         <header className='login-wall__topbar'>
                             <div className='login-wall__wordmark'>
@@ -914,7 +930,7 @@ export function App(): JSX.Element {
                                         >
                                             <CodexMark
                                                 className='login-wall__mux-codex'
-                                                theme={loginTheme}
+                                                theme={effectiveLoginTheme}
                                             />
                                         </div>
                                     </article>
@@ -979,7 +995,7 @@ export function App(): JSX.Element {
                         setIsAutomationDialogOpen(false);
                     }}
                     onCopyPrompt={copyAutomationSetupPrompt}
-                    theme={loginTheme}
+                    theme={effectiveLoginTheme}
                 />
             ) : undefined}
         </>
