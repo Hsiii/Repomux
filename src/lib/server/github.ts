@@ -441,6 +441,7 @@ export async function fetchWorkItems(
                     issue.assignees?.flatMap((assignee) =>
                         assignee.login === undefined ? [] : [assignee.login]
                     ) ?? [],
+                authorLogin: issue.user?.login ?? '',
                 body: typeof issue.body === 'string' ? issue.body.trim() : '',
                 codexReady: hasLabel(issue, 'codex-ready'),
                 commentsCount: issue.comments,

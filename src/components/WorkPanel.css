@@ -130,6 +130,7 @@
 
 .settings-menu {
     top: calc(100% + var(--space-8));
+    width: var(--space-232);
 }
 
 .settings-menu__group {
@@ -177,11 +178,65 @@
     background-color: var(--clr-surface-muted);
 }
 
+.settings-selector {
+    min-height: var(--space-40);
+    display: grid;
+    grid-template-columns: var(--space-20) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-8);
+    padding: 0 var(--space-8);
+    color: var(--clr-text-muted);
+}
+
+.settings-segment,
+.work-filter {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-4);
+    border: var(--size-border-1) solid var(--clr-border);
+    border-radius: var(--radius-8);
+    background-color: var(--clr-input);
+}
+
+.settings-segment__button,
+.work-filter__button {
+    min-height: var(--space-32);
+    border: 0;
+    border-radius: var(--radius-4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    color: var(--clr-text-muted);
+    font: var(--font-label);
+    background-color: transparent;
+}
+
+.settings-segment__button {
+    flex: 1;
+    padding: 0 var(--space-8);
+}
+
+.work-filter__button {
+    padding: 0 var(--space-8);
+}
+
+.settings-segment__button:hover,
+.settings-segment__button:focus-visible,
+.settings-segment__button[aria-pressed='true'],
+.work-filter__button:hover,
+.work-filter__button:focus-visible,
+.work-filter__button[aria-pressed='true'] {
+    color: var(--clr-text);
+    background-color: var(--clr-surface-muted);
+}
+
 .work-panel__toolbar {
     position: relative;
     z-index: 2;
     display: grid;
-    grid-template-columns: minmax(240px, 420px) minmax(0, 1fr) auto;
+    grid-template-columns: minmax(240px, 1fr) auto auto;
     align-items: center;
     gap: var(--space-16);
     margin-bottom: var(--space-16);
@@ -229,7 +284,7 @@
 
 .sort-menu {
     position: relative;
-    grid-column: 3;
+    justify-self: end;
 }
 
 .sort-menu__trigger {
@@ -502,13 +557,23 @@
         display: none;
     }
 
-    .sort-menu {
-        grid-column: auto;
+    .work-filter {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .work-filter__button {
+        flex: 1;
     }
 
     .sort-menu__trigger {
         width: 100%;
         justify-content: space-between;
+    }
+
+    .sort-menu {
+        width: 100%;
+        justify-self: stretch;
     }
 
     .queue-list,

@@ -112,9 +112,7 @@ const loginWallFlowCanvas = {
 
 export function App(): JSX.Element {
     const [repositorySearchQuery, setRepositorySearchQuery] = useState('');
-    const [workFilter, setWorkFilter] = useState<WorkFilter>(
-        'assigned-or-unassigned'
-    );
+    const [workFilter, setWorkFilter] = useState<WorkFilter>('all');
     const [workSortKey, setWorkSortKey] = useState<WorkSortKey>('repo-count');
     const [workSortDirection, setWorkSortDirection] =
         useState<SortDirection>('desc');
@@ -215,14 +213,11 @@ export function App(): JSX.Element {
                 return true;
             }
 
-            if (item.assigneeLogins.includes(githubLogin)) {
-                return true;
+            if (workFilter === 'assigned') {
+                return item.assigneeLogins.includes(githubLogin);
             }
 
-            return (
-                workFilter === 'assigned-or-unassigned' &&
-                item.assigneeLogins.length === 0
-            );
+            return item.authorLogin === githubLogin;
         });
 
         return nextItems.toSorted((firstItem, secondItem) => {

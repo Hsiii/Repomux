@@ -9,6 +9,7 @@ export const mockRepositories: readonly Repository[] = [
 export const mockWorkItems: readonly WorkItem[] = [
     {
         assigneeLogins: [],
+        authorLogin: 'Hsiii',
         body: 'Add a dark mode toggle.\n\nPersist the choice, respect system preference, and cover all surfaces.',
         codexReady: false,
         commentsCount: 2,
@@ -21,6 +22,7 @@ export const mockWorkItems: readonly WorkItem[] = [
     },
     {
         assigneeLogins: ['Hsiii'],
+        authorLogin: 'collaborator',
         body: 'Review the repository editor. Simplify the empty state before merge.',
         codexReady: false,
         commentsCount: 1,
@@ -33,6 +35,7 @@ export const mockWorkItems: readonly WorkItem[] = [
     },
     {
         assigneeLogins: [],
+        authorLogin: 'Hsiii',
         body: 'Replace manual issue refresh with query invalidation.',
         codexReady: true,
         commentsCount: 0,

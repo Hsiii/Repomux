@@ -15,7 +15,10 @@ import {
     Search,
     Settings,
     Sun,
+    UserCheck,
     UserCircle,
+    UserPen,
+    Users,
 } from 'lucide-react';
 
 import type { GitHubUser, WorkItem } from '../types/app';
@@ -70,14 +73,14 @@ const sortDirectionOptions = [
 ] as const;
 
 const workFilterOptions = [
-    { label: 'Assigned to me', value: 'assigned' },
-    { label: 'Include unassigned', value: 'assigned-or-unassigned' },
-    { label: 'All work', value: 'all' },
+    { icon: Users, label: 'All', value: 'all' },
+    { icon: UserCheck, label: 'Assigned', value: 'assigned' },
+    { icon: UserPen, label: 'Created', value: 'created' },
 ] as const;
 
 const languageOptions = [
-    { label: 'English', value: 'en' },
-    { label: 'Chinese', value: 'zh' },
+    { label: 'EN', value: 'en' },
+    { label: 'ZH', value: 'zh' },
 ] as const;
 
 function renderGitHubDisplayName(githubUser: GitHubUser | undefined) {
@@ -271,87 +274,80 @@ function WorkQueue(props: {
                                         </span>
                                     </button>
 
-                                    <div className='settings-menu__group'>
-                                        <span className='settings-menu__label'>
-                                            Queue filter
-                                        </span>
-                                        {workFilterOptions.map((option) => (
+                                    <div
+                                        aria-label='Theme'
+                                        className='settings-selector'
+                                        role='group'
+                                    >
+                                        <Settings
+                                            aria-hidden='true'
+                                            size={16}
+                                        />
+                                        <div className='settings-segment'>
                                             <button
-                                                aria-checked={
-                                                    option.value === workFilter
-                                                }
-                                                className='settings-menu__item'
-                                                key={option.value}
+                                                aria-pressed={theme === 'dark'}
+                                                className='settings-segment__button'
                                                 onClick={() => {
-                                                    onUpdateWorkFilter(
-                                                        option.value
-                                                    );
+                                                    if (theme !== 'dark') {
+                                                        onToggleTheme();
+                                                    }
                                                 }}
-                                                role='menuitemradio'
                                                 type='button'
                                             >
-                                                <span>{option.label}</span>
-                                                {option.value === workFilter ? (
-                                                    <Check
-                                                        aria-hidden='true'
-                                                        size={14}
-                                                    />
-                                                ) : undefined}
+                                                <Moon
+                                                    aria-hidden='true'
+                                                    size={14}
+                                                />
+                                                Dark
                                             </button>
-                                        ))}
+                                            <button
+                                                aria-pressed={theme === 'light'}
+                                                className='settings-segment__button'
+                                                onClick={() => {
+                                                    if (theme !== 'light') {
+                                                        onToggleTheme();
+                                                    }
+                                                }}
+                                                type='button'
+                                            >
+                                                <Sun
+                                                    aria-hidden='true'
+                                                    size={14}
+                                                />
+                                                Light
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <button
-                                        className='settings-menu__item'
-                                        onClick={onToggleTheme}
-                                        role='menuitem'
-                                        type='button'
+                                    <div
+                                        aria-label='Language'
+                                        className='settings-selector'
+                                        role='group'
                                     >
-                                        {theme === 'dark' ? (
-                                            <Sun aria-hidden='true' size={16} />
-                                        ) : (
-                                            <Moon
-                                                aria-hidden='true'
-                                                size={16}
-                                            />
-                                        )}
-                                        <span>
-                                            {theme === 'dark'
-                                                ? 'Light mode'
-                                                : 'Dark mode'}
-                                        </span>
-                                    </button>
-
-                                    <div className='settings-menu__group'>
-                                        <span className='settings-menu__label'>
-                                            Language
-                                        </span>
-                                        {languageOptions.map((option) => (
-                                            <button
-                                                aria-checked={
-                                                    option.value === language
-                                                }
-                                                className='settings-menu__item'
-                                                key={option.value}
-                                                onClick={() => {
-                                                    onSetLanguage(option.value);
-                                                }}
-                                                role='menuitemradio'
-                                                type='button'
-                                            >
-                                                <Languages
-                                                    aria-hidden='true'
-                                                    size={16}
-                                                />
-                                                <span>{option.label}</span>
-                                                {option.value === language ? (
-                                                    <Check
-                                                        aria-hidden='true'
-                                                        size={14}
-                                                    />
-                                                ) : undefined}
-                                            </button>
-                                        ))}
+                                        <Languages
+                                            aria-hidden='true'
+                                            size={16}
+                                        />
+                                        <div className='settings-segment'>
+                                            {languageOptions.map((option) => (
+                                                <button
+                                                    aria-pressed={
+                                                        option.value ===
+                                                        language
+                                                    }
+                                                    className='settings-segment__button'
+                                                    key={option.value}
+                                                    onClick={() => {
+                                                        onSetLanguage(
+                                                            option.value
+                                                        );
+                                                    }}
+                                                    type='button'
+                                                >
+                                                    {option.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
 
                                     <button
@@ -392,6 +388,31 @@ function WorkQueue(props: {
                         value={repositorySearchQuery}
                     />
                 </label>
+
+                <div
+                    aria-label='Work queue filter'
+                    className='work-filter'
+                    role='group'
+                >
+                    {workFilterOptions.map((option) => {
+                        const FilterIcon = option.icon;
+
+                        return (
+                            <button
+                                aria-pressed={option.value === workFilter}
+                                className='work-filter__button'
+                                key={option.value}
+                                onClick={() => {
+                                    onUpdateWorkFilter(option.value);
+                                }}
+                                type='button'
+                            >
+                                <FilterIcon aria-hidden='true' size={16} />
+                                <span>{option.label}</span>
+                            </button>
+                        );
+                    })}
+                </div>
 
                 <div className='sort-menu'>
                     <button

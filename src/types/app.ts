@@ -13,6 +13,7 @@ export interface GitHubIssue {
     pull_request?: unknown;
     repository_url: string;
     title: string;
+    user?: { readonly login?: string };
 }
 
 export interface GitHubUser {
@@ -23,6 +24,7 @@ export interface GitHubUser {
 
 export interface WorkItem {
     assigneeLogins: readonly string[];
+    authorLogin: string;
     body: string;
     codexReady: boolean;
     commentsCount: number;

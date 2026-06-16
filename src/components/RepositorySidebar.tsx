@@ -12,7 +12,7 @@ import {
 
 import type { GitHubUser, Repository } from '../types/app';
 
-export type WorkFilter = 'assigned' | 'assigned-or-unassigned' | 'all';
+export type WorkFilter = 'assigned' | 'created' | 'all';
 
 interface RepositorySidebarProps {
     filteredRepositories: readonly Repository[];
@@ -39,7 +39,7 @@ interface RepositorySidebarProps {
 
 const workFilterOptions = [
     { label: 'Assigned to me', value: 'assigned' },
-    { label: 'Include unassigned', value: 'assigned-or-unassigned' },
+    { label: 'Created by me', value: 'created' },
     { label: 'All work', value: 'all' },
 ] as const;
 
