@@ -1,4 +1,5 @@
 import type { JSX } from 'react';
+import { useId, useState } from 'react';
 import {
     ArrowDownWideNarrow,
     ArrowLeft,
@@ -87,46 +88,106 @@ function WorkDropdown(props: {
     ariaLabel: string;
     className?: string;
     icon?: JSX.Element;
+    menuClassName?: string;
     onChange: (value: string) => void;
     options: ReadonlyArray<{ label: string; value: string }>;
-    selectClassName?: string;
+    triggerClassName?: string;
     value: string;
 }): JSX.Element {
     const {
         ariaLabel,
         className,
         icon,
+        menuClassName,
         onChange,
         options,
-        selectClassName,
+        triggerClassName,
         value,
     } = props;
+    const [isOpen, setIsOpen] = useState(false);
+    const listboxId = useId();
     const wrapperClassName =
         className === undefined
             ? 'work-dropdown'
             : `work-dropdown ${className}`;
+    const buttonClassName =
+        triggerClassName === undefined
+            ? 'work-dropdown__trigger'
+            : `work-dropdown__trigger ${triggerClassName}`;
+    const listboxClassName =
+        menuClassName === undefined
+            ? 'work-dropdown__menu'
+            : `work-dropdown__menu ${menuClassName}`;
+    const selectedOption =
+        options.find((option) => option.value === value) ?? options[0];
 
     return (
-        <div className={wrapperClassName}>
-            {icon === undefined ? undefined : (
-                <span aria-hidden='true' className='work-dropdown__icon'>
-                    {icon}
-                </span>
-            )}
-            <select
+        <div
+            className={wrapperClassName}
+            onBlur={(event) => {
+                const nextTarget = event.relatedTarget;
+
+                if (
+                    !(nextTarget instanceof Node) ||
+                    !event.currentTarget.contains(nextTarget)
+                ) {
+                    setIsOpen(false);
+                }
+            }}
+            onKeyDown={(event) => {
+                if (event.key === 'Escape') {
+                    setIsOpen(false);
+                }
+            }}
+        >
+            <button
+                aria-controls={listboxId}
+                aria-expanded={isOpen}
+                aria-haspopup='listbox'
                 aria-label={ariaLabel}
-                className={selectClassName}
-                onChange={(event) => {
-                    onChange(event.target.value);
+                className={buttonClassName}
+                onClick={() => {
+                    setIsOpen((current) => !current);
                 }}
-                value={value}
+                type='button'
             >
-                {options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
+                {icon === undefined ? undefined : (
+                    <span aria-hidden='true' className='work-dropdown__icon'>
+                        {icon}
+                    </span>
+                )}
+                <span className='work-dropdown__value'>
+                    {selectedOption.label}
+                </span>
+                <ChevronDown
+                    aria-hidden='true'
+                    className='work-dropdown__chevron'
+                    size={14}
+                />
+            </button>
+
+            {isOpen ? (
+                <div className={listboxClassName} id={listboxId} role='listbox'>
+                    {options.map((option) => (
+                        <button
+                            aria-selected={option.value === value}
+                            className='work-dropdown__option'
+                            key={option.value}
+                            onClick={() => {
+                                onChange(option.value);
+                                setIsOpen(false);
+                            }}
+                            role='option'
+                            type='button'
+                        >
+                            <span>{option.label}</span>
+                            {option.value === value ? (
+                                <Check aria-hidden='true' size={14} />
+                            ) : undefined}
+                        </button>
+                    ))}
+                </div>
+            ) : undefined}
         </div>
     );
 }
