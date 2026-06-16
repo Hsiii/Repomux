@@ -1,7 +1,5 @@
 .app-shell {
     height: 100vh;
-    display: grid;
-    grid-template-columns: minmax(320px, var(--size-repo-panel)) 1fr;
     overflow: hidden;
     background-color: var(--clr-bg-shell);
 }

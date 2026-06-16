@@ -24,16 +24,12 @@ import {
     fetchAccessibleRepositories,
     fetchWorkItems,
 } from '../lib/github';
-import {
-    getStoredActiveRepositories,
-    setStoredActiveRepositories,
-} from '../lib/repositories';
-import type { Repository, WorkItem } from '../types/app';
+import type { WorkItem } from '../types/app';
 import { BrandLogo } from './BrandLogo';
 import { CodexMark } from './CodexMark';
 import { GitHubMark } from './GitHubMark';
-import { RepositorySidebar } from './RepositorySidebar';
 import type { WorkFilter } from './RepositorySidebar';
+import type { SortDirection, WorkSortKey } from './WorkPanel';
 import { WorkPanel } from './WorkPanel';
 
 const automationSetupPrompt = [
@@ -116,12 +112,13 @@ const loginWallFlowCanvas = {
 
 export function App(): JSX.Element {
     const [repositorySearchQuery, setRepositorySearchQuery] = useState('');
-    const [activeRepositoryNames, setActiveRepositoryNames] = useState<
-        readonly string[] | undefined
-    >(getStoredActiveRepositories);
     const [workFilter, setWorkFilter] = useState<WorkFilter>(
         'assigned-or-unassigned'
     );
+    const [workSortKey, setWorkSortKey] = useState<WorkSortKey>('repo-count');
+    const [workSortDirection, setWorkSortDirection] =
+        useState<SortDirection>('desc');
+    const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<WorkItem | undefined>();
     const [promptDrafts, setPromptDrafts] = useState<Record<string, string>>(
         {}
@@ -161,16 +158,6 @@ export function App(): JSX.Element {
 
     const availableRepositories = accessibleRepositoriesQuery.data ?? [];
 
-    const effectiveActiveRepositoryNames =
-        activeRepositoryNames ??
-        (availableRepositories.length === 0
-            ? []
-            : [availableRepositories[0].fullName]);
-
-    const activeRepositories = availableRepositories.filter((repository) =>
-        effectiveActiveRepositoryNames.includes(repository.fullName)
-    );
-
     const filteredRepositories = useMemo(() => {
         const normalizedQuery = repositorySearchQuery.trim().toLowerCase();
 
@@ -184,11 +171,11 @@ export function App(): JSX.Element {
     }, [availableRepositories, repositorySearchQuery]);
 
     const workItemsQuery = useQuery({
-        enabled: isGitHubConnected && activeRepositories.length > 0,
-        queryFn: async () => await fetchWorkItems(activeRepositories),
+        enabled: isGitHubConnected && availableRepositories.length > 0,
+        queryFn: async () => await fetchWorkItems(availableRepositories),
         queryKey: [
             'work-items',
-            activeRepositories
+            availableRepositories
                 .map((repository) => repository.fullName)
                 .toSorted()
                 .join(','),
@@ -197,26 +184,76 @@ export function App(): JSX.Element {
 
     const workItems = workItemsQuery.data ?? [];
 
-    const filteredWorkItems = workItems.filter((item) => {
+    const filteredWorkItems = useMemo(() => {
         const githubLogin = githubUser?.login;
+        const repositoryCounts = new Map<string, number>();
+        const repositoryNameMatches =
+            repositorySearchQuery.trim() === ''
+                ? undefined
+                : new Set(
+                      filteredRepositories.map(
+                          (repository) => repository.fullName
+                      )
+                  );
 
-        if (githubLogin === undefined) {
-            return true;
+        for (const item of workItems) {
+            repositoryCounts.set(
+                item.repo,
+                (repositoryCounts.get(item.repo) ?? 0) + 1
+            );
         }
 
-        if (workFilter === 'all') {
-            return true;
-        }
+        const nextItems = workItems.filter((item) => {
+            if (
+                repositoryNameMatches !== undefined &&
+                !repositoryNameMatches.has(item.repo)
+            ) {
+                return false;
+            }
 
-        if (item.assigneeLogins.includes(githubLogin)) {
-            return true;
-        }
+            if (githubLogin === undefined || workFilter === 'all') {
+                return true;
+            }
 
-        return (
-            workFilter === 'assigned-or-unassigned' &&
-            item.assigneeLogins.length === 0
-        );
-    });
+            if (item.assigneeLogins.includes(githubLogin)) {
+                return true;
+            }
+
+            return (
+                workFilter === 'assigned-or-unassigned' &&
+                item.assigneeLogins.length === 0
+            );
+        });
+
+        return nextItems.toSorted((firstItem, secondItem) => {
+            const direction = workSortDirection === 'asc' ? 1 : -1;
+            let comparison: number;
+
+            if (workSortKey === 'comments') {
+                comparison = firstItem.commentsCount - secondItem.commentsCount;
+            } else if (workSortKey === 'type') {
+                comparison = firstItem.type.localeCompare(secondItem.type);
+            } else {
+                comparison =
+                    (repositoryCounts.get(firstItem.repo) ?? 0) -
+                    (repositoryCounts.get(secondItem.repo) ?? 0);
+            }
+
+            if (comparison !== 0) {
+                return comparison * direction;
+            }
+
+            return firstItem.repo.localeCompare(secondItem.repo);
+        });
+    }, [
+        filteredRepositories,
+        githubUser?.login,
+        repositorySearchQuery,
+        workFilter,
+        workItems,
+        workSortDirection,
+        workSortKey,
+    ]);
 
     const selectedPrompt =
         selectedItem === undefined ? '' : (promptDrafts[selectedItem.id] ?? '');
@@ -241,27 +278,6 @@ export function App(): JSX.Element {
             });
         },
     });
-
-    useEffect(() => {
-        setActiveRepositoryNames((current) => {
-            if (current === undefined) {
-                return current;
-            }
-
-            const next = current.filter((repositoryName) =>
-                availableRepositories.some(
-                    (repository) => repository.fullName === repositoryName
-                )
-            );
-
-            if (next.length === current.length) {
-                return current;
-            }
-
-            setStoredActiveRepositories(next);
-            return next;
-        });
-    }, [availableRepositories]);
 
     useEffect(() => {
         if (!isLanguageMenuOpen && !isThemeMenuOpen) {
@@ -293,17 +309,6 @@ export function App(): JSX.Element {
             );
         };
     }, [isLanguageMenuOpen, isThemeMenuOpen]);
-
-    function updateActiveRepositories(nextRepositoryNames: readonly string[]) {
-        setStoredActiveRepositories(nextRepositoryNames);
-        setActiveRepositoryNames(nextRepositoryNames);
-    }
-
-    function selectRepository(repository: Readonly<Repository>) {
-        updateActiveRepositories([repository.fullName]);
-        setSelectedItem(undefined);
-        setStatusMessage('');
-    }
 
     function updatePrompt(value: string) {
         if (selectedItem === undefined) {
@@ -387,50 +392,57 @@ export function App(): JSX.Element {
         <>
             {isGitHubConnected ? (
                 <main className={`app-shell app-shell--${loginTheme}`}>
-                    <RepositorySidebar
-                        filteredRepositories={filteredRepositories}
+                    <WorkPanel
+                        filteredRepositoriesCount={filteredRepositories.length}
+                        filteredWorkItems={filteredWorkItems}
                         githubUser={githubUser}
                         hasGitHubError={githubSessionQuery.isError}
+                        isAssigning={assignMutation.isPending}
                         isAutomationPromptCopied={isAutomationPromptCopied}
                         isGitHubConnected={isGitHubConnected}
                         isSettingsMenuOpen={isSettingsMenuOpen}
+                        isSortMenuOpen={isSortMenuOpen}
                         language={loginLanguage}
+                        onAssign={() => {
+                            assignMutation.mutate(undefined);
+                        }}
                         onConnectGitHub={connectGitHub}
                         onDisconnectGitHub={disconnectGitHub}
-                        onSelectRepository={selectRepository}
+                        onSelectItem={selectItem}
                         onSetLanguage={setLoginLanguage}
                         onSetupAutomation={copyAutomationSetupPrompt}
                         onToggleSettingsMenu={() => {
                             setIsSettingsMenuOpen((current) => !current);
+                            setIsSortMenuOpen(false);
+                        }}
+                        onToggleSortMenu={() => {
+                            setIsSortMenuOpen((current) => !current);
+                            setIsSettingsMenuOpen(false);
                         }}
                         onToggleTheme={() => {
                             setLoginTheme((current) =>
                                 current === 'dark' ? 'light' : 'dark'
                             );
                         }}
+                        onUpdatePrompt={updatePrompt}
                         onUpdateRepositorySearchQuery={setRepositorySearchQuery}
+                        onUpdateSort={(sortKey, direction) => {
+                            setWorkSortKey(sortKey);
+                            setWorkSortDirection(direction);
+                            setIsSortMenuOpen(false);
+                        }}
                         onUpdateWorkFilter={(filter) => {
                             setWorkFilter(filter);
                             setIsSettingsMenuOpen(false);
                         }}
                         repositorySearchQuery={repositorySearchQuery}
-                        selectedRepositoryNames={effectiveActiveRepositoryNames}
-                        theme={loginTheme}
-                        workFilter={workFilter}
-                    />
-
-                    <WorkPanel
-                        filteredWorkItems={filteredWorkItems}
-                        isAssigning={assignMutation.isPending}
-                        isGitHubConnected={isGitHubConnected}
-                        onAssign={() => {
-                            assignMutation.mutate(undefined);
-                        }}
-                        onSelectItem={selectItem}
-                        onUpdatePrompt={updatePrompt}
                         selectedItem={selectedItem}
                         selectedPrompt={selectedPrompt}
                         statusText={statusText}
+                        theme={loginTheme}
+                        workFilter={workFilter}
+                        workSortDirection={workSortDirection}
+                        workSortKey={workSortKey}
                     />
                 </main>
             ) : (
