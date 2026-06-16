@@ -64,11 +64,16 @@ http://localhost:3000/api/github/callback
 ```
 
 GitHub OAuth Apps validate the callback URL against the app registered for the
-client ID. If production uses a production callback URL, create a separate OAuth
-App for local development and set `GITHUB_DEV_CLIENT_ID` and
-`GITHUB_DEV_CLIENT_SECRET` in `.env.local` or `.env`. Repomux uses those dev
-credentials for `localhost` and `127.0.0.1`, falling back to
-`GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` when the dev values are empty.
+client ID. If production uses a production callback URL, local dev can reuse the
+same OAuth App by setting `GITHUB_OAUTH_REDIRECT_URI` to that registered
+production callback URL. GitHub redirects to production first, then Repomux
+relays local-dev login states back to `http://localhost:3000/api/github/callback`
+so the local server can exchange the code.
+
+Use `GITHUB_DEV_CLIENT_ID` and `GITHUB_DEV_CLIENT_SECRET` only if you prefer a
+separate OAuth App for localhost. Repomux uses those dev credentials for
+`localhost` and `127.0.0.1`, falling back to `GITHUB_CLIENT_ID` and
+`GITHUB_CLIENT_SECRET` when the dev values are empty.
 
 Repomux signs in through Next route handlers, stores the GitHub access token in an HTTP-only cookie, then uses server-side API routes to read the queue, post the prompt comment, and add the `codex-ready` label.
 

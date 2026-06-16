@@ -13,6 +13,12 @@ const githubTokenCookieName = 'repomux.githubToken';
 const githubOAuthStateCookieName = 'repomux.githubOAuthState';
 const githubTokenCookieMaxAge = 60 * 60 * 24 * 30;
 const githubOAuthStateCookieMaxAge = 60 * 10;
+const githubLocalRelayStatePrefix = 'repomux-local-relay.';
+
+interface GitHubLocalRelayState {
+    readonly callbackUrl: string;
+    readonly state: string;
+}
 
 function getEnvironmentVariable(name: string): string | undefined {
     const value = process.env[name]?.trim();
@@ -27,6 +33,10 @@ function getEnvironmentVariable(name: string): string | undefined {
 function isLocalGitHubOAuthRequest(request: NextRequest): boolean {
     const { hostname } = new URL(request.url);
 
+    return isLoopbackHostname(hostname);
+}
+
+function isLoopbackHostname(hostname: string): boolean {
     return (
         hostname === 'localhost' ||
         hostname === '127.0.0.1' ||
@@ -34,12 +44,24 @@ function isLocalGitHubOAuthRequest(request: NextRequest): boolean {
     );
 }
 
-function getGitHubClientId(request: NextRequest): string {
-    const hasDevCredential =
+function isLoopbackUrl(url: URL): boolean {
+    return (
+        url.protocol === 'http:' &&
+        isLoopbackHostname(url.hostname) &&
+        url.pathname === '/api/github/callback'
+    );
+}
+
+function hasGitHubDevCredential(): boolean {
+    return (
         getEnvironmentVariable('GITHUB_DEV_CLIENT_ID') !== undefined ||
-        getEnvironmentVariable('GITHUB_DEV_CLIENT_SECRET') !== undefined;
+        getEnvironmentVariable('GITHUB_DEV_CLIENT_SECRET') !== undefined
+    );
+}
+
+function getGitHubClientId(request: NextRequest): string {
     const variableName =
-        isLocalGitHubOAuthRequest(request) && hasDevCredential
+        isLocalGitHubOAuthRequest(request) && hasGitHubDevCredential()
             ? 'GITHUB_DEV_CLIENT_ID'
             : 'GITHUB_CLIENT_ID';
     const clientId = getEnvironmentVariable(variableName);
@@ -54,11 +76,8 @@ function getGitHubClientId(request: NextRequest): string {
 }
 
 function getGitHubClientSecret(request: NextRequest): string {
-    const hasDevCredential =
-        getEnvironmentVariable('GITHUB_DEV_CLIENT_ID') !== undefined ||
-        getEnvironmentVariable('GITHUB_DEV_CLIENT_SECRET') !== undefined;
     const variableName =
-        isLocalGitHubOAuthRequest(request) && hasDevCredential
+        isLocalGitHubOAuthRequest(request) && hasGitHubDevCredential()
             ? 'GITHUB_DEV_CLIENT_SECRET'
             : 'GITHUB_CLIENT_SECRET';
     const clientSecret = getEnvironmentVariable(variableName);
@@ -83,16 +102,65 @@ function getGitHubOAuthScope(): string {
 }
 
 function getGitHubRedirectUri(request: NextRequest): string {
-    const configuredRedirectUri = isLocalGitHubOAuthRequest(request)
-        ? (getEnvironmentVariable('GITHUB_DEV_OAUTH_REDIRECT_URI') ??
-          getEnvironmentVariable('GITHUB_OAUTH_REDIRECT_URI'))
-        : getEnvironmentVariable('GITHUB_OAUTH_REDIRECT_URI');
+    let configuredRedirectUri: string | undefined;
+
+    if (isLocalGitHubOAuthRequest(request)) {
+        configuredRedirectUri = hasGitHubDevCredential()
+            ? getEnvironmentVariable('GITHUB_DEV_OAUTH_REDIRECT_URI')
+            : getEnvironmentVariable('GITHUB_OAUTH_REDIRECT_URI');
+    } else {
+        configuredRedirectUri = getEnvironmentVariable(
+            'GITHUB_OAUTH_REDIRECT_URI'
+        );
+    }
 
     if (configuredRedirectUri !== undefined && configuredRedirectUri !== '') {
         return configuredRedirectUri;
     }
 
     return new URL('/api/github/callback', request.url).toString();
+}
+
+function getLocalGitHubCallbackUri(request: NextRequest): string {
+    return new URL('/api/github/callback', request.url).toString();
+}
+
+function encodeGitHubLocalRelayState(payload: GitHubLocalRelayState): string {
+    return `${githubLocalRelayStatePrefix}${Buffer.from(
+        JSON.stringify(payload)
+    ).toString('base64url')}`;
+}
+
+function decodeGitHubLocalRelayState(
+    state: string
+): GitHubLocalRelayState | undefined {
+    if (!state.startsWith(githubLocalRelayStatePrefix)) {
+        return undefined;
+    }
+
+    try {
+        const payload = JSON.parse(
+            Buffer.from(
+                state.slice(githubLocalRelayStatePrefix.length),
+                'base64url'
+            ).toString('utf8')
+        ) as Partial<GitHubLocalRelayState>;
+
+        if (
+            typeof payload.callbackUrl !== 'string' ||
+            typeof payload.state !== 'string' ||
+            payload.state === ''
+        ) {
+            return undefined;
+        }
+
+        return {
+            callbackUrl: payload.callbackUrl,
+            state: payload.state,
+        };
+    } catch {
+        return undefined;
+    }
 }
 
 function getGitHubHeaders(token: string): Headers {
@@ -128,8 +196,21 @@ function hasLabel(issue: GitHubIssue, labelName: string): boolean {
     });
 }
 
-export function createGitHubStateCookieValue(): string {
-    return crypto.randomUUID();
+export function createGitHubStateCookieValue(request: NextRequest): string {
+    const state = crypto.randomUUID();
+    const redirectUri = getGitHubRedirectUri(request);
+
+    if (
+        !isLocalGitHubOAuthRequest(request) ||
+        redirectUri === getLocalGitHubCallbackUri(request)
+    ) {
+        return state;
+    }
+
+    return encodeGitHubLocalRelayState({
+        callbackUrl: getLocalGitHubCallbackUri(request),
+        state,
+    });
 }
 
 export function createGitHubAuthorizeUrl(
@@ -169,6 +250,49 @@ export function getGitHubTokenFromRequest(
     request: NextRequest
 ): string | undefined {
     return getGitHubToken(request);
+}
+
+export function createGitHubLocalRelayRedirectUrl(
+    request: NextRequest
+): URL | undefined {
+    const state = request.nextUrl.searchParams.get('state') ?? '';
+    const relayState = decodeGitHubLocalRelayState(state);
+
+    if (relayState === undefined) {
+        return undefined;
+    }
+
+    let callbackUrl: URL;
+
+    try {
+        callbackUrl = new URL(relayState.callbackUrl);
+    } catch {
+        return undefined;
+    }
+
+    if (!isLoopbackUrl(callbackUrl)) {
+        return undefined;
+    }
+
+    callbackUrl.hash = '';
+    callbackUrl.search = '';
+
+    for (const parameterName of [
+        'code',
+        'error',
+        'error_description',
+        'error_uri',
+    ]) {
+        const value = request.nextUrl.searchParams.get(parameterName);
+
+        if (value !== null) {
+            callbackUrl.searchParams.set(parameterName, value);
+        }
+    }
+
+    callbackUrl.searchParams.set('state', state);
+
+    return callbackUrl;
 }
 
 export async function exchangeGitHubCode(

@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 import {
+    createGitHubLocalRelayRedirectUrl,
     exchangeGitHubCode,
     getGitHubOAuthStateCookieName,
     getGitHubTokenCookieMaxAge,
@@ -20,6 +21,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const code = request.nextUrl.searchParams.get('code') ?? '';
     const storedState =
         request.cookies.get(getGitHubOAuthStateCookieName())?.value ?? '';
+
+    if (storedState === '') {
+        const localRelayRedirectUrl =
+            createGitHubLocalRelayRedirectUrl(request);
+
+        if (localRelayRedirectUrl !== undefined) {
+            return NextResponse.redirect(localRelayRedirectUrl);
+        }
+    }
 
     if (state === '' || storedState === '' || state !== storedState) {
         const response = createErrorRedirect(request, 'github_oauth_state');

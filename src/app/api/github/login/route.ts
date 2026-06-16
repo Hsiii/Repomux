@@ -9,7 +9,7 @@ import {
 } from '../../../../lib/server/github';
 
 export function GET(request: NextRequest): NextResponse {
-    const state = createGitHubStateCookieValue();
+    const state = createGitHubStateCookieValue(request);
     let response: NextResponse;
 
     try {
