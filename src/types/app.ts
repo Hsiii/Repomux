@@ -6,6 +6,7 @@ export interface Repository {
 export interface GitHubIssue {
     assignees?: ReadonlyArray<{ readonly login?: string }>;
     body?: string;
+    comments: number;
     html_url: string;
     labels: ReadonlyArray<string | { readonly name?: string }>;
     number: number;
@@ -24,6 +25,7 @@ export interface WorkItem {
     assigneeLogins: readonly string[];
     body: string;
     codexReady: boolean;
+    commentsCount: number;
     id: string;
     number: number;
     repo: string;

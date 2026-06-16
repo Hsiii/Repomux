@@ -443,6 +443,7 @@ export async function fetchWorkItems(
                     ) ?? [],
                 body: typeof issue.body === 'string' ? issue.body.trim() : '',
                 codexReady: hasLabel(issue, 'codex-ready'),
+                commentsCount: issue.comments,
                 id: `${repo}#${issue.number}`,
                 number: issue.number,
                 repo,
