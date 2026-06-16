@@ -52,7 +52,7 @@
     justify-self: end;
     display: inline-flex;
     align-items: center;
-    gap: var(--space-12);
+    gap: var(--space-8);
 }
 
 .account-avatar {
@@ -66,12 +66,6 @@
     color: var(--clr-text-muted);
     font: var(--font-label);
     background-color: var(--clr-surface-muted);
-}
-
-.account-main {
-    min-width: 0;
-    display: grid;
-    gap: var(--space-4);
 }
 
 .account-name {
@@ -107,6 +101,18 @@
     place-items: center;
 }
 
+.icon-button--bare {
+    border-color: transparent;
+    color: var(--clr-text-muted);
+    background-color: transparent;
+}
+
+.icon-button--bare:hover,
+.icon-button--bare:focus-visible {
+    color: var(--clr-text);
+    background-color: var(--clr-surface-muted);
+}
+
 .settings-menu,
 .sort-menu__content {
     position: absolute;
@@ -125,6 +131,16 @@
 .settings-menu {
     top: calc(100% + var(--space-8));
     width: var(--space-232);
+}
+
+.settings-account {
+    min-height: var(--space-40);
+    padding: 0 var(--space-8);
+    border-bottom: var(--size-border-1) solid var(--clr-border);
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    color: var(--clr-text);
 }
 
 .settings-menu__group {

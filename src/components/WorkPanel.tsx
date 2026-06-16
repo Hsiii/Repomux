@@ -326,21 +326,13 @@ function WorkQueue(props: {
                     {filteredRepositoriesCount} repos
                 </span>
                 <div className='work-panel__account'>
-                    <span aria-hidden='true' className='account-avatar'>
-                        <UserCircle size={24} />
-                    </span>
                     {isGitHubConnected ? (
                         <>
-                            <div className='account-main'>
-                                <span className='account-name'>
-                                    {renderGitHubDisplayName(githubUser)}
-                                </span>
-                            </div>
                             <button
                                 aria-expanded={isSettingsMenuOpen}
                                 aria-haspopup='menu'
                                 aria-label='Open settings'
-                                className='icon-button'
+                                className='icon-button icon-button--bare'
                                 onClick={onToggleSettingsMenu}
                                 type='button'
                             >
@@ -348,6 +340,20 @@ function WorkQueue(props: {
                             </button>
                             {isSettingsMenuOpen ? (
                                 <div className='settings-menu' role='menu'>
+                                    <div className='settings-account'>
+                                        <span
+                                            aria-hidden='true'
+                                            className='account-avatar'
+                                        >
+                                            <UserCircle size={24} />
+                                        </span>
+                                        <span className='account-name'>
+                                            {renderGitHubDisplayName(
+                                                githubUser
+                                            )}
+                                        </span>
+                                    </div>
+
                                     <button
                                         className='settings-menu__item'
                                         onClick={onSetupAutomation}
