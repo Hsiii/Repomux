@@ -50,6 +50,9 @@ NEXT_PUBLIC_GITHUB_OAUTH_SCOPE=repo
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
 GITHUB_OAUTH_REDIRECT_URI=
+GITHUB_DEV_CLIENT_ID=
+GITHUB_DEV_CLIENT_SECRET=
+GITHUB_DEV_OAUTH_REDIRECT_URI=
 ```
 
 Leave `GITHUB_OAUTH_REDIRECT_URI` empty unless you need to force a specific callback URL. By default, Repomux uses `/api/github/callback` on the current origin.
@@ -59,6 +62,13 @@ Create a GitHub OAuth App and set its callback URL to your Repomux deployment, f
 ```bash
 http://localhost:3000/api/github/callback
 ```
+
+GitHub OAuth Apps validate the callback URL against the app registered for the
+client ID. If production uses a production callback URL, create a separate OAuth
+App for local development and set `GITHUB_DEV_CLIENT_ID` and
+`GITHUB_DEV_CLIENT_SECRET` in `.env.local` or `.env`. Repomux uses those dev
+credentials for `localhost` and `127.0.0.1`, falling back to
+`GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` when the dev values are empty.
 
 Repomux signs in through Next route handlers, stores the GitHub access token in an HTTP-only cookie, then uses server-side API routes to read the queue, post the prompt comment, and add the `codex-ready` label.
 

@@ -14,24 +14,58 @@ const githubOAuthStateCookieName = 'repomux.githubOAuthState';
 const githubTokenCookieMaxAge = 60 * 60 * 24 * 30;
 const githubOAuthStateCookieMaxAge = 60 * 10;
 
-function getGitHubClientId(): string {
-    const clientId = process.env.GITHUB_CLIENT_ID?.trim();
+function getEnvironmentVariable(name: string): string | undefined {
+    const value = process.env[name]?.trim();
+
+    if (value === undefined || value === '') {
+        return undefined;
+    }
+
+    return value;
+}
+
+function isLocalGitHubOAuthRequest(request: NextRequest): boolean {
+    const { hostname } = new URL(request.url);
+
+    return (
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '[::1]'
+    );
+}
+
+function getGitHubClientId(request: NextRequest): string {
+    const hasDevCredential =
+        getEnvironmentVariable('GITHUB_DEV_CLIENT_ID') !== undefined ||
+        getEnvironmentVariable('GITHUB_DEV_CLIENT_SECRET') !== undefined;
+    const variableName =
+        isLocalGitHubOAuthRequest(request) && hasDevCredential
+            ? 'GITHUB_DEV_CLIENT_ID'
+            : 'GITHUB_CLIENT_ID';
+    const clientId = getEnvironmentVariable(variableName);
 
     if (clientId === undefined || clientId === '') {
         throw new Error(
-            'Missing required environment variable: GITHUB_CLIENT_ID'
+            `Missing required environment variable: ${variableName}`
         );
     }
 
     return clientId;
 }
 
-function getGitHubClientSecret(): string {
-    const clientSecret = process.env.GITHUB_CLIENT_SECRET?.trim();
+function getGitHubClientSecret(request: NextRequest): string {
+    const hasDevCredential =
+        getEnvironmentVariable('GITHUB_DEV_CLIENT_ID') !== undefined ||
+        getEnvironmentVariable('GITHUB_DEV_CLIENT_SECRET') !== undefined;
+    const variableName =
+        isLocalGitHubOAuthRequest(request) && hasDevCredential
+            ? 'GITHUB_DEV_CLIENT_SECRET'
+            : 'GITHUB_CLIENT_SECRET';
+    const clientSecret = getEnvironmentVariable(variableName);
 
     if (clientSecret === undefined || clientSecret === '') {
         throw new Error(
-            'Missing required environment variable: GITHUB_CLIENT_SECRET'
+            `Missing required environment variable: ${variableName}`
         );
     }
 
@@ -39,7 +73,7 @@ function getGitHubClientSecret(): string {
 }
 
 function getGitHubOAuthScope(): string {
-    const scope = process.env.NEXT_PUBLIC_GITHUB_OAUTH_SCOPE?.trim();
+    const scope = getEnvironmentVariable('NEXT_PUBLIC_GITHUB_OAUTH_SCOPE');
 
     if (scope === undefined || scope === '') {
         return 'repo';
@@ -49,7 +83,10 @@ function getGitHubOAuthScope(): string {
 }
 
 function getGitHubRedirectUri(request: NextRequest): string {
-    const configuredRedirectUri = process.env.GITHUB_OAUTH_REDIRECT_URI?.trim();
+    const configuredRedirectUri = isLocalGitHubOAuthRequest(request)
+        ? (getEnvironmentVariable('GITHUB_DEV_OAUTH_REDIRECT_URI') ??
+          getEnvironmentVariable('GITHUB_OAUTH_REDIRECT_URI'))
+        : getEnvironmentVariable('GITHUB_OAUTH_REDIRECT_URI');
 
     if (configuredRedirectUri !== undefined && configuredRedirectUri !== '') {
         return configuredRedirectUri;
@@ -101,7 +138,7 @@ export function createGitHubAuthorizeUrl(
 ): URL {
     const authorizeUrl = new URL('/login/oauth/authorize', githubOAuthOrigin);
 
-    authorizeUrl.searchParams.set('client_id', getGitHubClientId());
+    authorizeUrl.searchParams.set('client_id', getGitHubClientId(request));
     authorizeUrl.searchParams.set(
         'redirect_uri',
         getGitHubRedirectUri(request)
@@ -142,8 +179,8 @@ export async function exchangeGitHubCode(
         new URL('/login/oauth/access_token', githubOAuthOrigin),
         {
             body: new URLSearchParams({
-                client_id: getGitHubClientId(),
-                client_secret: getGitHubClientSecret(),
+                client_id: getGitHubClientId(request),
+                client_secret: getGitHubClientSecret(request),
                 code,
                 redirect_uri: getGitHubRedirectUri(request),
             }),
