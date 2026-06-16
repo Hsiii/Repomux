@@ -83,6 +83,54 @@ const themeOptions = [
     { label: 'System', value: 'system' },
 ] as const;
 
+function WorkDropdown(props: {
+    ariaLabel: string;
+    className?: string;
+    icon?: JSX.Element;
+    onChange: (value: string) => void;
+    options: ReadonlyArray<{ label: string; value: string }>;
+    selectClassName?: string;
+    value: string;
+}): JSX.Element {
+    const {
+        ariaLabel,
+        className,
+        icon,
+        onChange,
+        options,
+        selectClassName,
+        value,
+    } = props;
+    const wrapperClassName =
+        className === undefined
+            ? 'work-dropdown'
+            : `work-dropdown ${className}`;
+
+    return (
+        <div className={wrapperClassName}>
+            {icon === undefined ? undefined : (
+                <span aria-hidden='true' className='work-dropdown__icon'>
+                    {icon}
+                </span>
+            )}
+            <select
+                aria-label={ariaLabel}
+                className={selectClassName}
+                onChange={(event) => {
+                    onChange(event.target.value);
+                }}
+                value={value}
+            >
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+}
+
 function renderGitHubDisplayName(githubUser: GitHubUser | undefined) {
     if (githubUser?.login === undefined) {
         return 'GitHub';
@@ -248,54 +296,25 @@ function WorkQueue(props: {
                                         </span>
                                     </button>
 
-                                    <div
-                                        aria-label='Theme'
+                                    <WorkDropdown
+                                        ariaLabel='Theme'
                                         className='settings-select'
-                                    >
-                                        <select
-                                            aria-label='Theme'
-                                            onChange={(event) => {
-                                                onSetTheme(
-                                                    event.target
-                                                        .value as ThemePreference
-                                                );
-                                            }}
-                                            value={theme}
-                                        >
-                                            {themeOptions.map((option) => (
-                                                <option
-                                                    key={option.value}
-                                                    value={option.value}
-                                                >
-                                                    {option.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                        onChange={(value) => {
+                                            onSetTheme(
+                                                value as ThemePreference
+                                            );
+                                        }}
+                                        options={themeOptions}
+                                        value={theme}
+                                    />
 
-                                    <div
-                                        aria-label='Language'
+                                    <WorkDropdown
+                                        ariaLabel='Language'
                                         className='settings-select'
-                                    >
-                                        <select
-                                            aria-label='Language'
-                                            onChange={(event) => {
-                                                onSetLanguage(
-                                                    event.target.value
-                                                );
-                                            }}
-                                            value={language}
-                                        >
-                                            {languageOptions.map((option) => (
-                                                <option
-                                                    key={option.value}
-                                                    value={option.value}
-                                                >
-                                                    {option.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                        onChange={onSetLanguage}
+                                        options={languageOptions}
+                                        value={language}
+                                    />
 
                                     <button
                                         className='settings-menu__item'
@@ -336,23 +355,15 @@ function WorkQueue(props: {
                     />
                 </label>
 
-                <div className='work-filter'>
-                    <select
-                        aria-label='Work queue filter'
-                        onChange={(event) => {
-                            onUpdateWorkFilter(
-                                event.target.value as WorkFilter
-                            );
-                        }}
-                        value={workFilter}
-                    >
-                        {workFilterOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <WorkDropdown
+                    ariaLabel='Work queue filter'
+                    className='work-filter'
+                    onChange={(value) => {
+                        onUpdateWorkFilter(value as WorkFilter);
+                    }}
+                    options={workFilterOptions}
+                    value={workFilter}
+                />
 
                 <div className='sort-menu'>
                     <button
