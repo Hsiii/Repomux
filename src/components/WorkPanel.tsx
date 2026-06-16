@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import {
+    ArrowDownWideNarrow,
     ArrowLeft,
     Bot,
     Check,
@@ -8,13 +9,13 @@ import {
     CircleDot,
     GitPullRequestArrow,
     Languages,
-    ListFilter,
     LogOut,
     MessageSquare,
     Moon,
     Search,
     Settings,
     Sun,
+    UserCircle,
 } from 'lucide-react';
 
 import type { GitHubUser, WorkItem } from '../types/app';
@@ -58,8 +59,8 @@ interface WorkPanelProps {
 }
 
 const sortOptions = [
-    { label: 'Repository work count', value: 'repo-count' },
-    { label: 'Work item type', value: 'type' },
+    { label: 'Repo load', value: 'repo-count' },
+    { label: 'Type', value: 'type' },
     { label: 'Comments', value: 'comments' },
 ] as const;
 
@@ -223,18 +224,14 @@ function WorkQueue(props: {
         <>
             <div className='work-panel__header'>
                 <h2 className='work-title'>Work queue</h2>
+                <span className='work-panel__count'>
+                    {filteredWorkItems.length} work items in{' '}
+                    {filteredRepositoriesCount} repos
+                </span>
                 <div className='work-panel__account'>
-                    {githubUser?.avatar_url === undefined ? (
-                        <span aria-hidden='true' className='account-avatar'>
-                            GH
-                        </span>
-                    ) : (
-                        <img
-                            alt=''
-                            className='account-avatar'
-                            src={githubUser.avatar_url}
-                        />
-                    )}
+                    <span aria-hidden='true' className='account-avatar'>
+                        <UserCircle size={24} />
+                    </span>
                     {isGitHubConnected ? (
                         <>
                             <div className='account-main'>
@@ -390,16 +387,11 @@ function WorkQueue(props: {
                         onChange={(event) => {
                             onUpdateRepositorySearchQuery(event.target.value);
                         }}
-                        placeholder='Filter by repo'
+                        placeholder='Filter by repo (owner/name)'
                         type='search'
                         value={repositorySearchQuery}
                     />
                 </label>
-
-                <span className='work-panel__count'>
-                    {filteredWorkItems.length} work items in{' '}
-                    {filteredRepositoriesCount} repos
-                </span>
 
                 <div className='sort-menu'>
                     <button
@@ -409,7 +401,7 @@ function WorkQueue(props: {
                         onClick={onToggleSortMenu}
                         type='button'
                     >
-                        <ListFilter aria-hidden='true' size={16} />
+                        <ArrowDownWideNarrow aria-hidden='true' size={16} />
                         <span>{selectedSortOption.label}</span>
                         <span className='sort-menu__direction'>
                             {workSortDirection === 'desc'
