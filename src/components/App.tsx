@@ -398,7 +398,6 @@ export function App(): JSX.Element {
             {isGitHubConnected ? (
                 <main className={`app-shell app-shell--${effectiveLoginTheme}`}>
                     <WorkPanel
-                        filteredRepositoriesCount={filteredRepositories.length}
                         filteredWorkItems={filteredWorkItems}
                         githubUser={githubUser}
                         isAssigning={assignMutation.isPending}

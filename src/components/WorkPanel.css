@@ -29,7 +29,7 @@
     position: relative;
     min-height: 0;
     min-width: 0;
-    padding: var(--space-40);
+    padding: var(--space-20) var(--space-40);
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr);
     overflow: hidden;
@@ -37,13 +37,21 @@
 
 .work-panel__header {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: var(--space-16);
     margin-bottom: var(--space-16);
 }
 
+.work-panel__title-group {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-12);
+}
+
 .work-title {
+    flex: 0 0 auto;
     font: var(--font-title-sm);
 }
 
@@ -340,7 +348,6 @@
 }
 
 .work-panel__count {
-    justify-self: center;
     min-width: 0;
     overflow: hidden;
     color: var(--clr-text-dim);
@@ -602,7 +609,7 @@
     .work-panel {
         min-height: auto;
         display: block;
-        padding: var(--space-28);
+        padding: var(--space-20) var(--space-28);
         overflow: visible;
     }
 
@@ -619,9 +626,9 @@
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .account-main,
-    .work-panel__count {
-        display: none;
+    .work-panel__title-group {
+        flex-wrap: wrap;
+        row-gap: var(--space-4);
     }
 
     .work-filter {

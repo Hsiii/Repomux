@@ -26,7 +26,6 @@ export type ThemePreference = 'dark' | 'light' | 'system';
 export type WorkSortKey = 'repo-count' | 'type' | 'comments';
 
 interface WorkPanelProps {
-    filteredRepositoriesCount: number;
     filteredWorkItems: readonly WorkItem[];
     githubUser: GitHubUser | undefined;
     isGitHubConnected: boolean;
@@ -261,7 +260,6 @@ function WorkQueueRow(props: {
 }
 
 function WorkQueue(props: {
-    filteredRepositoriesCount: number;
     filteredWorkItems: readonly WorkItem[];
     githubUser: GitHubUser | undefined;
     isGitHubConnected: boolean;
@@ -286,7 +284,6 @@ function WorkQueue(props: {
     workSortKey: WorkSortKey;
 }): JSX.Element {
     const {
-        filteredRepositoriesCount,
         filteredWorkItems,
         githubUser,
         isGitHubConnected,
@@ -315,16 +312,21 @@ function WorkQueue(props: {
         sortOptions[0];
     const SortDirectionIcon =
         workSortDirection === 'desc' ? ArrowDownWideNarrow : ArrowUpWideNarrow;
+    const readyWorkItemsCount = filteredWorkItems.filter(
+        (item) => item.codexReady
+    ).length;
     const { t } = useI18n(language);
 
     return (
         <>
             <div className='work-panel__header'>
-                <h2 className='work-title'>Work queue</h2>
-                <span className='work-panel__count'>
-                    {filteredWorkItems.length} work items in{' '}
-                    {filteredRepositoriesCount} repos
-                </span>
+                <div className='work-panel__title-group'>
+                    <h2 className='work-title'>Work queue</h2>
+                    <span className='work-panel__count'>
+                        {readyWorkItemsCount}/{filteredWorkItems.length} codex
+                        ready work items
+                    </span>
+                </div>
                 <div className='work-panel__account'>
                     {isGitHubConnected ? (
                         <>
@@ -642,7 +644,6 @@ function WorkDetail(props: {
 
 export function WorkPanel(props: WorkPanelProps): JSX.Element {
     const {
-        filteredRepositoriesCount,
         filteredWorkItems,
         githubUser,
         isGitHubConnected,
@@ -677,7 +678,6 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
         <section className='work-panel'>
             {selectedItem === undefined ? (
                 <WorkQueue
-                    filteredRepositoriesCount={filteredRepositoriesCount}
                     filteredWorkItems={filteredWorkItems}
                     githubUser={githubUser}
                     isGitHubConnected={isGitHubConnected}
