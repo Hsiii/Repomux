@@ -21,6 +21,7 @@ import {
     Users,
 } from 'lucide-react';
 
+import { useI18n } from '../hooks/use-i18n';
 import type { GitHubUser, WorkItem } from '../types/app';
 import type { WorkFilter } from './RepositorySidebar';
 
@@ -32,7 +33,6 @@ interface WorkPanelProps {
     filteredWorkItems: readonly WorkItem[];
     githubUser: GitHubUser | undefined;
     hasGitHubError: boolean;
-    isAutomationPromptCopied: boolean;
     isGitHubConnected: boolean;
     isAssigning: boolean;
     isSettingsMenuOpen: boolean;
@@ -170,7 +170,6 @@ function WorkQueue(props: {
     filteredWorkItems: readonly WorkItem[];
     githubUser: GitHubUser | undefined;
     hasGitHubError: boolean;
-    isAutomationPromptCopied: boolean;
     isGitHubConnected: boolean;
     isSettingsMenuOpen: boolean;
     isSortMenuOpen: boolean;
@@ -197,7 +196,6 @@ function WorkQueue(props: {
         filteredWorkItems,
         githubUser,
         hasGitHubError,
-        isAutomationPromptCopied,
         isGitHubConnected,
         isSettingsMenuOpen,
         isSortMenuOpen,
@@ -222,6 +220,7 @@ function WorkQueue(props: {
     const selectedSortOption =
         sortOptions.find((option) => option.value === workSortKey) ??
         sortOptions[0];
+    const { t } = useI18n(language);
 
     return (
         <>
@@ -268,9 +267,7 @@ function WorkQueue(props: {
                                     >
                                         <Bot aria-hidden='true' size={16} />
                                         <span>
-                                            {isAutomationPromptCopied
-                                                ? 'Prompt copied'
-                                                : 'Copy setup prompt'}
+                                            {t('automation.settingsButton')}
                                         </span>
                                     </button>
 
@@ -625,7 +622,6 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
         filteredWorkItems,
         githubUser,
         hasGitHubError,
-        isAutomationPromptCopied,
         isGitHubConnected,
         isAssigning,
         isSettingsMenuOpen,
@@ -662,7 +658,6 @@ export function WorkPanel(props: WorkPanelProps): JSX.Element {
                     filteredWorkItems={filteredWorkItems}
                     githubUser={githubUser}
                     hasGitHubError={hasGitHubError}
-                    isAutomationPromptCopied={isAutomationPromptCopied}
                     isGitHubConnected={isGitHubConnected}
                     isSettingsMenuOpen={isSettingsMenuOpen}
                     isSortMenuOpen={isSortMenuOpen}

@@ -10,37 +10,27 @@ import {
     ChevronDown,
     CircleDot,
     Clock3,
-    Copy,
     GitPullRequestArrow,
     Languages,
     Moon,
     Sun,
-    X,
 } from 'lucide-react';
 
 import { useGitHubConnection } from '../hooks/use-github-connection';
+import { useI18n } from '../hooks/use-i18n';
 import {
     assignToCodex,
     fetchAccessibleRepositories,
     fetchWorkItems,
 } from '../lib/github';
 import type { WorkItem } from '../types/app';
+import { AutomationSetupDialog } from './AutomationSetupDialog';
 import { BrandLogo } from './BrandLogo';
 import { CodexMark } from './CodexMark';
 import { GitHubMark } from './GitHubMark';
 import type { WorkFilter } from './RepositorySidebar';
 import type { SortDirection, WorkSortKey } from './WorkPanel';
 import { WorkPanel } from './WorkPanel';
-
-const automationSetupPrompt = [
-    'Help me set up a local Codex automation for GitHub `codex-ready` work.',
-    '',
-    'Before saving anything, ask me for the GitHub scope, local automation workspace root, local repository root, schedule, and name.',
-    '',
-    'Then process one open `codex-ready` issue or pull request per run: require Codex GitHub access and local git or `gh` auth, read the latest `## Codex prompt` comment, sync the repo, create `codex/<item-number>-<slug>`, complete the work, respect `AGENTS.md`, run focused validation, commit with a conventional commit, push, open or update a PR when needed, and post a short GitHub update.',
-    '',
-    'If auth, prompt text, local paths, or repo state are missing or conflicting, stop and report the blocker instead of guessing.',
-].join('\n');
 
 const loginWallQueueItems = [
     {
@@ -130,6 +120,7 @@ export function App(): JSX.Element {
     const [isAutomationPromptCopied, setIsAutomationPromptCopied] =
         useState(false);
     const [isAutomationDialogOpen, setIsAutomationDialogOpen] = useState(false);
+    const { t } = useI18n(loginLanguage);
     const loginBenefitsRef = useRef<HTMLDivElement>(null);
     const loginRepoRefs = useRef<Array<HTMLDivElement | undefined>>([]);
     const loginMuxNodeRef = useRef<HTMLDivElement>(null);
@@ -346,20 +337,20 @@ export function App(): JSX.Element {
         loginThemes[0];
     const SelectedLoginThemeIcon = selectedLoginTheme.icon;
     function copyAutomationSetupPrompt() {
-        setIsSettingsMenuOpen(false);
         navigator.clipboard
-            .writeText(automationSetupPrompt)
+            .writeText(t('automation.prompt'))
             .then(() => {
                 setIsAutomationPromptCopied(true);
-                setStatusMessage(
-                    'Automation setup prompt copied. Paste it into Codex to create the suggested automation.'
-                );
+                setStatusMessage(t('status.automationCopied'));
             })
             .catch(() => {
-                setStatusMessage(
-                    'Clipboard access failed. Copy the setup prompt manually from the page or README.'
-                );
+                setStatusMessage(t('status.clipboardFailed'));
             });
+    }
+
+    function openAutomationSetupDialog() {
+        setIsSettingsMenuOpen(false);
+        setIsAutomationDialogOpen(true);
     }
 
     useEffect(() => {
@@ -393,7 +384,6 @@ export function App(): JSX.Element {
                         githubUser={githubUser}
                         hasGitHubError={githubSessionQuery.isError}
                         isAssigning={assignMutation.isPending}
-                        isAutomationPromptCopied={isAutomationPromptCopied}
                         isGitHubConnected={isGitHubConnected}
                         isSettingsMenuOpen={isSettingsMenuOpen}
                         isSortMenuOpen={isSortMenuOpen}
@@ -405,7 +395,7 @@ export function App(): JSX.Element {
                         onDisconnectGitHub={disconnectGitHub}
                         onSelectItem={selectItem}
                         onSetLanguage={setLoginLanguage}
-                        onSetupAutomation={copyAutomationSetupPrompt}
+                        onSetupAutomation={openAutomationSetupDialog}
                         onToggleSettingsMenu={() => {
                             setIsSettingsMenuOpen((current) => !current);
                             setIsSortMenuOpen(false);
@@ -979,83 +969,19 @@ export function App(): JSX.Element {
                             </div>
                         </section>
                     </div>
-
-                    {isAutomationDialogOpen ? (
-                        <div
-                            className='login-wall__automation-dialog-backdrop'
-                            onClick={() => {
-                                setIsAutomationDialogOpen(false);
-                            }}
-                        >
-                            <section
-                                aria-labelledby='login-wall-automation-title'
-                                aria-modal='true'
-                                className='login-wall__automation-dialog'
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                }}
-                                role='dialog'
-                            >
-                                <div className='login-wall__automation-dialog-header'>
-                                    <div className='login-wall__automation-dialog-copy'>
-                                        <h2
-                                            className='login-wall__automation-dialog-title'
-                                            id='login-wall-automation-title'
-                                        >
-                                            Automation setup
-                                        </h2>
-                                        <p className='login-wall__automation-dialog-description'>
-                                            Copy this once to let Codex set up
-                                            the automation with your scope,
-                                            paths, and schedule.
-                                        </p>
-                                    </div>
-                                    <button
-                                        aria-label='Close automation setup dialog'
-                                        className='login-wall__automation-dialog-close'
-                                        onClick={() => {
-                                            setIsAutomationDialogOpen(false);
-                                        }}
-                                        type='button'
-                                    >
-                                        <X aria-hidden='true' size={18} />
-                                    </button>
-                                </div>
-
-                                <div className='login-wall__automation-dialog-body'>
-                                    <div className='login-wall__automation-prompt-card'>
-                                        <div className='login-wall__automation-prompt-header'>
-                                            <p className='login-wall__automation-prompt-title'>
-                                                Copy into Codex
-                                            </p>
-                                            <button
-                                                className='login-wall__automation-copy'
-                                                onClick={
-                                                    copyAutomationSetupPrompt
-                                                }
-                                                type='button'
-                                            >
-                                                <Copy
-                                                    aria-hidden='true'
-                                                    size={14}
-                                                />
-                                                <span>
-                                                    {isAutomationPromptCopied
-                                                        ? 'Copied'
-                                                        : 'Copy prompt'}
-                                                </span>
-                                            </button>
-                                        </div>
-                                        <pre className='login-wall__automation-prompt'>
-                                            {automationSetupPrompt}
-                                        </pre>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-                    ) : undefined}
                 </main>
             )}
+            {isAutomationDialogOpen ? (
+                <AutomationSetupDialog
+                    isPromptCopied={isAutomationPromptCopied}
+                    language={loginLanguage}
+                    onClose={() => {
+                        setIsAutomationDialogOpen(false);
+                    }}
+                    onCopyPrompt={copyAutomationSetupPrompt}
+                    theme={loginTheme}
+                />
+            ) : undefined}
         </>
     );
 }

@@ -10,6 +10,7 @@ import {
     Sun,
 } from 'lucide-react';
 
+import { useI18n } from '../hooks/use-i18n';
 import type { GitHubUser, Repository } from '../types/app';
 
 export type WorkFilter = 'assigned' | 'created' | 'all';
@@ -53,7 +54,6 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
         filteredRepositories,
         githubUser,
         hasGitHubError,
-        isAutomationPromptCopied,
         isGitHubConnected,
         isSettingsMenuOpen,
         language,
@@ -71,6 +71,7 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
         theme,
         workFilter,
     } = props;
+    const { t } = useI18n(language);
 
     function renderRepositoryName(fullName: string) {
         const [owner, ...nameParts] = fullName.split('/');
@@ -241,9 +242,7 @@ export function RepositorySidebar(props: RepositorySidebarProps): JSX.Element {
                                     >
                                         <Bot aria-hidden='true' size={16} />
                                         <span>
-                                            {isAutomationPromptCopied
-                                                ? 'Prompt copied'
-                                                : 'Copy setup prompt'}
+                                            {t('automation.settingsButton')}
                                         </span>
                                     </button>
 
