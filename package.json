@@ -11,9 +11,18 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier . --write",
         "format:check": "prettier . --check",
+        "prepare": "husky",
         "setup:codex": "bun scripts/setup-repomux-codex-automation.mjs",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "check": "tsc -p tsconfig.json --noEmit && eslint . && prettier . --check && next build"
+    },
+    "lint-staged": {
+        "*.{js,jsx,ts,tsx,css,scss,html,json,md,yml,yaml}": [
+            "prettier --write"
+        ],
+        "*.{js,jsx,ts,tsx}": [
+            "eslint --fix"
+        ]
     },
     "dependencies": {
         "@vercel/analytics": "2.0.1",
@@ -31,6 +40,8 @@
         "eslint": "10.4.0",
         "eslint-config-complete": "4.7.2",
         "eslint-import-resolver-typescript": "4.4.4",
+        "husky": "^9.1.7",
+        "lint-staged": "^17.0.7",
         "prettier": "3.8.3",
         "typescript": "6.0.3",
         "vercel": "54.9.1"
